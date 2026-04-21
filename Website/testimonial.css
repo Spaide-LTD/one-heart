@@ -1,0 +1,224 @@
+/* Reset & Base */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000000;
+    color: #ffffff;
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(12px);
+    padding: 10px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: #ffffff;
+}
+
+.nav-links .cta {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #ffffff;
+}
+
+/* Section Header */
+.testimonials-section {
+    padding: 140px 40px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 24px;
+}
+
+.badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+.section-header h1 {
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+.section-header p {
+    font-size: 19px;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Marquee Container */
+.marquee-container {
+    position: relative;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-track {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    will-change: transform;
+}
+
+/* Testimonial Cards */
+.testimonial-card {
+    flex: 0 0 380px;
+    background: #0A0A0A;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px;
+    transition: transform 0.3s ease, background 0.3s ease;
+    cursor: default;
+}
+
+.testimonial-card:hover {
+    background: #0F0F0F;
+    transform: translateY(-4px);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.stars {
+    color: #ffffff;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+.quote {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+    min-height: 110px;
+}
+
+.attribution {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 16px;
+}
+
+/* Framer Badge */
+.framer-badge {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #ffffff;
+    color: #000000;
+    padding: 10px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.framer-badge:hover {
+    transform: translateY(-2px);
+}
+
+.framer-badge svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar { padding: 10px 16px; gap: 16px; }
+    .nav-links a:not(.cta) { display: none; }
+    .testimonials-section { padding: 120px 20px 60px; }
+    .section-header h1 { font-size: 40px; }
+    .section-header p { font-size: 16px; }
+    .testimonial-card { flex: 0 0 300px; padding: 24px; }
+}
