@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | OneHeart Command</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+                <div class="logo-text">
+                    <h1 data-i18n="brand.name">ONEHEART</h1>
+                    <span data-i18n="brand.tag">COMMAND</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="index.html" class="nav-item active">
+                    <i class="fa-solid fa-house"></i> <span data-i18n="nav.dashboard">Dashboard</span>
+                </a>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.events">Events</div>
+                    <a href="event-manager.html" class="nav-item"><i class="fa-solid fa-list-check"></i> <span
+                            data-i18n="nav.eventManager">Event Manager</span></a>
+                    <a href="past-events.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> <span
+                            data-i18n="nav.pastEvents">Past Events</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.website">Website</div>
+
+                    <a href="holiday-themes.html" class="nav-item"><i class="fa-solid fa-holly-berry"></i> <span
+                            data-i18n="nav.holidayThemes">Holiday Themes</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.communication">Communication</div>
+                    <a href="contact-responses.html" class="nav-item"><i class="fa-regular fa-envelope"></i> <span
+                            data-i18n="nav.contactResponses">Contact Responses</span></a>
+                    <a href="whatsapp-chat.html" class="nav-item"><i class="fa-brands fa-whatsapp"></i> <span
+                            data-i18n="nav.whatsappChat">WhatsApp Chat</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.system">System</div>
+                    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span
+                            data-i18n="nav.settings">Settings</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-wrapper">
+            <header class="top-header">
+                                <div class="header-actions">
+                                            <button class="action-btn" id="changeLanguageBtn">
+        <i class="fa-solid fa-globe"></i> <span data-i18n="btn.changeLanguage">CHANGE LANGUAGE</span>
+    </button>
+                                            <button class="action-btn" id="logoutBtn" onclick="window.logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+    </button>
+                                </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title" data-i18n="page.dashboard.title">DASHBOARD</h1>
+                        <p class="page-subtitle" data-i18n="page.dashboard.subtitle">MASTER CONTROL CENTER</p>
+                    </div>
+                    <div class="date-time">
+                        <span id="current-date">Monday, May 5, 2026</span>
+                        <span id="current-time">11:24:09 AM</span>
+                    </div>
+                </div>
+
+                <div class="status-bar">
+                    <div class="status-left">
+                        <div class="status-indicator"></div>
+                        <div>
+                            <h4 style="font-size: 14px; margin-bottom: 2px;" data-i18n="status.system">SYSTEM STATUS:
+                                <span style="color: var(--success);" data-i18n="status.operational">OPERATIONAL</span>
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 12px;" data-i18n="status.detail">All
+                                systems running smoothly. No critical issues.</p>
+                        </div>
+                    </div>
+                    <div class="status-metrics">
+                        <div class="metric"><i class="fa-solid fa-envelope" style="color: var(--primary);"></i> <span
+                                class="metric-val">0</span> <span data-i18n="metric.unread">Unread</span></div>
+                        
+
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label" data-i18n="kpi.totalEvents">TOTAL EVENTS</span>
+                            <div class="kpi-icon"><i class="fa-regular fa-calendar"></i></div>
+                        </div>
+                        <div class="kpi-value" data-count="128">0</div>
+                        <div class="kpi-trend up"><i class="fa-solid fa-arrow-up"></i> <span
+                                data-i18n="kpi.trend.fromLastMonth">12% from last month</span></div>
+                        <div class="sparkline"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label" data-i18n="kpi.contactRequests">CONTACT REQUESTS</span>
+                            <div class="kpi-icon"><i class="fa-regular fa-address-book"></i></div>
+                        </div>
+                        <div class="kpi-value" data-count="24">0</div>
+                        <div class="kpi-trend up"><i class="fa-solid fa-arrow-up"></i> <span
+                                data-i18n="kpi.trend.fromLastWeek">8% from last week</span></div>
+                        <div class="sparkline"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label" data-i18n="kpi.featuredEvents">FEATURED EVENTS</span>
+                            <div class="kpi-icon"><i class="fa-regular fa-star"></i></div>
+                        </div>
+                        <div class="kpi-value" data-count="6">0</div>
+                        <div class="kpi-trend neutral">— No change</div>
+                        <div class="sparkline"></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label" data-i18n="kpi.messages">MESSAGES</span>
+                            <div class="kpi-icon"><i class="fa-regular fa-comment-dots"></i></div>
+                        </div>
+                        <div class="kpi-value" data-count="16">0</div>
+                        <div class="kpi-trend up"><i class="fa-solid fa-arrow-up"></i> 4 new today</div>
+                        <div class="sparkline"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-layout">
+                    <div class="main-column">
+                        <div class="section-header">
+                            <h3 class="section-title"><i class="fa-solid fa-bolt" style="color: var(--primary);"></i>
+                                <span data-i18n="section.quickActions">QUICK ACTIONS</span></h3>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn" id="addEventBtn">
+                                <i class="fa-solid fa-plus"></i> <span data-i18n="add_event">ADD EVENT</span>
+                            </button>
+
+                            <button class="action-btn" id="viewResponsesBtn">
+                                <i class="fa-regular fa-envelope"></i> <span data-i18n="btn.viewResponses">VIEW
+                                    RESPONSES</span>
+                            </button>
+                        </div>
+
+                        <div class="section-header" style="margin-top: 30px;">
+                            <h3 class="section-title" data-i18n="section.upcomingEvents">UPCOMING EVENTS</h3>
+                            <a href="all-events.html" class="view-all" data-i18n="link.viewAll">View All <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date/Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="thumb"><i class="fa-solid fa-image"></i></div>
+                                            <div><strong data-i18n="event.executiveSummit">Executive Summit
+                                                    2026</strong></div>
+                                        </td>
+                                        <td data-i18n="event.executiveSummit.date">May 10, 2026 • 09:00 AM</td>
+                                        <td><span class="badge success" data-i18n="status.confirmed">CONFIRMED</span>
+                                        </td>
+                                        <td><i class="fa-solid fa-ellipsis-vertical"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="thumb purple"><i class="fa-solid fa-champagne-glasses"></i>
+                                            </div>
+                                            <div><strong data-i18n="event.brandLaunch">Brand Launch Night</strong></div>
+                                        </td>
+                                        <td data-i18n="event.brandLaunch.date">May 24, 2026 • 07:00 PM</td>
+                                        <td><span class="badge warning" data-i18n="status.pending">PENDING</span></td>
+                                        <td><i class="fa-solid fa-ellipsis-vertical"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="thumb gold"><i class="fa-solid fa-crown"></i></div>
+                                            <div><strong data-i18n="event.galaDinner">Annual Gala Dinner</strong></div>
+                                        </td>
+                                        <td data-i18n="event.galaDinner.date">June 01, 2026 • 06:30 PM</td>
+                                        <td><span class="badge success" data-i18n="status.confirmed">CONFIRMED</span>
+                                        </td>
+                                        <td><i class="fa-solid fa-ellipsis-vertical"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-header" style="margin-top: 30px;">
+                            <h3 class="section-title" data-i18n="section.recentInquiries">RECENT INQUIRIES</h3>
+                            <a href="contact-responses.html" class="view-all" data-i18n="link.viewAll">View All <i
+                                    class="fa-solid fa-arrow-right"></i></a>
+                        </div>
+                        <div class="inquiry-card">
+                            <div class="inquiry-user">
+                                <div class="avatar-circle">JD</div>
+                                <div>
+                                    <div class="name" data-i18n="inquiry.user.johnDoe">John Doe</div>
+                                    <div class="msg" data-i18n="inquiry.msg.corporatePackage">Interested in Corporate
+                                        Event Package</div>
+                                </div>
+                            </div>
+                            <div class="inquiry-meta">
+                                <span class="time">2m ago</span>
+                                <span class="badge primary" data-i18n="badge.new">NEW</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="side-column">
+                        <div class="section-header">
+                            <h3 class="section-title" data-i18n="section.activityFeed">ACTIVITY FEED</h3>
+                            <a href="#" class="view-all" data-i18n="link.viewAll">View All</a>
+                        </div>
+                        <div class="activity-card">
+                            <ul class="activity-feed">
+                                <li class="feed-item">
+                                    <div class="feed-icon"><i class="fa-regular fa-star"></i></div>
+                                    <div class="feed-content">
+                                        <h4 data-i18n="activity.featuredCreated">Featured event created</h4>
+                                        <p data-i18n="event.brandLaunch">Brand Launch Night</p>
+                                    </div>
+                                    <span class="feed-time">2m ago</span>
+                                </li>
+                                <li class="feed-item">
+                                    <div class="feed-icon"><i class="fa-regular fa-calendar"></i></div>
+                                    <div class="feed-content">
+                                        <h4 data-i18n="activity.eventUpdated">Event updated</h4>
+                                        <p data-i18n="event.executiveSummit">Executive Summit 2026</p>
+                                    </div>
+                                    <span class="feed-time">15m ago</span>
+                                </li>
+                                <li class="feed-item">
+                                    <div class="feed-icon"><i class="fa-regular fa-envelope"></i></div>
+                                    <div class="feed-content">
+                                        <h4 data-i18n="activity.newContact">New contact message</h4>
+                                        <p data-i18n="activity.fromSarah">From Sarah Johnson</p>
+                                    </div>
+                                    <span class="feed-time">28m ago</span>
+                                </li>
+
+                                <li class="feed-item">
+                                    <div class="feed-icon"><i class="fa-regular fa-user"></i></div>
+                                    <div class="feed-content">
+                                        <h4 data-i18n="activity.newUser">New user added</h4>
+                                        <p data-i18n="activity.user.mikeJohnson">Mike Johnson</p>
+                                    </div>
+                                    <span class="feed-time">3h ago</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="website-status-card">
+                            <div class="ws-header">
+                                <div class="ws-live"></div>
+                                <h4 data-i18n="website.status">WEBSITE STATUS</h4>
+                            </div>
+                            <p class="ws-text" data-i18n="website.live">Your website is live and visible</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../components/notifications.js"></script> <!-- Adjust path as needed -->
+    <script src="../js/script.js"></script>
+
+
+</body>
+
+</html>

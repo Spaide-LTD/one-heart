@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="holiday_themes">Holiday Themes | OneHeart Command</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/holiday-themes.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+    
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                 <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+                <div class="logo-text">
+                    <h1 data-i18n="brand.name">ONEHEART</h1>
+                    <span data-i18n="brand.tag">COMMAND</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i> <span data-i18n="nav.dashboard">Dashboard</span>
+                </a>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.events">Events</div>
+                    <a href="event-manager.html" class="nav-item"><i class="fa-solid fa-list-check"></i> <span data-i18n="nav.eventManager">Event Manager</span></a>
+                    <a href="past-events.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="nav.pastEvents">Past Events</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.website">Website</div>
+                   
+                    <a href="holiday-themes.html" class="nav-item active"><i class="fa-solid fa-holly-berry"></i> <span data-i18n="nav.holidayThemes">Holiday Themes</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.communication">Communication</div>
+                    <a href="contact-responses.html" class="nav-item"><i class="fa-regular fa-envelope"></i> <span data-i18n="nav.contactResponses">Contact Responses</span></a>
+                    <a href="whatsapp-chat.html" class="nav-item"><i class="fa-brands fa-whatsapp"></i> <span data-i18n="nav.whatsappChat">WhatsApp Chat</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="nav.section.system">System</div>
+                    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span data-i18n="nav.settings">Settings</span></a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-actions">
+                    <!-- removed unused search, notifications and user placeholder -->
+                    <button class="action-btn" id="logoutBtn" onclick="window.logout()">
+                      <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header-actions">
+                    <div class="page-header-left">
+                        <h1 data-i18n="holiday_themes">Holiday Themes</h1>
+                        <p class="page-subtitle" data-i18n="manage_themes">Manage seasonal website overlays</p>
+                    </div>
+                    <button class="btn-primary" id="addThemeBtn">
+                        <i class="fa-solid fa-plus"></i> 
+                        <span data-i18n="add_theme">Add Custom Theme</span>
+                    </button>
+                </div>
+
+                <div id="themesGrid" class="themes-grid">
+                    <!-- Theme cards injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD THEME MODAL -->
+    <div class="modal-overlay" id="addThemeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 data-i18n="add_theme">Add Custom Theme</h2>
+                <button class="modal-close" id="closeAddModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label data-i18n="theme_name">Theme Name</label>
+                    <input type="text" class="input" id="customName" data-i18n-placeholder="theme_name_placeholder" placeholder="e.g. Spring Festival">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label data-i18n="category">Category</label>
+                        <select class="input" id="customCategory">
+                            <option value="global">Global</option>
+                            <option value="islamic">Islamic / Middle Eastern</option>
+                            <option value="hindu">Hindu / South Asian</option>
+                            <option value="asian">Asian</option>
+                            <option value="regional">Regional / Cultural</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="icon">Icon (Emoji)</label>
+                        <input type="text" class="input" id="customIcon" placeholder="🌸" maxlength="2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="description">Description</label>
+                    <textarea class="input" id="customDesc" rows="2" data-i18n-placeholder="description_placeholder" placeholder="Brief description of the theme..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label data-i18n="primary_color">Primary Color</label>
+                        <input type="color" class="input" id="customPrimary" value="#8b5cf6">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="accent_color">Accent Color</label>
+                        <input type="color" class="input" id="customAccent" value="#06b6d4">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="overlay_effect">Overlay Effect</label>
+                    <input type="text" class="input" id="customEffect" data-i18n-placeholder="overlay_placeholder" placeholder="linear-gradient(...)">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAddModal" data-i18n="cancel">Cancel</button>
+                <button class="btn-primary" id="saveThemeBtn" data-i18n="save">Save Theme</button>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/settings.js"></script>
+<script src="../components/notifications.js"></script>
+<script src="../js/holiday-themes.js"></script>
+
+</body>
+</html>

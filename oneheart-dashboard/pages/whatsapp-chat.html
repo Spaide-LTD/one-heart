@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="whatsapp_chat">WhatsApp Chat | OneHeart Command</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+    
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                  <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+                <div class="logo-text">
+                    <h1 data-i18n="brand.name">ONEHEART</h1>
+                    <span data-i18n="brand.tag">COMMAND</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i> 
+                    <span data-i18n="dashboard">Dashboard</span>
+                </a>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="events_section">Events</div>
+                    
+                    <a href="event-manager.html" class="nav-item">
+                        <i class="fa-solid fa-list-check"></i> 
+                        <span data-i18n="event_manager">Event Manager</span>
+                    </a>
+                    <a href="past-events.html" class="nav-item">
+                        <i class="fa-solid fa-clock-rotate-left"></i> 
+                        <span data-i18n="past_events">Past Events</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="website_section">Website</div>
+                   
+                    <a href="holiday-themes.html" class="nav-item">
+                        <i class="fa-solid fa-holly-berry"></i> 
+                        <span data-i18n="holiday_themes">Holiday Themes</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="communication_section">Communication</div>
+                    <a href="contact-responses.html" class="nav-item">
+                        <i class="fa-regular fa-envelope"></i> 
+                        <span data-i18n="contact_responses">Contact Responses</span>
+                    </a>
+                    <a href="whatsapp-chat.html" class="nav-item active">
+                        <i class="fa-brands fa-whatsapp"></i> 
+                        <span data-i18n="whatsapp_chat">WhatsApp Chat</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="system_section">System</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fa-solid fa-gear"></i> 
+                        <span data-i18n="settings">Settings</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-wrapper">
+            <header class="top-header">
+              <div class="header-actions">
+                <!-- removed unused search, notifications, user placeholder, and sync button -->
+                <button class="action-btn" id="logoutBtn" onclick="window.logout()">
+                  <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title" data-i18n="whatsapp_chat">WHATSAPP CHAT</h1>
+                        <p class="page-subtitle" data-i18n="direct_communication">DIRECT CLIENT COMMUNICATION</p>
+                    </div>
+                </div>
+
+              <div class="chat-container">
+  <!-- Chat Sidebar (Contact List) -->
+  <div class="chat-sidebar">
+    <div class="chat-search">
+      <input class="input" data-i18n-placeholder="chat.search" placeholder="Search chats...">
+    </div>
+    <div class="chat-list" id="chatList">
+      <!-- Chat contacts rendered by JS -->
+    </div>
+  </div>
+
+  <!-- Chat Main Area -->
+  <div class="chat-main">
+    <div class="chat-header">
+      <div class="chat-avatar" id="chatAvatar" style="background: var(--gradient-violet);">--</div>
+      <div>
+        <strong id="chatContactName" data-i18n="chat.selectContact">Select a contact</strong>
+        <p id="chatStatus" style="color: var(--text-secondary);" data-i18n="chat.status.online">Online</p>
+      </div>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+      <!-- Messages rendered by JS -->
+      <div style="text-align: center; color: var(--text-muted); padding: 40px;" data-i18n="chat.welcome">
+        Select a contact to start chatting
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <input class="input" id="messageInput" data-i18n-placeholder="chat.typeMessage" placeholder="Type a message..." disabled>
+      <button class="action-btn" id="sendBtn" disabled>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../components/notifications.js"></script>
+<script src="../js/whatsapp-chat.js"></script>
+<script src="../js/settings.js"></script>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

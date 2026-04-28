@@ -4,12 +4,18 @@ if (particlesRoot) {
   function createParticle() {
     const particle = document.createElement("span");
     particle.className = "particle";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44e3ce0 (dashboard)
     const size = Math.random() * 2.8 + 1;
     const startX = Math.random() * 100;
     const duration = Math.random() * 22 + 18;
     const delay = Math.random() * -25;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44e3ce0 (dashboard)
     particle.style.width = `${size}px`;
     particle.style.height = `${size}px`;
     particle.style.left = `${startX}%`;
@@ -17,6 +23,7 @@ if (particlesRoot) {
     particle.style.animationDuration = `${duration}s`;
     particle.style.animationDelay = `${delay}s`;
     particle.style.opacity = String(Math.random() * 0.8 + 0.1);
+<<<<<<< HEAD
 
     particlesRoot.appendChild(particle);
   }
@@ -24,17 +31,27 @@ if (particlesRoot) {
   for (let i = 0; i < 85; i += 1) {
     createParticle();
   }
+=======
+    particlesRoot.appendChild(particle);
+  }
+
+  for (let i = 0; i < 85; i += 1) createParticle();
+>>>>>>> 44e3ce0 (dashboard)
 }
 
 const steps = Array.from(document.querySelectorAll(".timeline-step"));
 const rail = document.querySelector(".timeline-rail");
 const dot = document.getElementById("timelineDot");
 const stepCurrent = document.getElementById("stepCurrent");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44e3ce0 (dashboard)
 let activeIndex = 0;
 let scrollRaf = 0;
 
 function positionDot() {
+<<<<<<< HEAD
   if (!rail || !dot || !steps.length) {
     return;
   }
@@ -46,13 +63,24 @@ function positionDot() {
   const stepRect = activeStep.getBoundingClientRect();
   const centerY = stepRect.top - railRect.top + stepRect.height / 2;
   dot.style.top = `${centerY}px`;
+=======
+  if (!rail || !dot || !steps.length) return;
+  const activeStep = steps[activeIndex];
+  if (!activeStep) return;
+  const railRect = rail.getBoundingClientRect();
+  const stepRect = activeStep.getBoundingClientRect();
+  dot.style.top = `${stepRect.top - railRect.top + stepRect.height / 2}px`;
+>>>>>>> 44e3ce0 (dashboard)
 }
 
 function getActiveIndexFromScroll() {
   const viewportCenter = window.innerHeight * 0.45;
   let bestIndex = 0;
   let bestDist = Infinity;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44e3ce0 (dashboard)
   steps.forEach((step, i) => {
     const rect = step.getBoundingClientRect();
     const centerY = rect.top + rect.height / 2;
@@ -62,11 +90,15 @@ function getActiveIndexFromScroll() {
       bestIndex = i;
     }
   });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 44e3ce0 (dashboard)
   return bestIndex;
 }
 
 function updateTimeline(index) {
+<<<<<<< HEAD
   if (index < 0 || index >= steps.length) {
     return;
   }
@@ -74,21 +106,33 @@ function updateTimeline(index) {
   const changed = index !== activeIndex;
   activeIndex = index;
 
+=======
+  if (index < 0 || index >= steps.length) return;
+  const changed = index !== activeIndex;
+  activeIndex = index;
+>>>>>>> 44e3ce0 (dashboard)
   const activeStep = steps[activeIndex];
   if (stepCurrent && activeStep) {
     stepCurrent.textContent = activeStep.dataset.step;
     if (changed) {
       stepCurrent.classList.remove("is-tick");
+<<<<<<< HEAD
       window.requestAnimationFrame(() => {
         stepCurrent.classList.add("is-tick");
       });
     }
   }
 
+=======
+      requestAnimationFrame(() => stepCurrent.classList.add("is-tick"));
+    }
+  }
+>>>>>>> 44e3ce0 (dashboard)
   steps.forEach((step, i) => {
     step.classList.toggle("is-active", i === activeIndex);
     step.classList.toggle("is-passed", i < activeIndex);
   });
+<<<<<<< HEAD
 
   positionDot();
 
@@ -97,11 +141,18 @@ function updateTimeline(index) {
     window.requestAnimationFrame(() => {
       dot.classList.add("is-pulse");
     });
+=======
+  positionDot();
+  if (changed && dot) {
+    dot.classList.remove("is-pulse");
+    requestAnimationFrame(() => dot.classList.add("is-pulse"));
+>>>>>>> 44e3ce0 (dashboard)
   }
 }
 
 function syncTimelineFromScroll() {
   const next = getActiveIndexFromScroll();
+<<<<<<< HEAD
   if (next !== activeIndex) {
     updateTimeline(next);
   } else {
@@ -113,6 +164,14 @@ function scheduleSync() {
   if (scrollRaf) {
     cancelAnimationFrame(scrollRaf);
   }
+=======
+  if (next !== activeIndex) updateTimeline(next);
+  else positionDot();
+}
+
+function scheduleSync() {
+  if (scrollRaf) cancelAnimationFrame(scrollRaf);
+>>>>>>> 44e3ce0 (dashboard)
   scrollRaf = requestAnimationFrame(() => {
     scrollRaf = 0;
     syncTimelineFromScroll();
@@ -121,6 +180,7 @@ function scheduleSync() {
 
 if (steps.length && rail && dot) {
   updateTimeline(0);
+<<<<<<< HEAD
 
   window.addEventListener("scroll", scheduleSync, { passive: true });
   window.addEventListener("resize", () => {
@@ -494,3 +554,124 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
 });
+=======
+  window.addEventListener("scroll", scheduleSync, { passive: true });
+  window.addEventListener("resize", syncTimelineFromScroll);
+  requestAnimationFrame(syncTimelineFromScroll);
+}
+
+const marqueeContainer = document.getElementById("marqueeContainer");
+const marqueeTrack = document.getElementById("marqueeTrack");
+if (marqueeContainer && marqueeTrack) {
+  let position = 0;
+  const speed = 0.6;
+  let isPaused = false;
+  const originalCards = Array.from(marqueeTrack.children);
+  originalCards.forEach((card) => marqueeTrack.appendChild(card.cloneNode(true)));
+
+  function animateMarquee() {
+    if (!isPaused) {
+      position -= speed;
+      const halfWidth = marqueeTrack.scrollWidth / 2;
+      if (Math.abs(position) >= halfWidth) position = 0;
+      marqueeTrack.style.transform = `translateX(${position}px)`;
+    }
+    requestAnimationFrame(animateMarquee);
+  }
+  marqueeContainer.addEventListener("mouseenter", () => (isPaused = true));
+  marqueeContainer.addEventListener("mouseleave", () => (isPaused = false));
+  marqueeContainer.addEventListener("touchstart", () => (isPaused = true));
+  marqueeContainer.addEventListener("touchend", () => (isPaused = false));
+  window.addEventListener("resize", () => {
+    position = position % (marqueeTrack.scrollWidth / 2);
+    marqueeTrack.style.transform = `translateX(${position}px)`;
+  });
+  animateMarquee();
+}
+
+const DASHBOARD_KEY = "oh_website_config";
+const CONTACT_KEY = "oh_contact_responses";
+
+function readDashboardConfig() {
+  try {
+    const raw = localStorage.getItem(DASHBOARD_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function applyMaintenanceMode(config) {
+  const maintenance = config.maintenance;
+  if (!maintenance || !maintenance.enabled) return;
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.inset = "0";
+  overlay.style.zIndex = "9999";
+  overlay.style.display = "grid";
+  overlay.style.placeItems = "center";
+  overlay.style.padding = "2rem";
+  overlay.style.background = "rgba(3,4,8,0.94)";
+  overlay.innerHTML = `<div style="max-width:640px;text-align:center;border:1px solid rgba(255,255,255,.2);padding:2rem;border-radius:16px;background:#090b12;color:#fff"><h1 style="margin:0 0 .75rem">Website Maintenance</h1><p style="margin:0;color:#c7cedf">${maintenance.message || "We will be back shortly."}</p></div>`;
+  document.body.appendChild(overlay);
+}
+
+function applyHolidayTheme(config) {
+  const theme = config.theme;
+  if (!theme) return;
+  document.documentElement.style.setProperty("--accent", theme.accent || "#22c55e");
+  document.documentElement.style.setProperty("--bg", theme.bg || "#0a0a0a");
+  document.documentElement.style.setProperty("--text", theme.text || "#ffffff");
+}
+
+function injectFeaturedEvents(config) {
+  const featured = Array.isArray(config.featuredEvents) ? config.featuredEvents : [];
+  if (!featured.length || document.getElementById("featured-events")) return;
+  const section = document.createElement("section");
+  section.className = "content-section";
+  section.id = "featured-events";
+  section.innerHTML = `<h2>Featured Past Events</h2><div style="display:grid;gap:14px;margin-top:18px">${featured
+    .map(
+      (event) => `<article style="text-align:left;border:1px solid var(--border);border-radius:14px;padding:16px;background:rgba(18,18,18,.65)"><h3 style="margin:0">${event.title}</h3><p style="margin:8px 0 0;color:var(--muted)">${event.date || ""} - ${event.description || ""}</p></article>`
+    )
+    .join("")}</div>`;
+  const testimonials = document.getElementById("testimonials");
+  if (testimonials?.parentNode) testimonials.parentNode.insertBefore(section, testimonials);
+}
+
+function wireContactCapture() {
+  const form = document.getElementById("contactForm");
+  if (!form) return;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const payload = Object.fromEntries(fd.entries());
+    payload.createdAt = new Date().toLocaleString();
+    let all;
+    try {
+      const raw = localStorage.getItem(CONTACT_KEY);
+      all = raw ? JSON.parse(raw) : [];
+    } catch {
+      all = [];
+    }
+    all.unshift(payload);
+    localStorage.setItem(CONTACT_KEY, JSON.stringify(all));
+    const btn = form.querySelector(".submit-btn");
+    if (!btn) return;
+    const original = btn.innerHTML;
+    btn.innerHTML = "Inquiry Sent";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.disabled = false;
+      form.reset();
+    }, 1400);
+  });
+}
+
+const config = readDashboardConfig();
+applyHolidayTheme(config);
+applyMaintenanceMode(config);
+injectFeaturedEvents(config);
+wireContactCapture();
+>>>>>>> 44e3ce0 (dashboard)
