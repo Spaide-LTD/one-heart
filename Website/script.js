@@ -209,52 +209,73 @@ if (marqueeContainer && marqueeTrack) {
 }
 
 
-
-// ========== CONTACT FORM HANDLING ==========
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
+// Contact Form Functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('eventForm');
+  const dateInput = document.getElementById('expectedDate');
+  const calendarBtn = document.querySelector('.calendar-icon-btn');
+  
+  // Form submission
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const btn = this.querySelector('.submit-btn');
-    const originalHTML = btn.innerHTML;
+    const submitBtn = form.querySelector('.submit-button');
+    const originalHTML = submitBtn.innerHTML;
     
     // Loading state
-    btn.innerHTML = 'Sending...';
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
+    submitBtn.innerHTML = `Sending...`;
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.7';
     
-    // Simulate submission
-    setTimeout(() => {
-      btn.innerHTML = '✓ Inquiry Sent!';
-      btn.style.background = 'var(--accent)';
-      btn.style.color = '#000';
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Reset form
-      this.reset();
+      // Success state
+      submitBtn.innerHTML = `Sent! ✓`;
+      submitBtn.style.background = '#10b981';
+      form.reset();
       
-      // Reset button after delay
       setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.background = '';
-        btn.style.color = '';
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.background = '';
       }, 3000);
-    }, 1500);
+      
+    } catch (error) {
+      submitBtn.innerHTML = `Error - Try Again`;
+      setTimeout(() => {
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+      }, 3000);
+    }
   });
+  
+  // Calendar button click
+  if (calendarBtn && dateInput) {
+    calendarBtn.addEventListener('click', () => {
+      // Toggle to date type to show native picker
+      const currentType = dateInput.type;
+      dateInput.type = 'date';
+      dateInput.focus();
+      if (dateInput.showPicker) dateInput.showPicker();
+      
+      // Revert to text after interaction
+      dateInput.addEventListener('change', function revert() {
+        dateInput.type = 'text';
+        dateInput.removeEventListener('change', revert);
+      }, { once: true });
+      
+      dateInput.addEventListener('blur', function revert() {
+        dateInput.type = 'text';
+        dateInput.removeEventListener('blur', revert);
+      }, { once: true });
+    });
+  }
+});
 
-  // Subtle focus lift effect
-  const inputs = contactForm.querySelectorAll('input, select, textarea');
-  inputs.forEach(input => {
-    input.addEventListener('focus', () => {
-      input.parentElement.style.transform = 'translateY(-2px)';
-    });
-    input.addEventListener('blur', () => {
-      input.parentElement.style.transform = 'translateY(0)';
-    });
-  });
-}
 
 // ========== SERVICES SCROLL REVEAL ==========
 document.addEventListener('DOMContentLoaded', () => {
