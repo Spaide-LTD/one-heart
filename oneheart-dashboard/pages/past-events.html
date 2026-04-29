@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="past_events">Past Events | OneHeart Command</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/past.css">
+
+    <style>/* ===== FIX: Modal Two-Column Layout ===== */
+.modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.modal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-right {
+  display: none; /* Hidden by default, shown by JS for past events */
+  border-left: 1px solid var(--border-secondary);
+  padding-left: 24px;
+}
+
+/* When gallery is visible */
+.modal-right[style*="block"] {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Event cover image */
+.event-cover {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+}
+
+.event-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Event info styling */
+.event-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.event-info p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 4px 0;
+}
+
+.event-info strong {
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+/* Gallery header */
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.gallery-header h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Upload area */
+.upload-area {
+  border: 2px dashed var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  background: rgba(26, 26, 26, 0.5);
+}
+
+.upload-area:hover {
+  border-color: var(--border-primary);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.upload-area i {
+  font-size: 20px;
+  color: var(--primary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.upload-area p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 4px 0;
+}
+
+.upload-area small {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Gallery grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-secondary);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: none;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+/* Responsive: Stack columns on mobile */
+@media (max-width: 768px) {
+  .modal-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-right {
+    border-left: none;
+    border-top: 1px solid var(--border-secondary);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}</style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                 <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+                <div class="logo-text">
+                    <h1 data-i18n="brand.name">ONEHEART</h1>
+                    <span data-i18n="brand.tag">COMMAND</span>
+                </div>
+            </div>
+            <nav>
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i> 
+                    <span data-i18n="dashboard">Dashboard</span>
+                </a>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="events_section">Events</div>
+                    <a href="event-manager.html" class="nav-item">
+                        <i class="fa-solid fa-list-check"></i> 
+                        <span data-i18n="event_manager">Event Manager</span>
+                    </a>
+                    <a href="past-events.html" class="nav-item active">
+                        <i class="fa-solid fa-clock-rotate-left"></i> 
+                        <span data-i18n="past_events">Past Events</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="website_section">Website</div>
+                    <a href="holiday-themes.html" class="nav-item">
+                        <i class="fa-solid fa-holly-berry"></i> 
+                        <span data-i18n="holiday_themes">Holiday Themes</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="communication_section">Communication</div>
+                    <a href="contact-responses.html" class="nav-item">
+                        <i class="fa-regular fa-envelope"></i> 
+                        <span data-i18n="contact_responses">Contact Responses</span>
+                    </a>
+                    <a href="whatsapp-chat.html" class="nav-item">
+                        <i class="fa-brands fa-whatsapp"></i> 
+                        <span data-i18n="whatsapp_chat">WhatsApp Chat</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label" data-i18n="system_section">System</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fa-solid fa-gear"></i> 
+                        <span data-i18n="settings">Settings</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-wrapper">
+            <header class="top-header">
+              <div class="header-actions">
+                <button class="action-btn" id="logoutBtn" onclick="window.logout()">
+                  <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="page-container">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title" data-i18n="event_showcase">EVENT SHOWCASE</h1>
+                        <p class="page-subtitle" data-i18n="event_preview">FEATURED & PAST EVENTS PREVIEW</p>
+                    </div>
+                </div>
+
+                <!-- FEATURED EVENTS -->
+                <div class="section">
+                    <h2 class="section-title" data-i18n="featured_events">FEATURED EVENTS</h2>
+                    <div id="featuredEvents" class="events-grid"></div>
+                </div>
+
+                <!-- PAST EVENTS -->
+                <div class="section" style="margin-top:30px;">
+                    <h2 class="section-title" data-i18n="past_events">PAST EVENTS</h2>
+                    <div id="pastEvents" class="events-grid"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL unchanged -->
+     <!-- ============================================
+     EVENT DETAILS MODAL
+     ============================================ -->
+<div id="eventModal" class="modal-overlay">
+  <div class="modal">
+    
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 id="modalTitle">Event Details</h2>
+      <button id="closeModal" class="modal-close" title="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <div class="modal-content">
+        
+        <!-- Left: Event Info -->
+        <div class="modal-left">
+          <div class="event-cover">
+            <img id="modalCover" src="" alt="Event cover" onerror="this.src='https://via.placeholder.com/400x200/111/333?text=No+Image'">
+          </div>
+          <div class="event-info">
+            <h3 id="modalEventTitle">Event Title</h3>
+            <p><strong>Date:</strong> <span id="modalEventDate">—</span></p>
+            <p><strong>Client:</strong> <span id="modalEventClient">—</span></p>
+            <p><strong>Status:</strong> <span id="modalEventStatus">—</span></p>
+          </div>
+        </div>
+
+        <!-- Right: Gallery (only for past events) -->
+        <div class="modal-right" style="display: none;">
+          <div class="gallery-header">
+            <h4>Event Gallery</h4>
+            <label class="btn-secondary" style="cursor: pointer; font-size: 12px; padding: 6px 12px;">
+              <i class="fa-solid fa-plus"></i> <span data-i18n="btn.addPhotos">Add Photos</span>
+              <input type="file" id="galleryInput" multiple accept="image/*" style="display: none;">
+            </label>
+          </div>
+          <div id="uploadArea" class="upload-area">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <p data-i18n="click_to_upload">Click to upload photos</p>
+            <small>Max 5MB each • JPG, PNG, GIF</small>
+          </div>
+          <div id="galleryGrid" class="gallery-grid"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button id="closeModalBtn" class="btn-secondary">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/settings.js"></script>
+<script src="../components/notifications.js"></script>
+
+<script src="../js/past-events.js"></script>
+
+</body>
+</html>

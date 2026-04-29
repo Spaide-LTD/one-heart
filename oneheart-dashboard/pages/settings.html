@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="settings">Settings</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+  <div class="bg-animation"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="app-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="logo">
+          <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+        <div class="logo-text">
+          <h1 data-i18n="brand.name">ONEHEART</h1>
+          <span data-i18n="brand.tag">COMMAND</span>
+        </div>
+      </div>
+
+      <nav>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i> 
+          <span data-i18n="dashboard">Dashboard</span>
+        </a>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="events_section">Events</div>
+          <a href="event-manager.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> 
+            <span data-i18n="event_manager">Event Manager</span>
+          </a>
+          <a href="past-events.html" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i> 
+            <span data-i18n="past_events">Past Events</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="website_section">Website</div>
+          <a href="holiday-themes.html" class="nav-item">
+            <i class="fa-solid fa-holly-berry"></i> 
+            <span data-i18n="holiday_themes">Holiday Themes</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="communication_section">Communication</div>
+          <a href="contact-responses.html" class="nav-item">
+            <i class="fa-regular fa-envelope"></i> 
+            <span data-i18n="contact_responses">Contact Responses</span>
+          </a>
+          <a href="whatsapp-chat.html" class="nav-item">
+            <i class="fa-brands fa-whatsapp"></i> 
+            <span data-i18n="whatsapp_chat">WhatsApp Chat</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="system_section">System</div>
+          <a href="settings.html" class="nav-item active">
+            <i class="fa-solid fa-gear"></i> 
+            <span data-i18n="settings">Settings</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-wrapper">
+
+      <header class="top-header">
+        <div class="header-actions">
+          <!-- removed unused search, notifications and user placeholder -->
+          <button class="action-btn" id="logoutBtn" onclick="window.logout()">
+            <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-container">
+
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="settings">SETTINGS</h1>
+        </div>
+
+        <div class="glass-card" style="max-width: 400px;">
+          <h3 class="card-title" data-i18n="language">Language</h3>
+
+          <div class="form-group">
+            <select id="languageSwitcher" class="input">
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="glass-card" style="max-width: 400px; margin-top: 16px;">
+          <button id="logoutBtn" class="btn-danger" data-i18n="logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span data-i18n="logout">Logout</span>
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/supabase.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../js/settings.js"></script>
+
+</body>
+</html>

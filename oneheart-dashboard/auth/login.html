@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneHeart Login</title>
+  <link rel="stylesheet" href="login.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+ 
+<div class="login-wrapper">
+
+  <!-- LEFT SIDE -->
+  <div class="login-visual">
+    <div class="overlay"></div>
+    <div class="branding">
+      <h1>OneHeart</h1>
+      <p>Smart Conversations. Real Connections.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="login-container">
+    <h2>Welcome back</h2>
+    <p class="subtitle">Login to your dashboard</p>
+
+    <input id="email" placeholder="Email" />
+    
+    <div class="password-field">
+      <input id="password" type="password" placeholder="Password" />
+      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button id="loginBtn" onclick="login()">Login</button>
+
+    <div id="error"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="login.js"></script>
+</body>
+</html>
