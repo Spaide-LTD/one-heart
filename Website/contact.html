@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | One Heart Events</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="contact.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="particles-container"></div>
+
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">
+      <img src="images/logo.png" alt="One Heart">
+      <span>ONE HEART</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="processes.html">Process</a></li>
+      <li><a href="catalogue.html">Catalogue</a></li>
+      <li><a href="testimonials.html">Testimonials</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="mobile-menu-btn"><span></span><span></span><span></span></button>
+  </nav>
+
+  <section class="page-header">
+    <div class="page-header-bg"><div class="header-glow"></div></div>
+    <div class="page-header-content reveal">
+      <span class="section-label">Get In Touch</span>
+      <h1>Let's Create <span class="gradient-text">Together</span></h1>
+      <p>Ready to plan your next extraordinary event? We'd love to hear from you</p>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="contact-container">
+      
+      <!-- Left: Contact Form -->
+      <div class="contact-form-wrapper reveal">
+        <div class="form-card glass">
+          <h2>Send Us a Message</h2>
+          <p>Fill out the form below and our team will get back to you within 24 hours</p>
+          
+          <form id="contactForm" class="contact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-user"></i> Full Name</label>
+                <input type="text" name="name" placeholder="Your full name" required>
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" name="email" placeholder="your@email.com" required>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label><i class="fas fa-phone"></i> Phone</label>
+                <input type="tel" name="phone" placeholder="+966 50 123 4567">
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-calendar"></i> Event Date</label>
+                <input type="date" name="eventDate">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label><i class="fas fa-tag"></i> Event Type</label>
+              <select name="eventType">
+                <option value="">Select event type</option>
+                <option value="wedding">Wedding</option>
+                <option value="corporate">Corporate Event</option>
+                <option value="birthday">Birthday Party</option>
+                <option value="conference">Conference</option>
+                <option value="launch">Product Launch</option>
+                <option value="private">Private Celebration</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label><i class="fas fa-users"></i> Expected Guests</label>
+              <select name="guests">
+                <option value="">Number of guests</option>
+                <option value="1-50">1 - 50</option>
+                <option value="51-100">51 - 100</option>
+                <option value="101-200">101 - 200</option>
+                <option value="201-500">201 - 500</option>
+                <option value="500+">500+</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label><i class="fas fa-comment"></i> Message</label>
+              <textarea name="message" rows="5" placeholder="Tell us about your vision, budget, and any special requirements..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary form-submit">
+              <span>Send Message</span>
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Right: Contact Info -->
+      <div class="contact-info-wrapper reveal">
+        
+        <div class="info-card glass">
+          <div class="info-icon">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <div class="info-content">
+            <h4>WhatsApp Us</h4>
+            <p>Quick responses for urgent inquiries</p>
+            <a href="https://wa.me/966501234567" target="_blank" class="info-link">
+              <span>+966 50 123 4567</span>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="info-card glass">
+          <div class="info-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="info-content">
+            <h4>Email Us</h4>
+            <p>For detailed proposals and inquiries</p>
+            <a href="mailto:info@oneheartevents.com" class="info-link">
+              <span>info@oneheartevents.com</span>
+              <i class="fas fa-external-link-alt"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="info-card glass">
+          <div class="info-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div class="info-content">
+            <h4>Visit Us</h4>
+            <p>Our headquarters in Riyadh</p>
+            <span class="info-address">
+              King Fahd Road, Al Olaya<br>
+              Riyadh 12212, Saudi Arabia
+            </span>
+          </div>
+        </div>
+        
+        <div class="info-card glass">
+          <div class="info-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="info-content">
+            <h4>Working Hours</h4>
+            <p>Sunday - Thursday</p>
+            <span class="info-address">9:00 AM - 6:00 PM KSA</span>
+          </div>
+        </div>
+        
+        <!-- Social Media -->
+        <div class="social-card glass">
+          <h4>Follow Our Journey</h4>
+          <div class="social-links">
+            <a href="https://x.com/oneheartevents" target="_blank" class="social-link" title="X (Twitter)">
+              <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://instagram.com/oneheartevents" target="_blank" class="social-link" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://tiktok.com/@oneheartevents" target="_blank" class="social-link" title="TikTok">
+              <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://linkedin.com/company/oneheartevents" target="_blank" class="social-link" title="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://youtube.com/@oneheartevents" target="_blank" class="social-link" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Quick CTA -->
+        <div class="quick-cta glass">
+          <div class="quick-cta-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="quick-cta-content">
+            <h4>Book a Free Consultation</h4>
+            <p>30-minute call to discuss your event</p>
+          </div>
+          <a href="https://wa.me/966501234567?text=Hi%20One%20Heart%2C%20I%20would%20like%20to%20book%20a%20free%20consultation" target="_blank" class="btn-primary">
+            <span>Book Now</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="map-section">
+    <div class="map-container reveal">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.5555555555555!2d46.6753!3d24.7136!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDQyJzQ5LjAiTiA0NsKwNDAnMzEuMSJF!5e0!3m2!1sen!2ssa!4v1234567890"
+        width="100%" 
+        height="400" 
+        style="border:0; border-radius: 24px; filter: grayscale(0.3) contrast(1.1);" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+      <div class="map-overlay glass">
+        <i class="fas fa-map-pin"></i>
+        <span>One Heart Events HQ</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="home.html" class="footer-logo">
+        <img src="images/logo.png" alt="One Heart"><span>ONE HEART</span>
+      </a>
+      <ul class="footer-links">
+        <li><a href="home.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="processes.html">Process</a></li>
+        <li><a href="catalogue.html">Catalogue</a></li>
+        <li><a href="testimonials.html">Testimonials</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p> 2024 One Heart Events. All rights reserved.</p>
+      <div class="theme-switcher">
+        <span>Dark</span><div class="theme-toggle"></div><span>Light</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="chatbot-widget">
+    <button class="chatbot-btn"><i class="fas fa-comment-dots"></i></button>
+    <div class="chatbot-window">
+      <div class="chatbot-header">
+        <h4><i class="fas fa-heart"></i> One Heart Assistant</h4>
+        <button class="chatbot-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chatbot-messages"></div>
+      <div class="chatbot-input">
+        <input type="text" placeholder="Type your message...">
+        <button><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="contact.js"></script>
+</body>
+</html>
+

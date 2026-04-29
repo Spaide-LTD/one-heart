@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Catalogue | One Heart Events</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="catalogue.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="particles-container"></div>
+
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">
+      <img src="images/logo.png" alt="One Heart">
+      <span>ONE HEART</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="processes.html">Process</a></li>
+      <li><a href="catalogue.html">Catalogue</a></li>
+      <li><a href="testimonials.html">Testimonials</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="mobile-menu-btn"><span></span><span></span><span></span></button>
+  </nav>
+
+  <section class="page-header">
+    <div class="page-header-bg"><div class="header-glow"></div></div>
+    <div class="page-header-content reveal">
+      <span class="section-label">Our Portfolio</span>
+      <h1>Event <span class="gradient-text">Catalogue</span></h1>
+      <p>Browse through our collection of extraordinary events and find inspiration for your next celebration</p>
+    </div>
+  </section>
+
+  <!-- Filter Bar -->
+  <section class="filter-section">
+    <div class="filter-container">
+      <button class="filter-btn active" data-filter="all">
+        <i class="fas fa-th-large"></i> All Events
+      </button>
+      <button class="filter-btn" data-filter="wedding">
+        <i class="fas fa-heart"></i> Weddings
+      </button>
+      <button class="filter-btn" data-filter="corporate">
+        <i class="fas fa-briefcase"></i> Corporate
+      </button>
+      <button class="filter-btn" data-filter="birthday">
+        <i class="fas fa-birthday-cake"></i> Birthdays
+      </button>
+      <button class="filter-btn" data-filter="conference">
+        <i class="fas fa-users"></i> Conferences
+      </button>
+      <button class="filter-btn" data-filter="launch">
+        <i class="fas fa-rocket"></i> Launches
+      </button>
+    </div>
+  </section>
+
+  <!-- Events Grid -->
+  <section class="events-catalogue">
+    <div class="catalogue-container" id="eventsGrid">
+      <!-- Events injected via JS -->
+    </div>
+  </section>
+
+  <!-- Event Modal -->
+  <div class="event-modal" id="eventModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button class="modal-close"><i class="fas fa-times"></i></button>
+      <div class="modal-body" id="modalBody">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="home.html" class="footer-logo">
+        <img src="images/logo.png" alt="One Heart"><span>ONE HEART</span>
+      </a>
+      <ul class="footer-links">
+        <li><a href="home.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="processes.html">Process</a></li>
+        <li><a href="catalogue.html">Catalogue</a></li>
+        <li><a href="testimonials.html">Testimonials</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p> 2024 One Heart Events. All rights reserved.</p>
+      <div class="theme-switcher">
+        <span>Dark</span><div class="theme-toggle"></div><span>Light</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="chatbot-widget">
+    <button class="chatbot-btn"><i class="fas fa-comment-dots"></i></button>
+    <div class="chatbot-window">
+      <div class="chatbot-header">
+        <h4><i class="fas fa-heart"></i> One Heart Assistant</h4>
+        <button class="chatbot-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chatbot-messages"></div>
+      <div class="chatbot-input">
+        <input type="text" placeholder="Type your message...">
+        <button><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="catalogue.js"></script>
+</body>
+</html>

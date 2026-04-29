@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Details | One Heart Events</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="service-detail.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="particles-container"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="home.html" class="nav-logo">
+      <img src="images/logo.png" alt="One Heart">
+      <span>ONE HEART</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="processes.html">Process</a></li>
+      <li><a href="catalogue.html">Catalogue</a></li>
+      <li><a href="testimonials.html">Testimonials</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="mobile-menu-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Service Hero -->
+  <section class="service-hero">
+    <div class="service-hero-image">
+      <img id="serviceHeroImg" src="" alt="">
+      <div class="service-hero-overlay"></div>
+    </div>
+    <div class="service-hero-content reveal">
+      <a href="services.html" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Services
+      </a>
+      <div class="service-hero-icon" id="serviceHeroIcon">
+        <i class="fas fa-heart"></i>
+      </div>
+      <h1 id="serviceTitle">Service Title</h1>
+      <p id="serviceSubtitle">Service description goes here</p>
+    </div>
+  </section>
+
+  <!-- Service Details -->
+  <section class="service-details">
+    <div class="details-container">
+      
+      <div class="details-main reveal">
+        <h2>What We Offer</h2>
+        <div class="details-content" id="serviceDescription">
+          <!-- Content injected via JS -->
+        </div>
+        
+        <div class="details-gallery">
+          <h3>Gallery</h3>
+          <div class="gallery-grid" id="serviceGallery">
+            <!-- Images injected via JS -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="details-sidebar reveal">
+        <div class="sidebar-card glass">
+          <h4>Package Includes</h4>
+          <ul id="serviceIncludes">
+            <!-- Items injected via JS -->
+          </ul>
+        </div>
+        
+        <div class="sidebar-card glass">
+          <h4>Starting From</h4>
+          <div class="price-tag" id="servicePrice">SAR 15,000</div>
+          <p class="price-note">Custom quotes available based on requirements</p>
+        </div>
+        
+        <a href="contact.html" class="btn-primary sidebar-cta">
+          <span>Book This Service</span>
+          <i class="fas fa-calendar-check"></i>
+        </a>
+        
+        <div class="sidebar-card glass contact-mini">
+          <h4>Quick Contact</h4>
+          <a href="https://wa.me/966501234567" target="_blank" class="mini-contact">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Us</span>
+          </a>
+          <a href="mailto:info@oneheartevents.com" class="mini-contact">
+            <i class="fas fa-envelope"></i>
+            <span>Email Us</span>
+          </a>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Related Services -->
+  <section class="related-services">
+    <div class="related-container">
+      <div class="section-header reveal">
+        <span class="section-label">Explore More</span>
+        <h2>Other <span class="gradient-text">Services</span></h2>
+      </div>
+      <div class="related-grid" id="relatedServices">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <a href="home.html" class="footer-logo">
+        <img src="images/logo.png" alt="One Heart">
+        <span>ONE HEART</span>
+      </a>
+      <ul class="footer-links">
+        <li><a href="home.html">Home</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="processes.html">Process</a></li>
+        <li><a href="catalogue.html">Catalogue</a></li>
+        <li><a href="testimonials.html">Testimonials</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p> 2024 One Heart Events. All rights reserved.</p>
+      <div class="theme-switcher">
+        <span>Dark</span>
+        <div class="theme-toggle"></div>
+        <span>Light</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chatbot Widget -->
+  <div class="chatbot-widget">
+    <button class="chatbot-btn">
+      <i class="fas fa-comment-dots"></i>
+    </button>
+    <div class="chatbot-window">
+      <div class="chatbot-header">
+        <h4><i class="fas fa-heart"></i> One Heart Assistant</h4>
+        <button class="chatbot-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chatbot-messages"></div>
+      <div class="chatbot-input">
+        <input type="text" placeholder="Type your message...">
+        <button><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="service-detail.js"></script>
+</body>
+</html>
