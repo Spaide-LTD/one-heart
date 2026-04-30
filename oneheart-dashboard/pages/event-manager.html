@@ -3,211 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="event_manager">Event Manager | OneHeart Command</title>
+    <title>Event Manager | OneHeart Command</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css"> <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-
-     <style>
-        .image-upload-area {
-            border: 2px dashed var(--border-secondary);
-            border-radius: var(--radius-md);
-            padding: 24px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            background: var(--bg-secondary);
-            position: relative;
-            overflow: hidden;
-        }
-        .image-upload-area:hover {
-            border-color: var(--border-primary);
-            background: var(--bg-glass);
-        }
-        .upload-placeholder i {
-            font-size: 24px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            display: block;
-        }
-        .upload-placeholder p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-        .upload-placeholder span {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        .image-preview {
-            position: relative;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-        .image-preview img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            display: block;
-        }
-        .remove-image-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: var(--transition-fast);
-        }
-        .remove-image-btn:hover {
-            background: var(--danger-bg);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-        
-        /* Date/Time Input Styling */
-        .datetime-input {
-            width: 100%;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-secondary);
-            color: var(--text-primary);
-            padding: 10px 14px;
-            border-radius: var(--radius-md);
-            outline: none;
-            transition: var(--transition-fast);
-            font-size: 13px;
-            font-family: var(--font-sans);
-            color-scheme: dark;
-        }
-        .datetime-input:focus {
-            border-color: var(--border-accent);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.06);
-            background: var(--bg-tertiary);
-        }
-        .datetime-input::-webkit-calendar-picker-indicator {
-            filter: invert(0.7);
-            cursor: pointer;
-        }
-        
-        /* Table image thumbnail */
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/event-manager.css">
+    <style>
+        /* Additional styles for image preview */
         .event-thumb-sm {
             width: 44px;
             height: 30px;
             border-radius: 6px;
             object-fit: cover;
-            display: inline-block;
             vertical-align: middle;
             margin-right: 10px;
             border: 1px solid var(--border-secondary);
         }
-        .event-thumb-placeholder {
-            width: 44px;
-            height: 30px;
-            border-radius: 6px;
-            background: var(--bg-tertiary);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-            margin-right: 10px;
-            color: var(--text-muted);
-            font-size: 12px;
-            border: 1px solid var(--border-secondary);
-        }
-        
-        .visibility-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: var(--radius-full);
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            border: 1px solid;
-            background: transparent;
-            font-family: var(--font-sans);
-        }
-        .visibility-toggle.internal {
-            color: var(--text-muted);
-            border-color: rgba(100, 116, 139, 0.2);
-        }
-        .visibility-toggle.internal:hover {
-            background: rgba(100, 116, 139, 0.1);
-            border-color: rgba(100, 116, 139, 0.4);
-        }
-        .visibility-toggle.public {
-            color: var(--primary-light);
-            border-color: rgba(139, 92, 246, 0.3);
-        }
-        .visibility-toggle.public:hover {
-            background: var(--primary-subtle);
-            border-color: rgba(139, 92, 246, 0.5);
-        }
-        .action-icon-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-md);
-            background: var(--bg-card);
-            border: 1px solid var(--border-secondary);
-            color: var(--text-secondary);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: var(--transition-fast);
-            font-size: 12px;
-        }
-        .action-icon-btn:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--border-primary);
-            color: var(--primary-light);
-        }
-        .past-row td {
-            opacity: 0.6;
-        }
-        .past-row td:first-child {
-            opacity: 1;
-        }
-        .modal-event-preview {
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--radius-md);
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 10px;
         }
-        .modal-event-preview img {
-            width: 50px;
-            height: 36px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        .modal-event-preview .preview-info h4 {
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
             font-size: 13px;
-            color: var(--text-primary);
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .modal-event-preview .preview-info p {
-            font-size: 11px;
-            color: var(--text-muted);
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.warning { background: #f59e0b; }
+        .toast.info { background: #3b82f6; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
     <div class="grid-overlay"></div>
-    
+
     <div class="app-container">
-        <aside class="sidebar">
+      <aside class="sidebar">
             <div class="logo">
                   <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
                 <div class="logo-text">
@@ -218,221 +63,127 @@
 
             <nav>
                 <a href="index.html" class="nav-item">
-                    <i class="fa-solid fa-house"></i> 
-                    <span data-i18n="dashboard">Dashboard</span>
+                    <i class="fa-solid fa-house"></i> <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
 
                 <div class="nav-section">
-                    <div class="nav-label" data-i18n="events_section">Events</div>
-                    <a href="event-manager.html" class="nav-item active">
-                        <i class="fa-solid fa-list-check"></i> 
-                        <span data-i18n="event_manager">Event Manager</span>
-                    </a>
-                    <a href="past-events.html" class="nav-item">
-                        <i class="fa-solid fa-clock-rotate-left"></i> 
-                        <span data-i18n="past_events">Past Events</span>
-                    </a>
+                    <div class="nav-label" data-i18n="nav.section.events">Events</div>
+                    <a href="event-manager.html" class="nav-item active"><i class="fa-solid fa-list-check"></i> <span data-i18n="nav.eventManager">Event Manager</span></a>
+                    <a href="past-events.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="nav.pastEvents">Past Events</span></a>
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-label" data-i18n="website_section">Website</div>
-                    <a href="holiday-themes.html" class="nav-item">
-                        <i class="fa-solid fa-holly-berry"></i> 
-                        <span data-i18n="holiday_themes">Holiday Themes</span>
-                    </a>
+                    <div class="nav-label" data-i18n="nav.section.website">Website</div>
+                    <a href="holiday-themes.html" class="nav-item"><i class="fa-solid fa-holly-berry"></i> <span data-i18n="nav.holidayThemes">Holiday Themes</span></a>
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-label" data-i18n="communication_section">Communication</div>
-                    <a href="contact-responses.html" class="nav-item">
-                        <i class="fa-regular fa-envelope"></i> 
-                        <span data-i18n="contact_responses">Contact Responses</span>
-                    </a>
-                    <a href="whatsapp-chat.html" class="nav-item">
-                        <i class="fa-brands fa-whatsapp"></i> 
-                        <span data-i18n="whatsapp_chat">WhatsApp Chat</span>
-                    </a>
+                    <div class="nav-label" data-i18n="nav.section.communication">Communication</div>
+                    <a href="contact-responses.html" class="nav-item"><i class="fa-regular fa-envelope"></i> <span data-i18n="nav.contactResponses">Contact Responses</span></a>
+                    <a href="whatsapp-chat.html" class="nav-item"><i class="fa-brands fa-whatsapp"></i> <span data-i18n="nav.whatsappChat">WhatsApp Chat</span></a>
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-label" data-i18n="system_section">System</div>
-                    <a href="settings.html" class="nav-item">
-                        <i class="fa-solid fa-gear"></i> 
-                        <span data-i18n="settings">Settings</span>
-                    </a>
+                    <div class="nav-label" data-i18n="nav.section.system">System</div>
+                    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span data-i18n="nav.settings">Settings</span></a>
                 </div>
             </nav>
         </aside>
 
         <main class="main-wrapper">
             <header class="top-header">
-                <div class="header-actions">
-                    <!-- removed unused header controls: search, notifications, user placeholder, sync -->
-                    <button class="action-btn" id="logoutBtn" onclick="window.logout()">
-                      <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
-                    </button>
-                </div>
+                <button class="action-btn" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
             </header>
 
             <div class="page-container">
-                
                 <div class="page-header-actions">
                     <div class="page-header-left">
-                        <h1 data-i18n="event_manager">Event Manager</h1>
-                        <p class="page-subtitle" data-i18n="manage_events">Manage all company events</p>
+                        <h1>Event Manager</h1>
+                        <p class="page-subtitle">Create and manage upcoming events</p>
                     </div>
-                    <button class="btn-primary" id="addEventBtn">
-                        <i class="fa-solid fa-plus"></i> 
-                        <span data-i18n="add_event">Add Event</span>
-                    </button>
+                    <button class="btn-primary" onclick="openEventModal()"><i class="fa-solid fa-plus"></i><span>New Event</span></button>
                 </div>
 
-                <div class="table-container">
+                <div class="table-container" id="tableContainer">
                     <table class="data-table">
-                        <thead>
-  <tr>
-    <th>Event</th>
-    <th>Date</th>
-    <th>Client</th>
-    <th>Status</th>
-    <th>Visibility</th>
-    <th>Featured</th>
-    <th>Actions</th> <!-- ✅ Add this -->
-  </tr>
-</thead>
+                        <thead><tr><th>Event</th><th>Date</th><th>Client</th><th>Status</th><th>Featured</th><th>Actions</th></tr></thead>
                         <tbody id="eventsTable"></tbody>
                     </table>
+                    <div class="pagination" id="pagination"></div>
                 </div>
-
                 <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-state-icon">
-                        <i class="fa-solid fa-calendar-days"></i>
-                    </div>
-                    <h3 data-i18n="no_events">No events yet</h3>
-                    <p data-i18n="create_first_event">Create your first event to get started.</p>
-                    <button class="btn-primary" onclick="document.getElementById('addEventBtn').click()">
-                        <i class="fa-solid fa-plus"></i> 
-                        <span data-i18n="add_event">Add Event</span>
-                    </button>
+                    <div class="empty-state-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <h3>No events yet</h3>
+                    <p>Create your first event to get started.</p>
+                    <button class="btn-primary" onclick="openEventModal()"><i class="fa-solid fa-plus"></i> Add Event</button>
                 </div>
-
             </div>
         </main>
     </div>
-    <!-- EVENT MODAL -->
-<!-- ============================================
-     EVENT MODAL — PREMIUM GLASSMORPHISM
-     ============================================ -->
-<div id="eventModal" class="modal-overlay">
-  <div class="modal">
-    
-    <!-- Header -->
-    <div class="modal-header">
-      <h2 id="modalTitle">Create Event</h2>
-      <button id="closeModal" class="modal-close" title="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
 
-    <!-- Body -->
-    <div class="modal-body">
-      <form id="eventForm" onsubmit="return false;">
-        
-        <!-- Hidden ID for edit mode -->
-        <input type="hidden" id="editEventId">
-
-        <!-- Title -->
-        <div class="form-group">
-          <label for="eventTitle">Event Title *</label>
-          <input type="text" id="eventTitle" class="input" placeholder="e.g., Holiday Gala 2024" required>
-        </div>
-
-        <!-- Date & Time -->
-        <div class="form-group">
-          <label for="eventDateTime">Date & Time *</label>
-          <input type="datetime-local" id="eventDateTime" class="input" required>
-        </div>
-
-        <!-- Client Name -->
-        <div class="form-group">
-          <label for="eventClient">Client Name</label>
-          <input type="text" id="eventClient" class="input" placeholder="Optional">
-        </div>
-
-        <!-- Description -->
-        <div class="form-group">
-          <label for="eventDesc">Description</label>
-          <textarea id="eventDesc" class="input" rows="3" placeholder="Event details, notes, etc."></textarea>
-        </div>
-
-        <!-- Image Upload -->
-        <div class="form-group">
-          <label>Event Image</label>
-          <div id="imageUploadArea" class="image-upload-area">
-            <div id="uploadPlaceholder" class="upload-placeholder">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span>Click to upload image</span>
-              <small>Max 5MB • JPG, PNG, GIF</small>
+    <!-- Event Modal - Image Only (No Video) -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header"><h2 id="modalTitle">Create New Event</h2><button class="modal-close" onclick="closeModal('eventModal')"><i class="fa-solid fa-xmark"></i></button></div>
+            <div class="modal-body">
+                <form id="eventForm" onsubmit="return false;">
+                    <input type="hidden" id="editEventId">
+                    <div class="modal-form-grid">
+                       
+                        <div class="form-group full-width"><label>Event Title *</label><input type="text" id="eventTitle" class="input" required></div>
+                        <div class="form-group"><label>Start Date & Time *</label><input type="datetime-local" id="eventStart" class="datetime-input" required></div>
+                        <div class="form-group"><label>End Date & Time</label><input type="datetime-local" id="eventEnd" class="datetime-input"></div>
+                        <div class="form-group"><label>Client Name</label><input type="text" id="eventClient" class="input"></div>
+                        <div class="form-group full-width">
+                            <label>Event Image</label>
+                            <div class="image-upload-area" id="mediaUploadArea" onclick="document.getElementById('eventImageInput').click()">
+                                <div id="uploadPlaceholder">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <p>Click to upload image</p>
+                                    <small>Max 10MB • JPG, PNG, GIF</small>
+                                </div>
+                                <div id="imagePreview" style="display: none; position: relative;">
+                                    <img id="previewImg" src="" alt="Preview" style="max-width:100%; max-height:160px; border-radius:var(--radius-md);">
+                                    <button type="button" class="remove-image-btn" onclick="removeImage(event)" title="Remove image">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <input type="file" id="eventImageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                            </div>
+                        </div>
+                        <div class="form-group full-width"><label>Description</label><textarea id="eventDesc" class="input" rows="3"></textarea></div>
+                        <div class="form-group"><div class="toggle-row"><span>Past Event</span><label class="switch"><input type="checkbox" id="eventIsPast"><span class="slider"></span></label></div></div>
+                        <div class="form-group"><div class="toggle-row"><span>Featured Event</span><label class="switch"><input type="checkbox" id="eventFeatured"><span class="slider"></span></label></div></div>
+                         <p class="toast" style="font-size: 10px; width: max-content;">NOTE: Events made before today's date will automatically be marked as past</p>
+                    </div>
+                </form>
             </div>
-            <div id="imagePreview" class="image-preview" style="display: none;">
-              <img id="previewImg" src="" alt="Preview">
-              <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
+            <div class="modal-footer"><button class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button><button class="btn-primary" onclick="saveEvent()"><i class="fa-solid fa-check"></i><span id="saveBtnText">Create Event</span></button></div>
+        </div>
+    </div>
+
+    <!-- Dynamic Confirmation Modal -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-body confirm-modal-body">
+                <div class="confirm-icon" id="confirmIcon"><i class="fa-solid fa-question"></i></div>
+                <h3 id="confirmTitle">Confirm Action</h3>
+                <p id="confirmMessage">Are you sure you want to proceed?</p>
+                <div class="confirm-actions">
+                    <button class="btn-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+                    <button class="btn-primary" id="confirmActionBtn" onclick="executeConfirmedAction()">Confirm</button>
+                </div>
             </div>
-            <input type="file" id="eventImageInput" accept="image/*" style="display: none;">
-          </div>
         </div>
-
-        <!-- Visibility -->
-        <div class="form-group">
-          <label>Visibility</label>
-          <div class="toggle-row">
-            <span>🌐 Public (visible on website)</span>
-            <label class="switch">
-              <input type="radio" name="visibility" id="visibilityPublic" value="public" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row" style="border-bottom: none;">
-            <span>🔒 Internal (dashboard only)</span>
-            <label class="switch">
-              <input type="radio" name="visibility" id="visibilityInternal" value="internal">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Featured Toggle -->
-        <div class="form-group" style="margin-bottom: 0;">
-          <div class="toggle-row" style="border: none; padding: 0;">
-            <span>⭐ Feature this event on homepage</span>
-            <label class="switch">
-              <input type="checkbox" id="eventFeatured">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-      </form>
     </div>
 
-    <!-- Footer -->
-    <div class="modal-footer">
-      <button type="button" id="cancelModal" class="btn-secondary">Cancel</button>
-      <button type="button" id="submitEvent" class="btn-primary">
-        <i class="fa-solid fa-check"></i> Save Event
-      </button>
-    </div>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js"></script>
-<script src="../js/settings.js"></script>
-<script src="../components/notifications.js"></script>
-<script src="../js/event-manager.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../components/notifications.js"></script>
+    <script src="../js/event-manager.js"></script>
 </body>
 </html>

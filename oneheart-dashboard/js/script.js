@@ -1,8 +1,12 @@
-const { data: { session } } = await window.supabaseClient.auth.getSession();
+(async () => {
+  const { data: { session } } = await window.supabaseClient.auth.getSession();
 
-if (!session) {
-  window.location.href = "/login.html";
-}
+  if (!session) {
+    window.location.replace("/login.html");
+    return;
+  }
+
+})();
 document.addEventListener('DOMContentLoaded', async () => {
   const supabase = window.supabaseClient;
 
