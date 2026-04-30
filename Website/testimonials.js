@@ -1,77 +1,43 @@
 
 const testimonialsData = [
   {
-    name: "Princess Aisha Al-Saud",
-    role: "Bride",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    text: "One Heart transformed our wedding into a fairytale. Every detail was perfection - from the floral arrangements to the lighting. Our guests are still talking about it months later!",
-    event: "Royal Wedding",
+    name: "Maxwell Kimani",
+    avatar: "https://lh3.googleusercontent.com/a-/ALV-UjUVnibd6ZPU485a6-rUAVHIK6qR3dDeeIN4USQh2lvVaMoPkIE=w54-h54-p-rp-mo-br100",
+    text: "I was simply impressed by their organization and delivery of services. They went above and beyond for our team and the event was a success. Thank you for the good job!",
     rating: 5
   },
   {
-    name: "Mohammed Al-Rashid",
-    role: "CEO, TechVentures",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    text: "The professionalism and creativity of the One Heart team is unmatched. Our product launch exceeded all expectations and generated incredible media buzz. Truly world-class service.",
-    event: "Product Launch",
+    name: "Sajjad Harunany",
+    avatar: "https://lh3.googleusercontent.com/a-/ALV-UjWBazPnoEdF-O1acHe6Zd3GyAeeU-4rI34pUZQSCbCtSoju8yv6=w54-h54-p-rp-mo-ba3-br100",
+    text: "I loved working with One heart. They cater for all your needs from planning to execution and everything was done flawlessly. The attention to detail and professionalism was outstanding.",
     rating: 5
   },
   {
-    name: "Fatima Hassan",
-    role: "Mother of the Bride",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    text: "Planning my daughter's wedding from abroad seemed impossible until we found One Heart. They handled everything with such care and attention. It was more beautiful than we ever imagined.",
-    event: "Desert Wedding",
+    name: "Ayman Brek",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocJS0cjut-uSRZfeovrhPvuKZtyZEmeD4oTHEXac-fZCnLKW2Q=w54-h54-p-rp-mo-br100",
+    text: "I had a great experience working with this team. Their attention to detail and level of professionalism really stood out throughout the entire event. Everything was well-organized and executed smoothly highly recommended.",
     rating: 5
   },
   {
-    name: "Khalid Bin Fahd",
-    role: "Marketing Director",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    text: "Our annual corporate gala has never looked better. The team at One Heart understood our brand vision and delivered an event that impressed every single attendee. Outstanding work!",
-    event: "Corporate Gala",
+    name: "عــبدالله بـن سلمان",
+    avatar: "https://lh3.googleusercontent.com/a-/ALV-UjW8DhE5WoOu_cQCijxeisuPkEsXkqxnRx8d9vX92Z42KwpGu7Pd=w54-h54-p-rp-mo-br100",
+    text: "They use creativity to create effective communication 😍",
     rating: 5
   },
   {
-    name: "Noura Al-Otaibi",
-    role: "Birthday Celebrant",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
-    text: "My 30th birthday was absolutely magical! The neon theme, the music, the food - everything was curated to perfection. One Heart knows how to throw a party!",
-    event: "Birthday Party",
+    name: "SALIM SALEH",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocKh7Jk5DUeYDIHQ8Dt-77WWED90i-kxNFO_eryW1TZJcsJRJA=w54-h54-p-rp-mo-br100",
+    text: "Exceptional service from start to finish. The team is highly skilled, flexible, and committed to delivering outstanding results. They turned the vision into reality and created an unforgettable experience.",
     rating: 5
   },
   {
-    name: "Dr. Ahmed Al-Zahrani",
-    role: "Conference Organizer",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-    text: "Managing a 1200-person conference is no small feat, but One Heart made it look effortless. The AV setup, registration flow, and networking sessions were flawlessly executed.",
-    event: "Fintech Conference",
+    name: "Rachel Adams",
+    avatar: "https://lh3.googleusercontent.com/a/ACg8ocKC-OdqugdsgAEKzkDyKr_XII2IqL6MRFLEbfe1smMmoT-pCg=w54-h54-p-rp-mo-br100",
+    text: "Comfortable service, high quality, and creative 👍🏻",
     rating: 5
   },
-  {
-    name: "Layla Mohammed",
-    role: "Anniversary Celebrant",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-    text: "For our 25th anniversary, One Heart created an intimate dinner that felt like a scene from a movie. The attention to detail, the ambiance, the service - pure perfection.",
-    event: "Private Celebration",
-    rating: 5
-  },
-  {
-    name: "Sultan Al-Qahtani",
-    role: "Event Sponsor",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
-    text: "As a sponsor, I've worked with many event companies. One Heart stands out for their creativity, reliability, and genuine passion for what they do. They're simply the best in the business.",
-    event: "Tech Summit",
-    rating: 5
-  },
-  {
-    name: "Reem Al-Harbi",
-    role: "Mother",
-    avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&h=100&fit=crop",
-    text: "My daughter's princess-themed 5th birthday was absolutely enchanting. The character performers, the decorations, the cake - every child (and parent!) was mesmerized. Thank you One Heart!",
-    event: "Kids Birthday",
-    rating: 5
-  }
+  
+  
 ];
 
 function createStars(rating) {
@@ -90,8 +56,6 @@ function createTestimonialCard(t, isFeatured = false) {
         <img src="${t.avatar}" alt="${t.name}" class="testimonial-avatar">
         <div>
           <div class="testimonial-name">${t.name}</div>
-          <div class="testimonial-role">${t.role}</div>
-          <span class="testimonial-event">${t.event}</span>
         </div>
       </div>
     </div>

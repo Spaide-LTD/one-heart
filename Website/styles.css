@@ -260,8 +260,7 @@ body {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   padding: 10px 5%;
 }
-
-.nav-logo {
+ .nav-logo { 
   display: flex;
   align-items: center;
   gap: 12px;
