@@ -54,21 +54,27 @@ function initNotifications() {
     }
   );
 
+  // -------------------------
+  // UPDATE STATUS METRICS (FIXED LOCATION)
+  // -------------------------
+  channel.on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "contact_messages"
+    },
+    () => {
+      if (typeof updateStatusMetrics === "function") {
+        updateStatusMetrics();
+      }
+    }
+  );
+
   channel.subscribe((status) => {
     console.log("📡 Realtime status:", status);
   });
 }
-channel.on(
-  "postgres_changes",
-  {
-    event: "*",
-    schema: "public",
-    table: "contact_messages"
-  },
-  () => {
-    updateStatusMetrics(); // auto refresh counts
-  }
-);
 
 // -------------------------
 // INIT SAFELY

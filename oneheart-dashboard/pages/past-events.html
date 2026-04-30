@@ -1,348 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="past_events">Past Events | OneHeart Command</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/past.css">
-     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-
-    <style>/* ===== FIX: Modal Two-Column Layout ===== */
-.modal-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.modal-left {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-right {
-  display: none; /* Hidden by default, shown by JS for past events */
-  border-left: 1px solid var(--border-secondary);
-  padding-left: 24px;
-}
-
-/* When gallery is visible */
-.modal-right[style*="block"] {
-  display: flex !important;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Event cover image */
-.event-cover {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-secondary);
-}
-
-.event-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Event info styling */
-.event-info h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 12px 0;
-}
-
-.event-info p {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin: 4px 0;
-}
-
-.event-info strong {
-  color: var(--text-muted);
-  margin-right: 6px;
-}
-
-/* Gallery header */
-.gallery-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.gallery-header h4 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-/* Upload area */
-.upload-area {
-  border: 2px dashed var(--border-secondary);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  background: rgba(26, 26, 26, 0.5);
-}
-
-.upload-area:hover {
-  border-color: var(--border-primary);
-  background: rgba(139, 92, 246, 0.05);
-}
-
-.upload-area i {
-  font-size: 20px;
-  color: var(--primary);
-  margin-bottom: 6px;
-  display: block;
-}
-
-.upload-area p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin: 0 0 4px 0;
-}
-
-.upload-area small {
-  font-size: 11px;
-  color: var(--text-tertiary);
-}
-
-/* Gallery grid */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  max-height: 200px;
-  overflow-y: auto;
-  padding: 4px 0;
-}
-
-.gallery-item {
-  position: relative;
-  aspect-ratio: 4/3;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-secondary);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.gallery-delete {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--danger);
-  border: none;
-  color: white;
-  font-size: 12px;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-}
-
-/* Responsive: Stack columns on mobile */
-@media (max-width: 768px) {
-  .modal-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-right {
-    border-left: none;
-    border-top: 1px solid var(--border-secondary);
-    padding-left: 0;
-    padding-top: 16px;
-  }
-  
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="past_events">Past Events | OneHeart Command</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/past.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
+
 <body>
-    <div class="bg-animation"></div>
-    <div class="grid-overlay"></div>
+  <div class="bg-animation"></div>
+  <div class="grid-overlay"></div>
 
-    <div class="app-container">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="logo">
-                 <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
-                <div class="logo-text">
-                    <h1 data-i18n="brand.name">ONEHEART</h1>
-                    <span data-i18n="brand.tag">COMMAND</span>
-                </div>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><img src="../images/logo.jpeg" alt="OneHeart Logo" style="width: 100%;"></div>
+        <div class="logo-text">
+          <h1 data-i18n="brand.name">ONEHEART</h1>
+          <span data-i18n="brand.tag">COMMAND</span>
+        </div>
+      </div>
+
+      <nav>
+        <a href="index.html" class="nav-item">
+          <i class="fa-solid fa-house"></i> <span data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="nav.section.events">Events</div>
+          <a href="event-manager.html" class="nav-item"><i class="fa-solid fa-list-check"></i> <span
+              data-i18n="nav.eventManager">Event Manager</span></a>
+          <a href="past-events.html" class="nav-item active"><i class="fa-solid fa-clock-rotate-left"></i> <span
+              data-i18n="nav.pastEvents">Past Events</span></a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="nav.section.website">Website</div>
+          <a href="holiday-themes.html" class="nav-item"><i class="fa-solid fa-holly-berry"></i> <span
+              data-i18n="nav.holidayThemes">Holiday Themes</span></a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="nav.section.communication">Communication</div>
+          <a href="contact-responses.html" class="nav-item"><i class="fa-regular fa-envelope"></i> <span
+              data-i18n="nav.contactResponses">Contact Responses</span></a>
+          <a href="whatsapp-chat.html" class="nav-item"><i class="fa-brands fa-whatsapp"></i> <span
+              data-i18n="nav.whatsappChat">WhatsApp Chat</span></a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label" data-i18n="nav.section.system">System</div>
+          <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i> <span
+              data-i18n="nav.settings">Settings</span></a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-wrapper">
+      <header class="top-header">
+        <div class="header-actions">
+          <button class="action-btn" id="logoutBtn" onclick="handleLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span data-i18n="logout">Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="page-container">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-i18n="past_events_title">PAST EVENTS ARCHIVE</h1>
+            <p class="page-subtitle" data-i18n="past_events_subtitle">VIEW AND EDIT COMPLETED EVENTS</p>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <select id="tagFilter" class="filter-select">
+            <option value="all">All Tags</option>
+            <option value="corporate">Corporate</option>
+            <option value="ceremonies">Ceremonies</option>
+            <option value="festivals">Festivals</option>
+            <option value="conferences">Conferences</option>
+            <option value="launches">Launches</option>
+          </select>
+          <select id="monthFilter" class="filter-select">
+            <option value="all">All Months</option>
+          </select>
+          <div id="statsContainer" class="stats-row"></div>
+        </div>
+
+        <div id="pastEventsGrid" class="events-grid"></div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <div class="empty-state-icon"><i class="fa-solid fa-calendar-days"></i></div>
+          <h3>No past events found</h3>
+          <p>Events marked as past will appear here.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Event Details Modal -->
+  <div id="eventModal" class="modal-overlay">
+    <div class="modal" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2 id="modalTitle">Event Details <span id="editModeBadge" class="edit-mode-badge"
+            style="display:none;">Editing</span></h2>
+        <button class="modal-close" onclick="closeModal('eventModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-content-split">
+          <!-- Left Column: Editable Event Info -->
+          <div>
+            <div class="event-cover"
+              style="border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px; position: relative;">
+              <img id="modalCover" src="" alt="Event cover"
+                style="width:100%; height:140px; object-fit:cover; background:var(--bg-tertiary);">
+              <button class="edit-icon" onclick="editCoverImage()"
+                style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.6); padding:6px 10px; border-radius:var(--radius-md);"><i
+                  class="fa-solid fa-camera"></i> Change Cover</button>
+              <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadNewCover()">
             </div>
-            <nav>
-                <a href="index.html" class="nav-item">
-                    <i class="fa-solid fa-house"></i> 
-                    <span data-i18n="dashboard">Dashboard</span>
-                </a>
 
-                <div class="nav-section">
-                    <div class="nav-label" data-i18n="events_section">Events</div>
-                    <a href="event-manager.html" class="nav-item">
-                        <i class="fa-solid fa-list-check"></i> 
-                        <span data-i18n="event_manager">Event Manager</span>
-                    </a>
-                    <a href="past-events.html" class="nav-item active">
-                        <i class="fa-solid fa-clock-rotate-left"></i> 
-                        <span data-i18n="past_events">Past Events</span>
-                    </a>
-                </div>
+            <!-- Editable Title -->
+            <div class="detail-row">
+              <i class="fa-solid fa-heading"></i>
+              <span class="detail-label">Title:</span>
+              <span class="detail-value" id="displayTitle"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('title')"></i>
+              <input type="text" id="editTitle" class="detail-input" style="display:none;">
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-label" data-i18n="website_section">Website</div>
-                    <a href="holiday-themes.html" class="nav-item">
-                        <i class="fa-solid fa-holly-berry"></i> 
-                        <span data-i18n="holiday_themes">Holiday Themes</span>
-                    </a>
-                </div>
+            <!-- Editable Date -->
+            <div class="detail-row">
+              <i class="fa-solid fa-calendar"></i>
+              <span class="detail-label">Date:</span>
+              <span class="detail-value" id="displayDate"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('date')"></i>
+              <input type="date" id="editDate" class="detail-input" style="display:none;">
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-label" data-i18n="communication_section">Communication</div>
-                    <a href="contact-responses.html" class="nav-item">
-                        <i class="fa-regular fa-envelope"></i> 
-                        <span data-i18n="contact_responses">Contact Responses</span>
-                    </a>
-                    <a href="whatsapp-chat.html" class="nav-item">
-                        <i class="fa-brands fa-whatsapp"></i> 
-                        <span data-i18n="whatsapp_chat">WhatsApp Chat</span>
-                    </a>
-                </div>
+            <!-- Editable Location -->
+            <div class="detail-row">
+              <i class="fa-solid fa-location-dot"></i>
+              <span class="detail-label">Location:</span>
+              <span class="detail-value" id="displayLocation"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('location')"></i>
+              <input type="text" id="editLocation" class="detail-input" style="display:none;">
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-label" data-i18n="system_section">System</div>
-                    <a href="settings.html" class="nav-item">
-                        <i class="fa-solid fa-gear"></i> 
-                        <span data-i18n="settings">Settings</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            <!-- Editable Guests -->
+            <div class="detail-row">
+              <i class="fa-solid fa-users"></i>
+              <span class="detail-label">Guests:</span>
+              <span class="detail-value" id="displayGuests"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('guests')"></i>
+              <input type="number" id="editGuests" class="detail-input" style="display:none;">
+            </div>
 
-        <!-- MAIN -->
-        <main class="main-wrapper">
-            <header class="top-header">
-              <div class="header-actions">
-                <button class="action-btn" id="logoutBtn" onclick="window.logout()">
-                  <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span>
-                </button>
+            <!-- Editable Tag -->
+            <div class="detail-row">
+              <i class="fa-solid fa-tag"></i>
+              <span class="detail-label">Tag:</span>
+              <span class="detail-value" id="displayTag"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('tag')"></i>
+              <select id="editTag" class="detail-input" style="display:none;">
+                <option value="corporate">Corporate</option>
+                <option value="ceremonies">Ceremonies</option>
+                <option value="festivals">Festivals</option>
+                <option value="conferences">Conferences</option>
+                <option value="launches">Launches</option>
+              </select>
+            </div>
+
+            <!-- Editable Client -->
+            <div class="detail-row">
+              <i class="fa-solid fa-building"></i>
+              <span class="detail-label">Client:</span>
+              <span class="detail-value" id="displayClient"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('client')"></i>
+              <input type="text" id="editClient" class="detail-input" style="display:none;">
+            </div>
+
+            <!-- Editable Description -->
+            <div class="detail-row" style="align-items: flex-start;">
+              <i class="fa-solid fa-align-left"></i>
+              <span class="detail-label">Description:</span>
+              <span class="detail-value" id="displayDesc"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('desc')"></i>
+              <textarea id="editDesc" class="detail-textarea" rows="3" style="display:none;"></textarea>
+            </div>
+            <!-- Editable Visibility (Public/Internal) -->
+            <div class="detail-row">
+              <i class="fa-solid fa-globe"></i>
+              <span class="detail-label">Visibility:</span>
+              <span class="detail-value" id="displayVisibility"></span>
+              <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('visibility')"></i>
+              <div class="toggle-row" style="display:none; margin:0;" id="editVisibility">
+                <span>Public Event (visible on website)</span>
+                <label class="switch">
+                  <input type="checkbox" id="editVisibilityCheckbox">
+                  <span class="slider"></span>
+                </label>
               </div>
-            </header>
-
-            <div class="page-container">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title" data-i18n="event_showcase">EVENT SHOWCASE</h1>
-                        <p class="page-subtitle" data-i18n="event_preview">FEATURED & PAST EVENTS PREVIEW</p>
-                    </div>
-                </div>
-
-                <!-- FEATURED EVENTS -->
-                <div class="section">
-                    <h2 class="section-title" data-i18n="featured_events">FEATURED EVENTS</h2>
-                    <div id="featuredEvents" class="events-grid"></div>
-                </div>
-
-                <!-- PAST EVENTS -->
-                <div class="section" style="margin-top:30px;">
-                    <h2 class="section-title" data-i18n="past_events">PAST EVENTS</h2>
-                    <div id="pastEvents" class="events-grid"></div>
-                </div>
             </div>
-        </main>
-    </div>
-
-    <!-- MODAL unchanged -->
-     <!-- ============================================
-     EVENT DETAILS MODAL
-     ============================================ -->
-<div id="eventModal" class="modal-overlay">
-  <div class="modal">
-    
-    <!-- Header -->
-    <div class="modal-header">
-      <h2 id="modalTitle">Event Details</h2>
-      <button id="closeModal" class="modal-close" title="Close">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <!-- Body -->
-    <div class="modal-body">
-      <div class="modal-content">
-        
-        <!-- Left: Event Info -->
-        <div class="modal-left">
-          <div class="event-cover">
-            <img id="modalCover" src="" alt="Event cover" onerror="this.src='https://via.placeholder.com/400x200/111/333?text=No+Image'">
           </div>
-          <div class="event-info">
-            <h3 id="modalEventTitle">Event Title</h3>
-            <p><strong>Date:</strong> <span id="modalEventDate">—</span></p>
-            <p><strong>Client:</strong> <span id="modalEventClient">—</span></p>
-            <p><strong>Status:</strong> <span id="modalEventStatus">—</span></p>
+
+
+          <!-- Right Column: Gallery -->
+          <div>
+            <!-- Tab switcher for Gallery -->
+            <div class="gallery-tabs">
+              <button id="imageTab" class="gallery-tab active" onclick="setUploadType('image')">📷 Images</button>
+              <button id="videoTab" class="gallery-tab" onclick="setUploadType('video')">🎥 Videos</button>
+            </div>
+
+            <!-- Image Upload Area -->
+            <div id="imageUploadArea" class="upload-area">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Click to upload images</p>
+            </div>
+
+            <!-- Video Upload Area -->
+            <div id="videoUploadArea" class="upload-area" style="display: none;">
+              <i class="fa-solid fa-video"></i>
+              <p>Click to upload videos</p>
+            </div>
+
+            <!-- Image Gallery Grid -->
+            <div id="galleryGrid" class="gallery-grid"></div>
+
+            <!-- Video Gallery Grid -->
+            <div id="videoGrid" class="gallery-grid" style="margin-top: 16px; display: none;"></div>
+
+            <input type="file" id="galleryInput" multiple accept="image/*" style="display: none;">
+            <input type="file" id="videoInput" multiple accept="video/mp4,video/webm,video/quicktime"
+              style="display: none;">
           </div>
         </div>
-
-        <!-- Right: Gallery (only for past events) -->
-        <div class="modal-right" style="display: none;">
-          <div class="gallery-header">
-            <h4>Event Gallery</h4>
-            <label class="btn-secondary" style="cursor: pointer; font-size: 12px; padding: 6px 12px;">
-              <i class="fa-solid fa-plus"></i> <span data-i18n="btn.addPhotos">Add Photos</span>
-              <input type="file" id="galleryInput" multiple accept="image/*" style="display: none;">
-            </label>
-          </div>
-          <div id="uploadArea" class="upload-area">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <p data-i18n="click_to_upload">Click to upload photos</p>
-            <small>Max 5MB each • JPG, PNG, GIF</small>
-          </div>
-          <div id="galleryGrid" class="gallery-grid"></div>
-        </div>
-
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('eventModal')">Close</button>
       </div>
     </div>
-
-    <!-- Footer -->
-    <div class="modal-footer">
-      <button id="closeModalBtn" class="btn-secondary">Close</button>
-    </div>
-
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../js/supabase.js"></script>
-<script src="../js/settings.js"></script>
-<script src="../components/notifications.js"></script>
-
-<script src="../js/past-events.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/past-events.js"></script>
 </body>
+
 </html>

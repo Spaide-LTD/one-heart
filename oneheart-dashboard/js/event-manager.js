@@ -1,345 +1,424 @@
-const { data: { session } } = await window.supabaseClient.auth.getSession();
+let allEvents = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentActionId = null;
+        let pendingActionType = null;
+        let uploadedImageFile = null;
+        let uploadedImageUrl = null;
 
-if (!session) {
-  window.location.href = "/login.html";
-}
-document.addEventListener("DOMContentLoaded", () => {
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-info-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
 
-  const supabase = window.supabaseClient;
+        function showNotification(message, type) {
+            showToast(message, type);
+        }
 
-  /* ===============================
-     DOM REFERENCES
-  =============================== */
-  const imageUploadArea = document.getElementById('imageUploadArea');
-  const eventImageInput = document.getElementById('eventImageInput');
-  const previewImg = document.getElementById('previewImg');
-  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-  const imagePreview = document.getElementById('imagePreview');
-  const removeImageBtn = document.getElementById('removeImageBtn');
-  const modal = document.getElementById("eventModal");
+        // Initialize Supabase
+        let supabaseClient = null;
+        try {
+            supabaseClient = window.supabaseClient || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log("Supabase initialized");
+        } catch (e) {
+            console.error("Failed to initialize Supabase:", e);
+        }
 
-  /* ===============================
-     IMAGE UPLOAD HANDLERS
-  =============================== */
-  if (imageUploadArea && eventImageInput) {
-    imageUploadArea.addEventListener('click', () => eventImageInput.click());
-  }
-
-  if (eventImageInput) {
-    eventImageInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file || !file.type.startsWith('image/')) return;
-      if (file.size > 5 * 1024 * 1024) {
-        notifyError((window.t?.('error.image_too_large')) || 'Image must be under 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        previewImg.src = ev.target.result;
-        if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
-        if (imagePreview) imagePreview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  if (removeImageBtn) {
-    removeImageBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (eventImageInput) eventImageInput.value = '';
-      if (previewImg) previewImg.src = '';
-      if (uploadPlaceholder) uploadPlaceholder.style.display = 'block';
-      if (imagePreview) imagePreview.style.display = 'none';
-    });
-  }
-
-  /* ===============================
-     LOAD EVENTS
-  =============================== */
-  async function loadEvents() {
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("start_date", { ascending: true });
-
-    if (error) {
-      // Load events error suppressed
-      notifyError("Failed to load events");
-      return;
-    }
-    renderEvents(data || []);
-  }
-
-  /* ===============================
-     RENDER TABLE (with Edit + Delete)
-  =============================== */
-  function renderEvents(events) {
-    const table = document.getElementById("eventsTable");
-    const emptyState = document.getElementById("emptyState");
-    if (!table) return;
-
-    if (!events.length) {
-      table.innerHTML = "";
-      if (emptyState) emptyState.style.display = "flex";
-      return;
-    }
-    if (emptyState) emptyState.style.display = "none";
-
-    table.innerHTML = events.map(e => `
-      <tr class="${e.is_past ? "past-row" : ""}">
-        <td>
-          <div style="display:flex; align-items:center; gap:10px;">
-            ${e.image_url 
-              ? `<img src="${e.image_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">`
-              : `<div style="width:40px;height:40px;border-radius:8px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#666;"><i class="fa-solid fa-image"></i></div>`
+        // ============================================
+        // LOAD EVENTS
+        // ============================================
+        async function loadEvents() {
+            if (!supabaseClient) {
+                showNotification("Supabase not configured", "error");
+                return;
             }
-            <div>
-              <strong>${escapeHtml(e.title)}</strong><br>
-              <span style="font-size:12px;color:#888;">${escapeHtml(e.description || "")}</span>
-            </div>
-          </div>
-        </td>
-        <td>${formatDate(e.start_date)}</td>
-        <td>${escapeHtml(e.client_name || "-")}</td>
-        <td>
-          ${e.is_past 
-            ? `<span class="badge neutral">Past</span>` 
-            : `<span class="badge success">Upcoming</span>`}
-        </td>
-        <td>
-          <button class="visibility-toggle ${e.is_public ? "public" : "internal"}"
-            onclick="togglePublic('${e.id}', ${e.is_public})">
-            ${e.is_public ? '🌐 Public' : '🔒 Internal'}
-          </button>
-        </td>
-        <td>
-          <span class="badge ${e.is_featured ? "primary" : "neutral"}">
-            ${e.is_featured ? '⭐ Featured' : '—'}
-          </span>
-        </td>
-        <td>
-          <button class="action-icon-btn" onclick="editEvent('${e.id}')" title="Edit">
-            <i class="fa-solid fa-pen"></i>
-          </button>
-          <button class="action-icon-btn" onclick="togglePast('${e.id}', ${e.is_past})" title="${e.is_past ? 'Mark Upcoming' : 'Mark Past'}">
-            <i class="fa-solid ${e.is_past ? 'fa-rotate-left' : 'fa-box-archive'}"></i>
-          </button>
-          <button class="action-icon-btn danger" onclick="deleteEvent('${e.id}', '${escapeHtml(e.title)}')" title="Delete">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `).join("");
-  }
+            
+            const { data, error } = await supabaseClient
+                .from("events")
+                .select("*")
+                .order("start_date", { ascending: false });
 
-  /* ===============================
-     SAVE EVENT (Create / Update)
-  =============================== */
-  async function saveEvent() {
-    const id = document.getElementById("editEventId")?.value;
-    const title = document.getElementById("eventTitle")?.value?.trim();
-    const date = document.getElementById("eventDateTime")?.value;
-    const client = document.getElementById("eventClient")?.value?.trim();
-    const desc = document.getElementById("eventDesc")?.value?.trim();
-    const isPublic = document.querySelector('input[name="visibility"]:checked')?.value === "public";
-    const isFeatured = document.getElementById("eventFeatured")?.checked;
+            if (error) {
+                console.error("Error loading events:", error);
+                showNotification("Failed to load events: " + error.message, "error");
+                return;
+            }
 
-    // Validate required fields for CREATE only
-    if (!id && (!title || !date)) {
-      notifyError("Title and Date are required");
-      return;
-    }
+            allEvents = data || [];
+            renderTable();
+            renderPagination();
+            toggleEmptyState();
+        }
 
-    // Handle image URL
-    let imageUrl = null;
-    if (imagePreview?.style.display === 'block' && previewImg?.src && previewImg.src.startsWith('data:')) {
-      // New upload: keep the data URL (or upload to storage in production)
-      imageUrl = previewImg.src;
-    } else if (id) {
-      // Editing: fetch existing image_url to preserve it
-      const { data: existing } = await supabase.from("events").select("image_url").eq("id", id).single();
-      imageUrl = existing?.image_url || null;
-    }
+        function renderTable() {
+            const tbody = document.getElementById("eventsTable");
+            const start = (currentPage - 1) * itemsPerPage;
+            const pageEvents = allEvents.slice(start, start + itemsPerPage);
 
-    const payload = {
-      title,
-      start_date: date,
-      client_name: client || null,
-      description: desc || null,
-      is_public: isPublic,
-      is_featured: isFeatured,
-      image_url: imageUrl
-    };
+            if (pageEvents.length === 0) { tbody.innerHTML = ""; return; }
 
-    try {
-      if (id) {
-        // UPDATE
-        const { error } = await supabase.from("events").update(payload).eq("id", id);
-        if (error) throw error;
-        notifySuccess("Event updated");
-      } else {
-        // INSERT
-        payload.is_past = false;
-        const { error } = await supabase.from("events").insert([payload]);
-        if (error) throw error;
-        notifySuccess("Event created");
-      }
-      closeModal();
-      loadEvents();
-    } catch (err) {
-      notifyError(err.message || "Failed to save event");
-    }
-  }
+            tbody.innerHTML = pageEvents.map(e => {
+                const dateObj = new Date(e.start_date);
+                const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                // Fix: Determine past status correctly - either explicitly marked past OR date is in the past
+                const isPast = e.is_past || (new Date(e.start_date) < new Date());
+                const isFeatured = e.is_featured;
+                const thumbHtml = e.hero_url ? `<img src="${e.hero_url}" class="event-thumb-sm" onerror="this.style.display='none'">` : '<span class="event-thumb-sm" style="display:inline-block;background:var(--bg-tertiary);text-align:center;line-height:30px;"><i class="fa-solid fa-image"></i></span>';
+                
+                // Status badge with correct indicator
+                const statusBadge = isPast ? 
+                    '<span class="status-badge past"><i class="fa-regular fa-calendar-check"></i> Past</span>' : 
+                    '<span class="status-badge upcoming"><i class="fa-regular fa-calendar"></i> Upcoming</span>';
+                
+                return `<tr class="${isPast ? 'past-row' : ''}">
+                    <td><div style="display:flex;align-items:center;">${thumbHtml}<span style="font-weight:500;">${escapeHtml(e.title)}</span></div></td>
+                    <td>${dateStr}</td>
+                    <td>${escapeHtml(e.client_name) || '-'}</td>
+                    <td>${statusBadge}</span></small></td>
+                    <td><button class="featured-star ${isFeatured ? 'active' : ''}" onclick="prepareFeatureAction('${e.id}', ${isFeatured})"><i class="fa-${isFeatured ? 'solid' : 'regular'} fa-star"></i></button></span></small></td>
+                    <td><div class="table-actions"><button class="action-icon-btn" onclick="openEdit('${e.id}')"><i class="fa-solid fa-pen"></i></button><div class="action-dropdown-wrap"><button class="action-menu-btn" onclick="toggleActionMenu(this)"><i class="fa-solid fa-ellipsis-vertical"></i></button><div class="action-dropdown"><button class="dropdown-item" onclick="preparePastAction('${e.id}')"><i class="fa-solid fa-clock-rotate-left"></i> Mark as Past</button><button class="dropdown-item" onclick="prepareFeatureAction('${e.id}', ${isFeatured})"><i class="fa-solid fa-star"></i> ${isFeatured ? 'Unfeature' : 'Feature'}</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="prepareDeleteAction('${e.id}')"><i class="fa-solid fa-trash"></i> Delete</button></div></div></div></td>
+                </tr>`;
+            }).join("");
+        }
 
-  /* ===============================
-     EDIT EVENT (Fixed)
-  =============================== */
-  window.editEvent = async function(id) {
-    try {
-      const { data, error } = await supabase.from("events").select("*").eq("id", id).single();
-      if (error || !data) throw error;
+        function renderPagination() {
+            const totalPages = Math.ceil(allEvents.length / itemsPerPage);
+            const container = document.getElementById("pagination");
+            if (totalPages <= 1) { container.innerHTML = allEvents.length ? `<span class="pagination-info">${allEvents.length} events</span>` : ""; return; }
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, allEvents.length);
+            let pagesHtml = "";
+            for (let i = 1; i <= totalPages; i++) pagesHtml += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            container.innerHTML = `<span class="pagination-info">${start}-${end} of ${allEvents.length}</span><button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>${pagesHtml}<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>`;
+        }
 
-      // Populate form fields
-      document.getElementById("editEventId").value = data.id;
-      document.getElementById("eventTitle").value = data.title || "";
-      document.getElementById("eventDateTime").value = data.start_date || "";
-      document.getElementById("eventClient").value = data.client_name || "";
-      document.getElementById("eventDesc").value = data.description || "";
-      document.getElementById("eventFeatured").checked = !!data.is_featured;
+        function changePage(page) { const total = Math.ceil(allEvents.length / itemsPerPage); if (page < 1 || page > total) return; currentPage = page; renderTable(); renderPagination(); }
+        function toggleEmptyState() { const has = allEvents.length > 0; const tableContainer = document.getElementById("tableContainer"); const emptyState = document.getElementById("emptyState"); if (tableContainer) tableContainer.style.display = has ? "" : "none"; if (emptyState) emptyState.style.display = has ? "none" : "flex"; }
 
-      // Set visibility radio
-      if (data.is_public) {
-        document.getElementById("visibilityPublic")?.click();
-      } else {
-        document.getElementById("visibilityInternal")?.click();
-      }
+        function openModal(id) { const modal = document.getElementById(id); if (modal) modal.classList.add("active"); }
+        function closeModal(id) { const modal = document.getElementById(id); if (modal) modal.classList.remove("active"); }
 
-      // Restore image preview
-      if (data.image_url) {
-        if (previewImg) previewImg.src = data.image_url;
-        if (uploadPlaceholder) uploadPlaceholder.style.display = 'none';
-        if (imagePreview) imagePreview.style.display = 'block';
-      } else {
-        resetImageUpload();
-      }
+        // ============================================
+        // CONTEXTUAL CONFIRMATION MODALS
+        // ============================================
+        function preparePastAction(id) {
+            currentActionId = id;
+            pendingActionType = 'past';
+            const event = allEvents.find(e => e.id === id);
+            const eventTitle = event?.title || 'this event';
+            
+            const confirmIcon = document.getElementById("confirmIcon");
+            const confirmTitle = document.getElementById("confirmTitle");
+            const confirmMessage = document.getElementById("confirmMessage");
+            const confirmActionBtn = document.getElementById("confirmActionBtn");
+            
+            if (confirmIcon) { confirmIcon.className = "confirm-icon past"; confirmIcon.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i>'; }
+            if (confirmTitle) confirmTitle.textContent = "Mark as Past Event?";
+            if (confirmMessage) confirmMessage.textContent = `"${escapeHtml(eventTitle)}" will be marked as a past event and will no longer appear in upcoming lists.`;
+            if (confirmActionBtn) { confirmActionBtn.className = "btn-primary"; confirmActionBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yes, Mark as Past'; }
+            closeAllDropdowns();
+            openModal("confirmModal");
+        }
 
-      // Open modal
-      if (modal) modal.classList.add("active");
-    } catch (err) {
-      notifyError("Failed to load event");
-    }
-  };
+        function prepareFeatureAction(id, isCurrentlyFeatured) {
+            currentActionId = id;
+            const event = allEvents.find(e => e.id === id);
+            const eventTitle = event?.title || 'this event';
+            const confirmIcon = document.getElementById("confirmIcon");
+            const confirmTitle = document.getElementById("confirmTitle");
+            const confirmMessage = document.getElementById("confirmMessage");
+            const confirmActionBtn = document.getElementById("confirmActionBtn");
+            
+            if (isCurrentlyFeatured) {
+                pendingActionType = 'unfeature';
+                if (confirmIcon) { confirmIcon.className = "confirm-icon unfeature"; confirmIcon.innerHTML = '<i class="fa-solid fa-star"></i>'; }
+                if (confirmTitle) confirmTitle.textContent = "Unfeature This Event?";
+                if (confirmMessage) confirmMessage.textContent = `"${escapeHtml(eventTitle)}" will no longer appear on the homepage.`;
+                if (confirmActionBtn) { confirmActionBtn.className = "btn-primary"; confirmActionBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yes, Unfeature'; }
+            } else {
+                pendingActionType = 'feature';
+                if (confirmIcon) { confirmIcon.className = "confirm-icon feature"; confirmIcon.innerHTML = '<i class="fa-solid fa-star"></i>'; }
+                if (confirmTitle) confirmTitle.textContent = "Feature This Event?";
+                if (confirmMessage) confirmMessage.textContent = `"${escapeHtml(eventTitle)}" will be highlighted on the homepage.`;
+                if (confirmActionBtn) { confirmActionBtn.className = "btn-primary"; confirmActionBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yes, Feature It'; }
+            }
+            closeAllDropdowns();
+            openModal("confirmModal");
+        }
 
-  /* ===============================
-     DELETE EVENT (New)
-  =============================== */
-  window.deleteEvent = async function(id, title) {
-    if (!confirm(`Delete "${title}"?\n\nThis cannot be undone.`)) return;
+        function prepareDeleteAction(id) {
+            currentActionId = id;
+            pendingActionType = 'delete';
+            const event = allEvents.find(e => e.id === id);
+            const eventTitle = event?.title || 'this event';
+            const confirmIcon = document.getElementById("confirmIcon");
+            const confirmTitle = document.getElementById("confirmTitle");
+            const confirmMessage = document.getElementById("confirmMessage");
+            const confirmActionBtn = document.getElementById("confirmActionBtn");
+            
+            if (confirmIcon) { confirmIcon.className = "confirm-icon delete"; confirmIcon.innerHTML = '<i class="fa-solid fa-trash-can"></i>'; }
+            if (confirmTitle) confirmTitle.textContent = "Delete This Event?";
+            if (confirmMessage) confirmMessage.textContent = `"${escapeHtml(eventTitle)}" will be permanently deleted. This action cannot be undone.`;
+            if (confirmActionBtn) { confirmActionBtn.className = "btn-danger"; confirmActionBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Event'; }
+            closeAllDropdowns();
+            openModal("confirmModal");
+        }
 
-    try {
-      const { error } = await supabase.from("events").delete().eq("id", id);
-      if (error) throw error;
-      notifySuccess("Event deleted");
-      loadEvents();
-    } catch (err) {
-      notifyError("Failed to delete event");
-    }
-  };
+        async function executeConfirmedAction() {
+            if (!currentActionId || !supabaseClient) return;
+            
+            switch(pendingActionType) {
+                case 'past':
+                    const { error: pastError } = await supabaseClient
+                        .from("events")
+                        .update({ is_past: true, is_featured: false })
+                        .eq("id", currentActionId);
+                    if (pastError) { showNotification("Failed to mark as past", "error"); }
+                    else { showNotification("Event marked as past", "success"); }
+                    break;
+                    
+                case 'feature':
+                    const event = allEvents.find(e => e.id === currentActionId);
+                    if (event?.is_past) { 
+                        showNotification("Past events cannot be featured", "warning"); 
+                        closeModal("confirmModal");
+                        return;
+                    }
+                    const { error: featError } = await supabaseClient
+                        .from("events")
+                        .update({ is_featured: true })
+                        .eq("id", currentActionId);
+                    if (featError) { showNotification("Failed to feature event", "error"); }
+                    else { showNotification("Event featured", "success"); }
+                    break;
+                    
+                case 'unfeature':
+                    const { error: unfeatError } = await supabaseClient
+                        .from("events")
+                        .update({ is_featured: false })
+                        .eq("id", currentActionId);
+                    if (unfeatError) { showNotification("Failed to unfeature event", "error"); }
+                    else { showNotification("Event unfeatured", "success"); }
+                    break;
+                    
+                case 'delete':
+                    const { error: delError } = await supabaseClient
+                        .from("events")
+                        .delete()
+                        .eq("id", currentActionId);
+                    if (delError) { showNotification("Failed to delete event", "error"); }
+                    else { showNotification("Event deleted", "success"); }
+                    break;
+            }
+            
+            closeModal("confirmModal");
+            pendingActionType = null;
+            currentActionId = null;
+            loadEvents();
+        }
 
-  /* ===============================
-     TOGGLES
-  =============================== */
-  window.togglePublic = async function(id, current) {
-    try {
-      const { error } = await supabase.from("events").update({ is_public: !current }).eq("id", id);
-      if (error) throw error;
-      loadEvents();
-    } catch (err) {
-      notifyError("Failed to update visibility");
-    }
-  };
+        function openEventModal() {
+            const modalTitle = document.getElementById("modalTitle");
+            const saveBtnText = document.getElementById("saveBtnText");
+            const eventForm = document.getElementById("eventForm");
+            const editEventId = document.getElementById("editEventId");
+            
+            if (modalTitle) modalTitle.textContent = "Create New Event";
+            if (saveBtnText) saveBtnText.textContent = "Create Event";
+            if (eventForm) eventForm.reset();
+            if (editEventId) editEventId.value = "";
+            resetImageUpload();
+            uploadedImageFile = null;
+            uploadedImageUrl = null;
+            openModal("eventModal");
+        }
 
-  window.togglePast = async function(id, current) {
-    try {
-      const { error } = await supabase.from("events").update({ is_past: !current }).eq("id", id);
-      if (error) throw error;
-      loadEvents();
-    } catch (err) {
-      notifyError("Failed to update status");
-    }
-  };
+        async function openEdit(id) {
+            if (!supabaseClient) return;
+            const { data, error } = await supabaseClient.from("events").select("*").eq("id", id).single();
+            if (error || !data) { showNotification("Failed to load event", "error"); return; }
+            
+            const modalTitle = document.getElementById("modalTitle");
+            const saveBtnText = document.getElementById("saveBtnText");
+            const editEventId = document.getElementById("editEventId");
+            const eventTitle = document.getElementById("eventTitle");
+            const eventClient = document.getElementById("eventClient");
+            const eventDesc = document.getElementById("eventDesc");
+            const eventStart = document.getElementById("eventStart");
+            const eventEnd = document.getElementById("eventEnd");
+            const eventIsPast = document.getElementById("eventIsPast");
+            const eventFeatured = document.getElementById("eventFeatured");
+            
+            if (modalTitle) modalTitle.textContent = "Edit Event";
+            if (saveBtnText) saveBtnText.textContent = "Save Changes";
+            if (editEventId) editEventId.value = data.id;
+            if (eventTitle) eventTitle.value = data.title || "";
+            if (eventClient) eventClient.value = data.client_name || "";
+            if (eventDesc) eventDesc.value = data.description || "";
+            if (eventStart) eventStart.value = data.start_date ? data.start_date.slice(0, 16) : "";
+            if (eventEnd) eventEnd.value = data.end_date ? data.end_date.slice(0, 16) : "";
+            if (eventIsPast) eventIsPast.checked = !!data.is_past;
+            if (eventFeatured) eventFeatured.checked = !!data.is_featured;
+            
+            if (data.hero_url) { 
+                showImagePreview(data.hero_url); 
+                uploadedImageUrl = data.hero_url;
+            } else { 
+                resetImageUpload(); 
+            }
+            openModal("eventModal");
+        }
 
-  /* ===============================
-     MODAL CONTROLS
-  =============================== */
-  window.openModal = function() {
-    // Reset form for CREATE
-    document.getElementById("editEventId").value = "";
-    document.getElementById("eventTitle").value = "";
-    document.getElementById("eventDateTime").value = "";
-    document.getElementById("eventClient").value = "";
-    document.getElementById("eventDesc").value = "";
-    document.getElementById("eventFeatured").checked = false;
-    document.getElementById("visibilityInternal")?.click();
-    resetImageUpload();
-    
-    if (modal) modal.classList.add("active");
-  };
+        async function saveEvent() {
+            if (!supabaseClient) { showNotification("Supabase not configured", "error"); return; }
+            const id = document.getElementById("editEventId")?.value;
+            const title = document.getElementById("eventTitle")?.value.trim();
+            const start = document.getElementById("eventStart")?.value;
+            
+            if (!title) { showNotification("Event title required", "warning"); return; }
+            if (!start) { showNotification("Start date required", "warning"); return; }
 
-  window.closeModal = function() {
-    if (modal) modal.classList.remove("active");
-  };
+            let imageUrl = uploadedImageUrl;
+            
+            if (uploadedImageFile) {
+                const fileExt = uploadedImageFile.name.split(".").pop();
+                const fileName = `event_${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+                const bucketName = "event-images";
+                
+                try {
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from(bucketName)
+                        .upload(fileName, uploadedImageFile);
+                    
+                    if (!uploadError) {
+                        const { data: urlData } = supabaseClient.storage
+                            .from(bucketName)
+                            .getPublicUrl(fileName);
+                        imageUrl = urlData.publicUrl;
+                    } else {
+                        console.error("Upload error:", uploadError);
+                        showNotification("Failed to upload image: " + uploadError.message, "error");
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Upload exception:", err);
+                    showNotification("Failed to upload image", "error");
+                    return;
+                }
+            }
 
-  function resetImageUpload() {
-    if (eventImageInput) eventImageInput.value = '';
-    if (previewImg) previewImg.src = '';
-    if (uploadPlaceholder) uploadPlaceholder.style.display = 'block';
-    if (imagePreview) imagePreview.style.display = 'none';
-  }
+            const payload = {
+                title,
+                client_name: document.getElementById("eventClient")?.value.trim() || null,
+                description: document.getElementById("eventDesc")?.value.trim() || null,
+                start_date: start,
+                end_date: document.getElementById("eventEnd")?.value || null,
+                is_past: document.getElementById("eventIsPast")?.checked || false,
+                is_featured: document.getElementById("eventFeatured")?.checked || false,
+                is_public: false,
+                hero_url: imageUrl || null
+            };
 
-  // Bind modal buttons
-  const addBtn = document.getElementById("addEventBtn");
-  const closeBtn = document.getElementById("closeModal");
-  const cancelBtn = document.getElementById("cancelModal");
-  const submitBtn = document.getElementById("submitEvent");
-  
-  if (addBtn) addBtn.onclick = openModal;
-  if (closeBtn) closeBtn.onclick = closeModal;
-  if (cancelBtn) cancelBtn.onclick = closeModal;
-  if (submitBtn) submitBtn.onclick = saveEvent;
+            let result;
+            if (id) {
+                result = await supabaseClient.from("events").update(payload).eq("id", id);
+            } else {
+                result = await supabaseClient.from("events").insert([payload]);
+            }
 
-  // Close modal on outside click
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-  }
+            if (result.error) { 
+                showNotification(result.error.message, "error"); 
+                return; 
+            }
+            showNotification(id ? "Event updated" : "Event created", "success");
+            closeModal("eventModal");
+            loadEvents();
+        }
 
-  /* ===============================
-     HELPERS
-  =============================== */
-  function formatDate(date) {
-    if (!date) return "—";
-    return new Date(date).toLocaleDateString(undefined, {
-      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-  }
+        // ============================================
+        // IMAGE UPLOAD HANDLING (No Video)
+        // ============================================
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                uploadedImageFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview(e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-  function escapeHtml(text) {
-    if (!text) return "";
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
+        function showImagePreview(src) {
+            const uploadPlaceholder = document.getElementById("uploadPlaceholder");
+            const imagePreview = document.getElementById("imagePreview");
+            const previewImg = document.getElementById("previewImg");
+            
+            if (uploadPlaceholder) uploadPlaceholder.style.display = "none";
+            if (imagePreview) imagePreview.style.display = "block";
+            if (previewImg) previewImg.src = src;
+        }
 
-  /* ===============================
-     INIT
-  =============================== */
-  if (window.supabaseReady) {
-    window.supabaseReady.then(loadEvents);
-  } else {
-    loadEvents();
-  }
+        function resetImageUpload() {
+            const uploadPlaceholder = document.getElementById("uploadPlaceholder");
+            const imagePreview = document.getElementById("imagePreview");
+            const previewImg = document.getElementById("previewImg");
+            const eventImageInput = document.getElementById("eventImageInput");
+            
+            if (uploadPlaceholder) uploadPlaceholder.style.display = "block";
+            if (imagePreview) imagePreview.style.display = "none";
+            if (previewImg) previewImg.src = "";
+            if (eventImageInput) eventImageInput.value = "";
+            uploadedImageFile = null;
+            uploadedImageUrl = null;
+        }
 
-  // Event Manager initialized
-});
+        function removeImage(e) {
+            if (e) e.stopPropagation();
+            resetImageUpload();
+        }
+
+        function toggleActionMenu(btn) { 
+            const dropdown = btn.nextElementSibling; 
+            document.querySelectorAll(".action-dropdown.active").forEach(d => { 
+                if (d !== dropdown) d.classList.remove("active"); 
+            }); 
+            if (dropdown) dropdown.classList.toggle("active"); 
+        }
+
+        function closeAllDropdowns() { 
+            document.querySelectorAll(".action-dropdown.active").forEach(d => d.classList.remove("active")); 
+        }
+
+        document.addEventListener("click", (e) => { 
+            if (!e.target.closest(".action-dropdown-wrap")) closeAllDropdowns(); 
+        });
+
+        function escapeHtml(text) { 
+            if (!text) return ""; 
+            const div = document.createElement("div"); 
+            div.textContent = text; 
+            return div.innerHTML; 
+        }
+
+        function handleLogout() { 
+            window.location.href = "../index.html"; 
+        }
+
+        // Initialize
+        document.addEventListener("DOMContentLoaded", () => { 
+            loadEvents(); 
+        });
+ 

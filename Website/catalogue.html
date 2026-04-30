@@ -6,6 +6,7 @@
   <title>Event Catalogue | One Heart Events</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="catalogue.css">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -42,14 +43,14 @@
       <button class="filter-btn active" data-filter="all">
         <i class="fas fa-th-large"></i> All Events
       </button>
-      <button class="filter-btn" data-filter="wedding">
-        <i class="fas fa-heart"></i> Weddings
+      <button class="filter-btn" data-filter="ceremonies">
+        <i class="fas fa-house"></i> Ceremonies
       </button>
       <button class="filter-btn" data-filter="corporate">
         <i class="fas fa-briefcase"></i> Corporate
       </button>
-      <button class="filter-btn" data-filter="birthday">
-        <i class="fas fa-birthday-cake"></i> Birthdays
+      <button class="filter-btn" data-filter="festivals">
+        <i class="fas fa-burst"></i> Festivals 
       </button>
       <button class="filter-btn" data-filter="conference">
         <i class="fas fa-users"></i> Conferences
@@ -114,8 +115,10 @@
       </div>
     </div>
   </div>
-
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="connector/supabase.js"></script>
   <script src="main.js"></script>
   <script src="catalogue.js"></script>
+  
 </body>
 </html>

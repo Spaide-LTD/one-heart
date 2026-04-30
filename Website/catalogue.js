@@ -1,262 +1,626 @@
+let allPastEvents = [];
+let allFeaturedEvents = [];
+let currentFilter = 'all';
+let activeTab = 'featured'; // 'featured' or 'past'
+let supabaseClient = null;
 
-const eventsData = [
-  {
-    id: 1,
-    title: "Royal Wedding at Al Faisaliah",
-    category: "wedding",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop",
-    video: "https://assets.mixkit.co/videos/preview/mixkit-wedding-couple-kissing-at-sunset-4326-large.mp4",
-    date: "March 2024",
-    location: "Riyadh, Saudi Arabia",
-    guests: "350 Guests",
-    description: "An enchanting royal wedding that blended traditional Saudi elegance with modern luxury. The Al Faisaliah ballroom was transformed into a garden of white roses and golden accents, creating a fairytale atmosphere for 350 distinguished guests. The evening featured a live orchestra, custom lighting design, and a seven-course gourmet dinner.",
-    gallery: [
-      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 2,
-    title: "Tech Summit 2024",
-    category: "conference",
-    image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&h=400&fit=crop",
-    video: null,
-    date: "February 2024",
-    location: "King Abdullah Financial District",
-    guests: "800 Attendees",
-    description: "A groundbreaking tech summit bringing together innovators from across the Middle East. The event featured keynote speeches from industry leaders, interactive workshops, and a startup pitch competition. Our team managed everything from registration to live streaming, ensuring a seamless experience for all 800 attendees.",
-    gallery: [
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 3,
-    title: "Neon Nights Birthday Bash",
-    category: "birthday",
-    image: "https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?w=600&h=400&fit=crop",
-    video: "https://assets.mixkit.co/videos/preview/mixkit-people-dancing-at-a-party-1327-large.mp4",
-    date: "January 2024",
-    location: "Private Villa, Jeddah",
-    guests: "120 Guests",
-    description: "A vibrant 30th birthday celebration with a neon theme that lit up the night. The private villa was transformed with UV lighting, neon installations, and a custom-built LED dance floor. Guests enjoyed craft cocktails, a live DJ, and surprise performances throughout the evening.",
-    gallery: [
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 4,
-    title: "Luxury Brand Launch",
-    category: "launch",
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
-    video: null,
-    date: "December 2023",
-    location: "Ritz-Carlton, Riyadh",
-    guests: "200 VIPs",
-    description: "An exclusive product launch for a luxury fragrance brand that captivated Riyadh's elite. The Ritz-Carlton was transformed into an aromatic garden with living walls, custom scent diffusers, and interactive product displays. The event generated significant media coverage and social media buzz.",
-    gallery: [
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 5,
-    title: "Annual Corporate Gala",
-    category: "corporate",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop",
-    video: "https://assets.mixkit.co/videos/preview/mixkit-people-toasting-at-a-party-4324-large.mp4",
-    date: "November 2023",
-    location: "Four Seasons Hotel",
-    guests: "500 Attendees",
-    description: "A black-tie corporate gala celebrating a major company's 20th anniversary. The evening included award presentations, live entertainment, a gourmet dinner, and a spectacular fireworks display. Our team coordinated over 50 vendors to deliver a flawless evening.",
-    gallery: [
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 6,
-    title: "Desert Oasis Wedding",
-    category: "wedding",
-    image: "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600&h=400&fit=crop",
-    video: null,
-    date: "October 2023",
-    location: "Al Ula, Saudi Arabia",
-    guests: "200 Guests",
-    description: "A breathtaking destination wedding set against the stunning rock formations of Al Ula. The ceremony took place at sunset with the ancient landscape as a backdrop. Guests enjoyed traditional Saudi hospitality combined with world-class service and entertainment under the stars.",
-    gallery: [
-      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 7,
-    title: "Fintech Conference",
-    category: "conference",
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&h=400&fit=crop",
-    video: null,
-    date: "September 2023",
-    location: "Riyadh Convention Center",
-    guests: "1200 Attendees",
-    description: "The region's largest fintech conference, featuring 50+ speakers, 30 exhibition booths, and multiple networking sessions. Our team managed the complex logistics of a multi-track event with parallel sessions, ensuring smooth transitions and maximum attendee engagement.",
-    gallery: [
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 8,
-    title: "Princess Theme Birthday",
-    category: "birthday",
-    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&h=400&fit=crop",
-    video: "https://assets.mixkit.co/videos/preview/mixkit-girl-blowing-candles-on-a-birthday-cake-4279-large.mp4",
-    date: "August 2023",
-    location: "Private Estate, Khobar",
-    guests: "80 Guests",
-    description: "A magical 5th birthday party with a princess theme that delighted children and adults alike. The estate was transformed into a fairy tale castle with custom decorations, character performers, a petting zoo, and a dessert bar that looked like it came from a storybook.",
-    gallery: [
-      "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: 9,
-    title: "Automotive Launch Event",
-    category: "launch",
-    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop",
-    video: null,
-    date: "July 2023",
-    location: "Diriyah Arena, Riyadh",
-    guests: "1500 Guests",
-    description: "A spectacular automotive launch that combined cutting-edge technology with theatrical presentation. The reveal featured drone light shows, holographic displays, and a test drive experience on a custom-built track. The event set new standards for product launches in the region.",
-    gallery: [
-      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop"
-    ]
-  }
-];
 
-function renderEvents(filter = 'all') {
-  const grid = document.getElementById('eventsGrid');
-  const filtered = filter === 'all' ? eventsData : eventsData.filter(e => e.category === filter);
-  
-  grid.innerHTML = filtered.map(event => `
-    <div class="event-card reveal" data-category="${event.category}" onclick="openModal(${event.id})">
-      <div class="event-media">
-        ${event.video ? `
-          <video muted loop playsinline poster="${event.image}">
-            <source src="${event.video}" type="video/mp4">
-          </video>
-          <div class="event-play"><i class="fas fa-play"></i></div>
-        ` : `<img src="${event.image}" alt="${event.title}">`}
-        <div class="event-media-overlay"></div>
-        <span class="event-badge">${event.category}</span>
-      </div>
-      <div class="event-info">
-        <h3>${event.title}</h3>
-        <p>${event.description}</p>
-        <div class="event-meta">
-          <span><i class="fas fa-calendar"></i> ${event.date}</span>
-          <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
-          <span><i class="fas fa-users"></i> ${event.guests}</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
-  
-  // Re-init reveals
-  const reveals = document.querySelectorAll('.event-card.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active');
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
-  
-  // Video hover play
-  document.querySelectorAll('.event-card video').forEach(video => {
-    const card = video.closest('.event-card');
-    card.addEventListener('mouseenter', () => video.play());
-    card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-  });
+// Initialize Supabase client
+async function initSupabase() {
+    try {
+        // Try to get existing Supabase client from window
+        if (window.supabaseClient) {
+            supabaseClient = window.supabaseClient;
+            console.log("Using existing Supabase client");
+        } else if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log("Created new Supabase client");
+        } else {
+            console.error("Supabase library not loaded.");
+            showEmptyState("Supabase not configured. Please contact support.");
+            return;
+        }
+        
+        await loadAllEvents();
+    } catch (error) {
+        console.error("Failed to initialize Supabase:", error);
+        showEmptyState("Failed to connect to database. Please try again later.");
+    }
 }
 
-function openModal(eventId) {
-  const event = eventsData.find(e => e.id === eventId);
-  if (!event) return;
-  
-  const modal = document.getElementById('eventModal');
-  const body = document.getElementById('modalBody');
-  
-  body.innerHTML = `
-    <div class="modal-hero">
-      ${event.video ? `
-        <video autoplay muted loop playsinline>
-          <source src="${event.video}" type="video/mp4">
-        </video>
-      ` : `<img src="${event.image}" alt="${event.title}">`}
-      <div class="modal-hero-overlay"></div>
-      <div class="modal-hero-content">
-        <span class="modal-badge">${event.category}</span>
-        <h2>${event.title}</h2>
-      </div>
-    </div>
-    <div class="modal-details">
-      <div class="event-meta" style="margin-bottom:20px;">
-        <span><i class="fas fa-calendar"></i> ${event.date}</span>
-        <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
-        <span><i class="fas fa-users"></i> ${event.guests}</span>
-      </div>
-      <p>${event.description}</p>
-      <div class="modal-gallery">
-        ${event.gallery.map(img => `<img src="${img}" alt="${event.title}">`).join('')}
-      </div>
-      <div class="modal-cta">
-        <a href="contact.html" class="btn-primary">
-          <span>Plan a Similar Event</span>
-          <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-    </div>
-  `;
-  
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+// Load both past and featured events
+async function loadAllEvents() {
+    if (!supabaseClient) {
+        console.error("Supabase not initialized");
+        return;
+    }
+
+    try {
+        // Load Past Events (is_past = true)
+        const { data: pastEvents, error: pastError } = await supabaseClient
+            .from('events')
+            .select('*')
+            .eq('is_past', true)
+            .order('start_date', { ascending: false });
+
+        if (pastError) {
+            console.error("Error loading past events:", pastError);
+        } else {
+            allPastEvents = pastEvents || [];
+            // Fetch gallery and videos for past events
+            for (let event of allPastEvents) {
+                await fetchEventMedia(event);
+            }
+        }
+
+        // Load Featured Events (is_featured = true AND is_past = false)
+        const { data: featuredEvents, error: featuredError } = await supabaseClient
+            .from('events')
+            .select('*')
+            .eq('is_featured', true)
+            .eq('is_past', false)
+            .order('start_date', { ascending: true });
+
+        if (featuredError) {
+            console.error("Error loading featured events:", featuredError);
+        } else {
+            allFeaturedEvents = featuredEvents || [];
+        }
+
+        console.log(`Loaded ${allPastEvents.length} past events and ${allFeaturedEvents.length} featured events`);
+        
+        // Render the active tab
+        renderCurrentTab();
+        
+    } catch (error) {
+        console.error("Error loading events:", error);
+        showEmptyState("Error loading events. Please refresh and try again.");
+    }
+}
+
+// Fetch gallery images and videos for an event
+async function fetchEventMedia(event) {
+    // Fetch gallery images
+    const { data: photos } = await supabaseClient
+        .from('event_photos')
+        .select('*')
+        .eq('event_id', event.id)
+        .order('uploaded_at', { ascending: true });
+    
+    event.gallery = photos?.map(p => p.image_url) || [];
+    
+    // Fetch videos
+    const { data: videos } = await supabaseClient
+        .from('event_videos')
+        .select('*')
+        .eq('event_id', event.id)
+        .order('position', { ascending: true });
+    
+    event.videos = videos || [];
+    event.video = event.videos.length > 0 ? event.videos[0].video_url : null;
+}
+
+// Render the current active tab
+function renderCurrentTab() {
+    if (activeTab === 'featured') {
+        renderFeaturedEvents();
+    } else {
+        renderPastEvents();
+    }
+}
+
+// Render Featured Events (no images - show special card)
+function renderFeaturedEvents() {
+    const grid = document.getElementById('eventsGrid');
+    if (!grid) return;
+    
+    const filtered = currentFilter === 'all' 
+        ? allFeaturedEvents 
+        : allFeaturedEvents.filter(e => getCategoryDisplay(e.tags) === currentFilter);
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-catalogue" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <i class="fas fa-star" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px; display: block;"></i>
+                <h3 style="color: var(--text-primary); margin-bottom: 8px;">No Featured Events</h3>
+                <p style="color: var(--text-muted);">Check back soon for our featured events!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(event => {
+        const category = getCategoryDisplay(event.tags);
+        const categoryIcon = {
+            'ceremonies': 'fa-house',
+            'corporate': 'fa-briefcase',
+            'festivals': 'fa-burst',
+            'conference': 'fa-users',
+            'launch': 'fa-rocket'
+        }[category] || 'fa-calendar';
+        
+        const formattedDate = formatEventDate(event.start_date);
+        const location = event.location || 'Location TBD';
+        const description = event.description || 'No description available.';
+        
+        return `
+            <div class="event-card reveal featured-card" data-category="${category}" onclick="openEventModal('${event.id}', true)">
+                <div class="event-media featured-media">
+                    <div class="featured-placeholder">
+                        <i class="fas fa-star"></i>
+                        <span>Featured Event</span>
+                    </div>
+                    <div class="event-media-overlay"></div>
+                    <span class="event-badge"><i class="fas ${categoryIcon}"></i> ${category}</span>
+                </div>
+                <div class="event-info">
+                    <h3>${escapeHtml(event.title)}</h3>
+                    <p>${escapeHtml(description.substring(0, 100))}${description.length > 100 ? '...' : ''}</p>
+                    <div class="event-meta">
+                        <span><i class="fas fa-calendar"></i> ${escapeHtml(formattedDate)}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</span>
+                        ${event.client_name ? `<span><i class="fas fa-building"></i> ${escapeHtml(event.client_name)}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    initRevealAnimations();
+}
+
+// Render Past Events (with images and videos)
+function renderPastEvents() {
+    const grid = document.getElementById('eventsGrid');
+    if (!grid) return;
+    
+    const filtered = currentFilter === 'all' 
+        ? allPastEvents 
+        : allPastEvents.filter(e => getCategoryDisplay(e.tags) === currentFilter);
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-catalogue" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px; display: block;"></i>
+                <h3 style="color: var(--text-primary); margin-bottom: 8px;">No Past Events Found</h3>
+                <p style="color: var(--text-muted);">Check back soon for our event gallery!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(event => {
+        const category = getCategoryDisplay(event.tags);
+        const categoryIcon = {
+            'ceremonies': 'fa-house',
+            'corporate': 'fa-briefcase',
+            'festivals': 'fa-burst',
+            'conference': 'fa-users',
+            'launch': 'fa-rocket'
+        }[category] || 'fa-calendar';
+        
+        const formattedDate = formatEventDate(event.start_date);
+        const guestCount = formatGuestCount(event.guest_count);
+        const location = event.location || 'Location TBD';
+        const description = event.description || 'No description available.';
+        const hasVideo = event.video !== null;
+        const heroImage = event.hero_url || 'https://placehold.co/600x400/1a1a2e/ffffff?text=No+Image';
+        
+        return `
+            <div class="event-card reveal" data-category="${category}" onclick="openEventModal('${event.id}', false)">
+                <div class="event-media">
+                    ${hasVideo ? `
+                        <video muted loop playsinline poster="${heroImage}">
+                            <source src="${event.video}" type="video/mp4">
+                        </video>
+                        <div class="event-play"><i class="fas fa-play"></i></div>
+                    ` : `
+                        <img src="${heroImage}" alt="${escapeHtml(event.title)}">
+                    `}
+                    <div class="event-media-overlay"></div>
+                    <span class="event-badge"><i class="fas ${categoryIcon}"></i> ${category}</span>
+                </div>
+                <div class="event-info">
+                    <h3>${escapeHtml(event.title)}</h3>
+                    <p>${escapeHtml(description.substring(0, 100))}${description.length > 100 ? '...' : ''}</p>
+                    <div class="event-meta">
+                        <span><i class="fas fa-calendar"></i> ${escapeHtml(formattedDate)}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</span>
+                        <span><i class="fas fa-users"></i> ${escapeHtml(guestCount)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    initRevealAnimations();
+    
+    // Video hover play for past events
+    document.querySelectorAll('.event-card video').forEach(video => {
+        const card = video.closest('.event-card');
+        if (card) {
+            card.addEventListener('mouseenter', () => video.play());
+            card.addEventListener('mouseleave', () => { 
+                video.pause(); 
+                video.currentTime = 0; 
+            });
+        }
+    });
+}
+
+// Get category display name
+function getCategoryDisplay(tags) {
+    if (!tags) return 'ceremonies';
+    if (Array.isArray(tags) && tags.length > 0) {
+        const category = tags[0].toLowerCase();
+        const validCategories = ['ceremonies', 'corporate', 'festivals', 'conference', 'launch'];
+        return validCategories.includes(category) ? category : 'ceremonies';
+    }
+    if (typeof tags === 'string') {
+        const category = tags.toLowerCase();
+        const validCategories = ['ceremonies', 'corporate', 'festivals', 'conference', 'launch'];
+        return validCategories.includes(category) ? category : 'ceremonies';
+    }
+    return 'ceremonies';
+}
+
+// Format date nicely
+function formatEventDate(dateStr) {
+    if (!dateStr) return 'Date TBD';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+}
+
+// Format guest count
+function formatGuestCount(count) {
+    if (!count) return '0 Guests';
+    return count.toLocaleString() + ' Guests';
+}
+
+// Open event modal
+async function openEventModal(eventId, isFeatured) {
+    let event = allFeaturedEvents.find(e => e.id === eventId);
+    if (!event) {
+        event = allPastEvents.find(e => e.id === eventId);
+    }
+    if (!event) return;
+    
+    const modal = document.getElementById('eventModal');
+    const body = document.getElementById('modalBody');
+    if (!modal || !body) return;
+    
+    const category = getCategoryDisplay(event.tags);
+    const categoryIcon = {
+        'ceremonies': 'fa-house',
+        'corporate': 'fa-briefcase',
+        'festivals': 'fa-burst',
+        'conference': 'fa-users',
+        'launch': 'fa-rocket'
+    }[category] || 'fa-calendar';
+    
+    const formattedDate = formatEventDate(event.start_date);
+    const guestCount = formatGuestCount(event.guest_count);
+    const location = event.location || 'Location TBD';
+    const description = event.description || 'No description available.';
+    const hasVideo = event.video !== null;
+    const gallery = event.gallery || [];
+    const videos = event.videos || [];
+    const heroImage = event.hero_url || 'https://placehold.co/800x400/1a1a2e/ffffff?text=No+Image';
+    const isFeaturedEvent = event.is_featured === true;
+    
+    let galleryHtml = '';
+    if (gallery.length > 0 && !isFeaturedEvent) {
+        galleryHtml = `
+            <div class="modal-gallery">
+                ${gallery.map(img => `<img src="${img}" alt="${escapeHtml(event.title)}">`).join('')}
+            </div>
+        `;
+    }
+    
+    let videosHtml = '';
+    if (videos.length > 0 && !isFeaturedEvent) {
+        videosHtml = `
+            <div class="modal-videos">
+                <h4 style="margin: 20px 0 10px; color: var(--text-primary);">Event Videos</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                    ${videos.map(v => `
+                        <video controls style="width: 100%; border-radius: 8px;" poster="${heroImage}">
+                            <source src="${v.video_url}" type="video/mp4">
+                        </video>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    const featuredBadge = isFeaturedEvent ? '<span class="featured-event-badge"><i class="fas fa-star"></i> Featured Event</span>' : '';
+    
+    body.innerHTML = `
+        <div class="modal-hero ${isFeaturedEvent ? 'featured-modal-hero' : ''}">
+            ${hasVideo && !isFeaturedEvent ? `
+                <video autoplay muted loop playsinline poster="${heroImage}">
+                    <source src="${event.video}" type="video/mp4">
+                </video>
+            ` : !isFeaturedEvent ? `
+                <img src="${heroImage}" alt="${escapeHtml(event.title)}">
+            ` : `
+                <div class="featured-modal-placeholder">
+                    <i class="fas fa-star"></i>
+                    <h2>${escapeHtml(event.title)}</h2>
+                </div>
+            `}
+            <div class="modal-hero-overlay"></div>
+            <div class="modal-hero-content">
+                ${featuredBadge}
+                <span class="modal-badge"><i class="fas ${categoryIcon}"></i> ${category}</span>
+                <h2>${escapeHtml(event.title)}</h2>
+            </div>
+        </div>
+        <div class="modal-details">
+            <div class="event-meta" style="margin-bottom:20px;">
+                <span><i class="fas fa-calendar"></i> ${escapeHtml(formattedDate)}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(location)}</span>
+                ${!isFeaturedEvent ? `<span><i class="fas fa-users"></i> ${escapeHtml(guestCount)}</span>` : ''}
+                ${event.client_name ? `<span><i class="fas fa-building"></i> ${escapeHtml(event.client_name)}</span>` : ''}
+            </div>
+            <p>${escapeHtml(description)}</p>
+            ${galleryHtml}
+            ${videosHtml}
+            <div class="modal-cta">
+                <a href="contact.html" class="btn-primary">
+                    <span>Plan a Similar Event</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
-  const modal = document.getElementById('eventModal');
-  modal.classList.remove('active');
-  document.body.style.overflow = '';
+    const modal = document.getElementById('eventModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        const videos = modal.querySelectorAll('video');
+        videos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
+}
+
+function showEmptyState(message = 'No events found') {
+    const grid = document.getElementById('eventsGrid');
+    if (grid) {
+        grid.innerHTML = `
+            <div class="empty-catalogue" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px; display: block;"></i>
+                <h3 style="color: var(--text-primary); margin-bottom: 8px;">${escapeHtml(message)}</h3>
+                <p style="color: var(--text-muted);">Check back soon for updates!</p>
+            </div>
+        `;
+    }
+}
+
+function initRevealAnimations() {
+    const reveals = document.querySelectorAll('.event-card.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+}
+
+function initFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.getAttribute('data-filter');
+            renderCurrentTab();
+        });
+    });
+}
+
+function initTabs() {
+    let tabContainer = document.querySelector('.catalogue-tabs');
+    if (!tabContainer) {
+        const filterSection = document.querySelector('.filter-section');
+        if (filterSection) {
+            tabContainer = document.createElement('div');
+            tabContainer.className = 'catalogue-tabs';
+            tabContainer.innerHTML = `
+                <button class="catalogue-tab active" data-tab="featured">
+                    <i class="fas fa-star"></i> Featured Events
+                </button>
+                <button class="catalogue-tab" data-tab="past">
+                    <i class="fas fa-clock-rotate-left"></i> Past Events
+                </button>
+            `;
+            filterSection.parentNode.insertBefore(tabContainer, filterSection);
+        }
+    }
+    
+    const tabs = document.querySelectorAll('.catalogue-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activeTab = tab.getAttribute('data-tab');
+            renderCurrentTab();
+        });
+    });
+}
+
+function initModal() {
+    const closeBtn = document.querySelector('.modal-close');
+    const backdrop = document.querySelector('.modal-backdrop');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    if (backdrop) {
+        backdrop.addEventListener('click', closeModal);
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+}
+
+function initMobileMenu() {
+    const mobileBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (mobileBtn && navLinks) {
+        mobileBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileBtn.classList.toggle('active');
+        });
+    }
+}
+
+function initThemeSwitcher() {
+    const themeToggle = document.querySelector('.theme-toggle');
+    const html = document.documentElement;
+    
+    if (themeToggle) {
+        // Remove any existing listeners to prevent duplicates
+        const newToggle = themeToggle.cloneNode(true);
+        themeToggle.parentNode.replaceChild(newToggle, themeToggle);
+        
+        newToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Re-render current tab to update styles
+            renderCurrentTab();
+        });
+    }
+    
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        html.setAttribute('data-theme', savedTheme);
+    }
+}
+
+function initChatbot() {
+    const chatBtn = document.querySelector('.chatbot-btn');
+    const chatWindow = document.querySelector('.chatbot-window');
+    const chatClose = document.querySelector('.chatbot-close');
+    
+    if (chatBtn && chatWindow) {
+        // Remove existing listeners
+        const newChatBtn = chatBtn.cloneNode(true);
+        chatBtn.parentNode.replaceChild(newChatBtn, chatBtn);
+        
+        newChatBtn.addEventListener('click', () => {
+            chatWindow.classList.toggle('active');
+        });
+    }
+    
+    if (chatClose && chatWindow) {
+        const newChatClose = chatClose.cloneNode(true);
+        chatClose.parentNode.replaceChild(newChatClose, chatClose);
+        
+        newChatClose.addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+        });
+    }
+}
+
+function initParticles() {
+    const container = document.querySelector('.particles-container');
+    if (container && container.children.length === 0) {
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = 3 + Math.random() * 4 + 's';
+            container.appendChild(particle);
+        }
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Save active tab to localStorage
+function saveActiveTab() {
+    localStorage.setItem('catalogue_active_tab', activeTab);
+}
+
+function loadSavedTab() {
+    const savedTab = localStorage.getItem('catalogue_active_tab');
+    if (savedTab && (savedTab === 'featured' || savedTab === 'past')) {
+        activeTab = savedTab;
+    }
+}
+
+// Save filter to localStorage
+function saveFilter() {
+    localStorage.setItem('catalogue_current_filter', currentFilter);
+}
+
+function loadSavedFilter() {
+    const savedFilter = localStorage.getItem('catalogue_current_filter');
+    if (savedFilter) {
+        currentFilter = savedFilter;
+        // Update active filter button
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            if (btn.getAttribute('data-filter') === savedFilter) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  renderEvents();
-  
-  // Filter buttons
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderEvents(btn.getAttribute('data-filter'));
+    loadSavedTab();
+    loadSavedFilter();
+    initParticles();
+    initFilters();
+    initTabs();
+    initModal();
+    initMobileMenu();
+    initThemeSwitcher();
+    initChatbot();
+    initSupabase();
+    
+    // Save tab and filter when changed
+    window.addEventListener('beforeunload', () => {
+        saveActiveTab();
+        saveFilter();
     });
-  });
-  
-  // Modal close
-  document.querySelector('.modal-close').addEventListener('click', closeModal);
-  document.querySelector('.modal-backdrop').addEventListener('click', closeModal);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 });
+
+// Also save when tab/filter changes via event listeners
+const originalRenderCurrentTab = renderCurrentTab;
+renderCurrentTab = function() {
+    saveActiveTab();
+    originalRenderCurrentTab();
+};
+
+const originalApplyFilter = function() {
+    saveFilter();
+};

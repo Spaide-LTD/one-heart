@@ -6,6 +6,7 @@
   <title>Contact Us | One Heart Events</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="contact.css">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -41,72 +42,51 @@
     <div class="contact-container">
       
       <!-- Left: Contact Form -->
-      <div class="contact-form-wrapper reveal">
-        <div class="form-card glass">
-          <h2>Send Us a Message</h2>
-          <p>Fill out the form below and our team will get back to you within 24 hours</p>
-          
-          <form id="contactForm" class="contact-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label><i class="fas fa-user"></i> Full Name</label>
-                <input type="text" name="name" placeholder="Your full name" required>
-              </div>
-              <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email</label>
-                <input type="email" name="email" placeholder="your@email.com" required>
-              </div>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label><i class="fas fa-phone"></i> Phone</label>
-                <input type="tel" name="phone" placeholder="+966 50 123 4567">
-              </div>
-              <div class="form-group">
-                <label><i class="fas fa-calendar"></i> Event Date</label>
-                <input type="date" name="eventDate">
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fas fa-tag"></i> Event Type</label>
-              <select name="eventType">
-                <option value="">Select event type</option>
-                <option value="wedding">Wedding</option>
-                <option value="corporate">Corporate Event</option>
-                <option value="birthday">Birthday Party</option>
-                <option value="conference">Conference</option>
-                <option value="launch">Product Launch</option>
-                <option value="private">Private Celebration</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fas fa-users"></i> Expected Guests</label>
-              <select name="guests">
-                <option value="">Number of guests</option>
-                <option value="1-50">1 - 50</option>
-                <option value="51-100">51 - 100</option>
-                <option value="101-200">101 - 200</option>
-                <option value="201-500">201 - 500</option>
-                <option value="500+">500+</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fas fa-comment"></i> Message</label>
-              <textarea name="message" rows="5" placeholder="Tell us about your vision, budget, and any special requirements..."></textarea>
-            </div>
-            
-            <button type="submit" class="btn-primary form-submit">
-              <span>Send Message</span>
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </form>
-        </div>
-      </div>
+    <form id="contactForm" class="contact-form">
+  <div class="form-row">
+    <div class="form-group">
+      <label><i class="fas fa-building"></i> Organization Name</label>
+      <input type="text" name="org_name" placeholder="Your company or organization name" required>
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-envelope"></i> Email</label>
+      <input type="email" name="email" placeholder="your@email.com" required>
+    </div>
+  </div>
+  
+  <div class="form-row">
+    <div class="form-group">
+      <label><i class="fas fa-phone"></i> Phone</label>
+      <input type="tel" name="phone" placeholder="+966 50 123 4567">
+    </div>
+    <div class="form-group">
+      <label><i class="fas fa-calendar"></i> Event Date</label>
+      <input type="date" name="event_date">
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label><i class="fas fa-chart-line"></i> Events Budget</label>
+    <select name="budget">
+      <option value="">Choose an option</option>
+      <option value="Under $10,000">Under $10,000</option>
+      <option value="$10,000 - $25,000">$10,000 - $25,000</option>
+      <option value="$25,000 - $50,000">$25,000 - $50,000</option>
+      <option value="$50,000 - $100,000">$50,000 - $100,000</option>
+      <option value="$100,000+">$100,000+</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label><i class="fas fa-comment"></i> Message</label>
+    <textarea name="message" rows="5" placeholder="Tell us about your vision, requirements, and any special requests..."></textarea>
+  </div>
+  
+  <button type="submit" class="btn-primary form-submit">
+    <span>Send Message</span>
+    <i class="fas fa-paper-plane"></i>
+  </button>
+</form>
       
       <!-- Right: Contact Info -->
       <div class="contact-info-wrapper reveal">
@@ -177,28 +157,7 @@
             <a href="https://tiktok.com/@oneheartevents" target="_blank" class="social-link" title="TikTok">
               <i class="fab fa-tiktok"></i>
             </a>
-            <a href="https://linkedin.com/company/oneheartevents" target="_blank" class="social-link" title="LinkedIn">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="https://youtube.com/@oneheartevents" target="_blank" class="social-link" title="YouTube">
-              <i class="fab fa-youtube"></i>
-            </a>
           </div>
-        </div>
-        
-        <!-- Quick CTA -->
-        <div class="quick-cta glass">
-          <div class="quick-cta-icon">
-            <i class="fas fa-calendar-check"></i>
-          </div>
-          <div class="quick-cta-content">
-            <h4>Book a Free Consultation</h4>
-            <p>30-minute call to discuss your event</p>
-          </div>
-          <a href="https://wa.me/966501234567?text=Hi%20One%20Heart%2C%20I%20would%20like%20to%20book%20a%20free%20consultation" target="_blank" class="btn-primary">
-            <span>Book Now</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
         </div>
         
       </div>
@@ -262,6 +221,8 @@
     </div>
   </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="connector/supabase.js"></script>
   <script src="main.js"></script>
   <script src="contact.js"></script>
 </body>
