@@ -1,11 +1,11 @@
+// At the top of every dashboard page (index.html, event-manager.html, etc.)
 (async () => {
-  const { data: { session } } = await window.supabaseClient.auth.getSession();
-
-  if (!session) {
-    window.location.replace("/login.html");
-    return;
-  }
-
+    // This will redirect to login if not authenticated
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) return;
+    
+    // Your page code here...
+    console.log("User is authenticated:", getCurrentUser()?.email);
 })();
 document.addEventListener('DOMContentLoaded', async () => {
   const supabase = window.supabaseClient;

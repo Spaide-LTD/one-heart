@@ -97,8 +97,8 @@
         <div id="pastEventsGrid" class="events-grid"></div>
         <div id="emptyState" class="empty-state" style="display: none;">
           <div class="empty-state-icon"><i class="fa-solid fa-calendar-days"></i></div>
-          <h3>No past events found</h3>
-          <p>Events marked as past will appear here.</p>
+          <h3 data-i18n="empty.noPast">No past events found</h3>
+          <p data-i18n="empty.pastInfo">Events marked as past will appear here.</p>
         </div>
       </div>
     </main>
@@ -122,14 +122,14 @@
                 style="width:100%; height:140px; object-fit:cover; background:var(--bg-tertiary);">
               <button class="edit-icon" onclick="editCoverImage()"
                 style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.6); padding:6px 10px; border-radius:var(--radius-md);"><i
-                  class="fa-solid fa-camera"></i> Change Cover</button>
+                  class="fa-solid fa-camera"></i> <span data-i18n="modal.changeCover">Change Cover</span></button>
               <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadNewCover()">
             </div>
 
             <!-- Editable Title -->
             <div class="detail-row">
               <i class="fa-solid fa-heading"></i>
-              <span class="detail-label">Title:</span>
+              <span class="detail-label" data-i18n="label.title">Title:</span>
               <span class="detail-value" id="displayTitle"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('title')"></i>
               <input type="text" id="editTitle" class="detail-input" style="display:none;">
@@ -138,7 +138,7 @@
             <!-- Editable Date -->
             <div class="detail-row">
               <i class="fa-solid fa-calendar"></i>
-              <span class="detail-label">Date:</span>
+              <span class="detail-label" data-i18n="label.date">Date:</span>
               <span class="detail-value" id="displayDate"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('date')"></i>
               <input type="date" id="editDate" class="detail-input" style="display:none;">
@@ -147,7 +147,7 @@
             <!-- Editable Location -->
             <div class="detail-row">
               <i class="fa-solid fa-location-dot"></i>
-              <span class="detail-label">Location:</span>
+              <span class="detail-label" data-i18n="label.location">Location:</span>
               <span class="detail-value" id="displayLocation"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('location')"></i>
               <input type="text" id="editLocation" class="detail-input" style="display:none;">
@@ -156,7 +156,7 @@
             <!-- Editable Guests -->
             <div class="detail-row">
               <i class="fa-solid fa-users"></i>
-              <span class="detail-label">Guests:</span>
+              <span class="detail-label" data-i18n="label.guests">Guests:</span>
               <span class="detail-value" id="displayGuests"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('guests')"></i>
               <input type="number" id="editGuests" class="detail-input" style="display:none;">
@@ -165,7 +165,7 @@
             <!-- Editable Tag -->
             <div class="detail-row">
               <i class="fa-solid fa-tag"></i>
-              <span class="detail-label">Tag:</span>
+              <span class="detail-label" data-i18n="label.tag">Tag:</span>
               <span class="detail-value" id="displayTag"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('tag')"></i>
               <select id="editTag" class="detail-input" style="display:none;">
@@ -180,7 +180,7 @@
             <!-- Editable Client -->
             <div class="detail-row">
               <i class="fa-solid fa-building"></i>
-              <span class="detail-label">Client:</span>
+              <span class="detail-label" data-i18n="label.client">Client:</span>
               <span class="detail-value" id="displayClient"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('client')"></i>
               <input type="text" id="editClient" class="detail-input" style="display:none;">
@@ -189,7 +189,7 @@
             <!-- Editable Description -->
             <div class="detail-row" style="align-items: flex-start;">
               <i class="fa-solid fa-align-left"></i>
-              <span class="detail-label">Description:</span>
+              <span class="detail-label" data-i18n="label.description">Description:</span>
               <span class="detail-value" id="displayDesc"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('desc')"></i>
               <textarea id="editDesc" class="detail-textarea" rows="3" style="display:none;"></textarea>
@@ -197,7 +197,7 @@
             <!-- Editable Visibility (Public/Internal) -->
             <div class="detail-row">
               <i class="fa-solid fa-globe"></i>
-              <span class="detail-label">Visibility:</span>
+              <span class="detail-label" data-i18n="label.visibility">Visibility:</span>
               <span class="detail-value" id="displayVisibility"></span>
               <i class="fa-regular fa-pen-to-square edit-icon" onclick="editField('visibility')"></i>
               <div class="toggle-row" style="display:none; margin:0;" id="editVisibility">
@@ -244,7 +244,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeModal('eventModal')">Close</button>
+        <button class="btn-secondary" onclick="closeModal('eventModal')" data-i18n="btn.close">Close</button>
       </div>
     </div>
   </div>
@@ -254,7 +254,7 @@
   <script src="../js/auth.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../js/settings.js"></script>
+  <script src="../js/i18n.js"></script>
   <script src="../js/past-events.js"></script>
 </body>
-
 </html>

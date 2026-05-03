@@ -1,33 +1,126 @@
+// past-events.js - Complete working version with proper authentication
+
 let allPastEvents = [];
 let currentEventId = null;
 let currentEventData = null;
 let activeUploadType = 'image';
 
-try {
-    supabaseClient = window.supabaseClient || supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch(e) { console.error("Supabase error:", e); }
+// Helper function to show notifications
+function showNotification(msg, type) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `position:fixed;bottom:20px;right:20px;background:${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981'};color:white;padding:12px 20px;border-radius:8px;z-index:9999;font-size:13px;z-index:10001;`;
+    toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-check-circle'}"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
 
-(async () => {
-    if (supabaseClient) {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session && window.location.pathname !== '/login.html') {
-            window.location.href = "../index.html";
+// Initialize Supabase
+async function initSupabase() {
+    return new Promise((resolve) => {
+        // Wait for supabase client to be ready
+        if (window.supabaseClient) {
+            supabaseClient = window.supabaseClient;
+            console.log("Supabase client found");
+            resolve(true);
+        } else if (window.supabase) {
+            supabaseClient = window.supabase;
+            console.log("Supabase global found");
+            resolve(true);
+        } else {
+            // Wait for it
+            const checkInterval = setInterval(() => {
+                if (window.supabaseClient) {
+                    supabaseClient = window.supabaseClient;
+                    console.log("Supabase client loaded");
+                    clearInterval(checkInterval);
+                    resolve(true);
+                }
+            }, 100);
+            
+            // Timeout after 5 seconds
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                console.error("Supabase client timeout");
+                showNotification("Failed to connect to database", "error");
+                resolve(false);
+            }, 5000);
         }
-    }
-    loadPastEvents();
-})();
+    });
+}
 
+// Authentication check
+async function requireAuth() {
+    if (!supabaseClient) {
+        await initSupabase();
+    }
+    
+    if (!supabaseClient) {
+        window.location.href = "../auth/login.html";
+        return false;
+    }
+    
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+            console.log("No active session, redirecting to login");
+            window.location.href = "../auth/login.html";
+            return false;
+        }
+        
+        console.log("User authenticated:", session.user.email);
+        return true;
+        
+    } catch (error) {
+        console.error("Auth error:", error);
+        window.location.href = "../auth/login.html";
+        return false;
+    }
+}
+
+// Main initialization
+async function initialize() {
+    // First, ensure Supabase is initialized
+    await initSupabase();
+    
+    // Then check authentication
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) return;
+    
+    // Finally load data
+    await loadPastEvents();
+    setupEventListeners();
+}
+
+// Load past events
 async function loadPastEvents() {
-    if (!supabaseClient) return;
+    if (!supabaseClient) {
+        console.error("Supabase not initialized");
+        showNotification("Database connection failed", "error");
+        return;
+    }
+    
+    showNotification("Loading events...", "info");
+    
     const { data, error } = await supabaseClient
         .from("events")
         .select("*")
         .eq("is_past", true)
         .order("start_date", { ascending: false });
-    if (error) { console.error(error); return; }
+    
+    if (error) { 
+        console.error("Error loading events:", error);
+        showNotification("Failed to load events: " + error.message, "error");
+        return; 
+    }
+    
     allPastEvents = data || [];
+    console.log(`Loaded ${allPastEvents.length} past events`);
     populateMonthFilter();
     applyFilters();
+    showNotification(`${allPastEvents.length} events loaded`, "success");
 }
 
 function populateMonthFilter() {
@@ -84,22 +177,22 @@ function getTagValue(tags) {
     return 'corporate';
 }
 
-// Helper function to get visibility status (handles null/undefined)
-function getVisibilityStatus(isPublic) {
-    // If is_public is true, return public, otherwise internal
-    return isPublic === true;
-}
-
 function renderPastEvents(events) {
     const container = document.getElementById('pastEventsGrid');
     const emptyState = document.getElementById('emptyState');
+    
+    if (!container) {
+        console.error("pastEventsGrid element not found");
+        return;
+    }
+    
     if (!events.length) {
-        if (container) container.innerHTML = '';
+        container.innerHTML = '';
         if (emptyState) emptyState.style.display = 'flex';
         return;
     }
+    
     if (emptyState) emptyState.style.display = 'none';
-    if (!container) return;
     
     container.innerHTML = events.map(e => {
         const date = e.start_date ? new Date(e.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Date TBD';
@@ -107,7 +200,6 @@ function renderPastEvents(events) {
         const tagClass = `tag-${tagValue}`;
         const tagName = tagValue.toUpperCase();
         const guestCount = e.guest_count ? e.guest_count.toLocaleString() : '0';
-        // FIX: Explicitly check for true value
         const isPublic = e.is_public === true;
         const visibilityIcon = isPublic ? 'fa-globe' : 'fa-lock';
         const visibilityText = isPublic ? 'Public' : 'Internal';
@@ -134,8 +226,12 @@ function renderPastEvents(events) {
     }).join('');
 }
 
-// Toggle visibility from card
 async function toggleVisibilityFromCard(eventId, currentPublic) {
+    if (!supabaseClient) {
+        showNotification("Database connection failed", "error");
+        return;
+    }
+    
     const newVisibility = !currentPublic;
     const { error } = await supabaseClient
         .from('events')
@@ -146,13 +242,12 @@ async function toggleVisibilityFromCard(eventId, currentPublic) {
         showNotification('Failed to update visibility: ' + error.message, 'error');
     } else {
         showNotification(`Event is now ${newVisibility ? 'public' : 'internal'}`, 'success');
-        loadPastEvents(); // Reload to update the card
+        await loadPastEvents(); // Reload to update the card
     }
 }
 
 function updateStats(events) {
     const totalGuestCount = events.reduce((sum, e) => sum + (e.guest_count || 0), 0);
-    // FIX: Count only events where is_public === true
     const publicCount = events.filter(e => e.is_public === true).length;
     const statsDiv = document.getElementById('statsContainer');
     if (statsDiv) {
@@ -206,7 +301,6 @@ function updateDisplayValues() {
     const displayDesc = document.getElementById('displayDesc');
     if (displayDesc) displayDesc.textContent = currentEventData.description || '—';
     
-    // FIX: Update visibility display in modal
     const visibilityDisplay = document.getElementById('displayVisibility');
     if (visibilityDisplay) {
         const isPublic = currentEventData.is_public === true;
@@ -236,7 +330,6 @@ function updateDisplayValues() {
     const editDesc = document.getElementById('editDesc');
     if (editDesc) editDesc.value = currentEventData.description || '';
     
-    // FIX: Set checkbox based on actual boolean value
     const editVisibility = document.getElementById('editVisibility');
     if (editVisibility) {
         editVisibility.checked = currentEventData.is_public === true;
@@ -301,8 +394,12 @@ function editField() {
 }
 
 async function saveAllEdits() {
+    if (!supabaseClient) {
+        showNotification("Database connection failed", "error");
+        return;
+    }
+    
     const tagValue = document.getElementById('editTag')?.value || 'corporate';
-    // FIX: Get the actual checkbox value
     const isPublic = document.getElementById('editVisibility')?.checked === true;
     
     const updates = {
@@ -361,6 +458,11 @@ function editCoverImage() {
 }
 
 async function uploadNewCover() {
+    if (!supabaseClient) {
+        showNotification("Database connection failed", "error");
+        return;
+    }
+    
     const file = document.getElementById('coverInput')?.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
@@ -387,10 +489,12 @@ async function uploadNewCover() {
 }
 
 async function loadGallery(eventId) {
+    if (!supabaseClient) return;
+    
     const galleryGrid = document.getElementById('galleryGrid');
     if (!galleryGrid) return;
     
-    galleryGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">Loading images...</p>';
+    galleryGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading images...</p>';
     const { data: photos, error } = await supabaseClient
         .from('event_photos')
         .select('*')
@@ -398,7 +502,7 @@ async function loadGallery(eventId) {
         .order('uploaded_at', { ascending: false });
     
     if (error || !photos?.length) {
-        galleryGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">No images yet. Click to upload.</p>';
+        galleryGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">📷 No images yet. Click to upload.</p>';
     } else {
         galleryGrid.innerHTML = photos.map(p => `
             <div class="gallery-item">
@@ -416,10 +520,12 @@ async function deletePhoto(photoId) {
 }
 
 async function loadVideos(eventId) {
+    if (!supabaseClient) return;
+    
     const videoGrid = document.getElementById('videoGrid');
     if (!videoGrid) return;
     
-    videoGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">Loading videos...</p>';
+    videoGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading videos...</p>';
     const { data: videos, error } = await supabaseClient
         .from('event_videos')
         .select('*')
@@ -427,7 +533,7 @@ async function loadVideos(eventId) {
         .order('position', { ascending: true });
     
     if (error || !videos?.length) {
-        videoGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">No videos yet. Click to upload.</p>';
+        videoGrid.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">🎥 No videos yet. Click to upload.</p>';
     } else {
         videoGrid.innerHTML = videos.map(v => `
             <div class="gallery-item video-item">
@@ -460,112 +566,110 @@ function playVideo(videoUrl) {
 
 async function deleteVideo(videoId) {
     if (!confirm('Delete this video?')) return;
-    const { error } = await supabaseClient
-        .from('event_videos')
-        .delete()
-        .eq('id', videoId);
+    await supabaseClient.from('event_videos').delete().eq('id', videoId);
+    loadVideos(currentEventId);
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    const tagFilter = document.getElementById('tagFilter');
+    const monthFilter = document.getElementById('monthFilter');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+    const galleryInput = document.getElementById('galleryInput');
+    const videoUploadArea = document.getElementById('videoUploadArea');
+    const videoInput = document.getElementById('videoInput');
     
-    if (error) {
-        showNotification('Failed to delete video: ' + error.message, 'error');
-    } else {
-        showNotification('Video deleted successfully', 'success');
-        loadVideos(currentEventId);
+    if (tagFilter) tagFilter.addEventListener('change', applyFilters);
+    if (monthFilter) monthFilter.addEventListener('change', applyFilters);
+    
+    // Image Upload
+    if (imageUploadArea) {
+        imageUploadArea.addEventListener('click', () => galleryInput?.click());
     }
-}
-
-// Image Upload
-const imageUploadArea = document.getElementById('imageUploadArea');
-const galleryInput = document.getElementById('galleryInput');
-
-if (imageUploadArea) {
-    imageUploadArea.addEventListener('click', () => galleryInput?.click());
-}
-
-if (galleryInput) {
-    galleryInput.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files);
-        if (!files.length || !currentEventId) return;
-        
-        if (imageUploadArea) {
-            imageUploadArea.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><p>Uploading images...</p>';
-        }
-        
-        for (const file of files) {
-            if (!file.type.startsWith('image/')) continue;
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            await new Promise((resolve) => {
-                reader.onload = async () => {
-                    await supabaseClient.from('event_photos').insert({
-                        event_id: currentEventId,
-                        image_url: reader.result,
-                        uploaded_at: new Date().toISOString()
-                    });
-                    resolve();
-                };
-            });
-        }
-        
-        if (imageUploadArea) {
-            imageUploadArea.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><p>Click to upload images</p>';
-        }
-        loadGallery(currentEventId);
-        if (galleryInput) galleryInput.value = '';
-    });
-}
-
-// Video Upload
-const videoUploadArea = document.getElementById('videoUploadArea');
-const videoInput = document.getElementById('videoInput');
-
-if (videoUploadArea) {
-    videoUploadArea.addEventListener('click', () => videoInput?.click());
-}
-
-if (videoInput) {
-    videoInput.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files);
-        if (!files.length || !currentEventId) return;
-        
-        if (videoUploadArea) {
-            videoUploadArea.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><p>Uploading videos...</p>';
-        }
-        
-        for (const file of files) {
-            if (!file.type.startsWith('video/')) continue;
+    
+    if (galleryInput) {
+        galleryInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length || !currentEventId) return;
             
-            const { data: existingVideos } = await supabaseClient
-                .from('event_videos')
-                .select('position')
-                .eq('event_id', currentEventId)
-                .order('position', { ascending: false })
-                .limit(1);
+            if (imageUploadArea) {
+                imageUploadArea.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><p>Uploading images...</p>';
+            }
             
-            const nextPosition = (existingVideos && existingVideos[0]?.position !== undefined) 
-                ? existingVideos[0].position + 1 
-                : 0;
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                await new Promise((resolve) => {
+                    reader.onload = async () => {
+                        await supabaseClient.from('event_photos').insert({
+                            event_id: currentEventId,
+                            image_url: reader.result,
+                            uploaded_at: new Date().toISOString()
+                        });
+                        resolve();
+                    };
+                });
+            }
             
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            await new Promise((resolve) => {
-                reader.onload = async () => {
-                    await supabaseClient.from('event_videos').insert({
-                        event_id: currentEventId,
-                        video_url: reader.result,
-                        position: nextPosition,
-                        uploaded_at: new Date().toISOString()
-                    });
-                    resolve();
-                };
-            });
-        }
-        
-        if (videoUploadArea) {
-            videoUploadArea.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><p>Click to upload videos</p>';
-        }
-        loadVideos(currentEventId);
-        if (videoInput) videoInput.value = '';
-    });
+            if (imageUploadArea) {
+                imageUploadArea.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><p>Click to upload images</p>';
+            }
+            loadGallery(currentEventId);
+            if (galleryInput) galleryInput.value = '';
+        });
+    }
+    
+    // Video Upload
+    if (videoUploadArea) {
+        videoUploadArea.addEventListener('click', () => videoInput?.click());
+    }
+    
+    if (videoInput) {
+        videoInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length || !currentEventId) return;
+            
+            if (videoUploadArea) {
+                videoUploadArea.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><p>Uploading videos...</p>';
+            }
+            
+            for (const file of files) {
+                if (!file.type.startsWith('video/')) continue;
+                
+                const { data: existingVideos } = await supabaseClient
+                    .from('event_videos')
+                    .select('position')
+                    .eq('event_id', currentEventId)
+                    .order('position', { ascending: false })
+                    .limit(1);
+                
+                const nextPosition = (existingVideos && existingVideos[0]?.position !== undefined) 
+                    ? existingVideos[0].position + 1 
+                    : 0;
+                
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                await new Promise((resolve) => {
+                    reader.onload = async () => {
+                        await supabaseClient.from('event_videos').insert({
+                            event_id: currentEventId,
+                            video_url: reader.result,
+                            position: nextPosition,
+                            uploaded_at: new Date().toISOString()
+                        });
+                        resolve();
+                    };
+                });
+            }
+            
+            if (videoUploadArea) {
+                videoUploadArea.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><p>Click to upload videos</p>';
+            }
+            loadVideos(currentEventId);
+            if (videoInput) videoInput.value = '';
+        });
+    }
 }
 
 function openModal(id) {
@@ -586,20 +690,9 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function showNotification(msg, type) {
-    const toast = document.createElement('div');
-    toast.style.cssText = `position:fixed;bottom:20px;right:20px;background:${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981'};color:white;padding:12px 20px;border-radius:8px;z-index:9999;font-size:13px;`;
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
 function handleLogout() {
     window.location.href = "../index.html";
 }
 
-const tagFilter = document.getElementById('tagFilter');
-const monthFilter = document.getElementById('monthFilter');
-
-if (tagFilter) tagFilter.addEventListener('change', applyFilters);
-if (monthFilter) monthFilter.addEventListener('change', applyFilters);
+// Start the application
+initialize();

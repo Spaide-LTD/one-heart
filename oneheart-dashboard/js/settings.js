@@ -174,6 +174,54 @@ const translations = {
     "modal.budget": "Budget:",
     "modal.eventDate": "Event Date:",
     "modal.message": "Message:"
+    ,
+    // Past events / modal labels
+    "past_events": "Past Events",
+    "past_events_title": "PAST EVENTS ARCHIVE",
+    "past_events_subtitle": "VIEW AND EDIT COMPLETED EVENTS",
+    "select.allTags": "All Tags",
+    "select.allMonths": "All Months",
+    "option.corporate": "Corporate",
+    "option.ceremonies": "Ceremonies",
+    "option.festivals": "Festivals",
+    "option.conferences": "Conferences",
+    "option.launches": "Launches",
+    "empty.noPast": "No past events found",
+    "empty.pastInfo": "Events marked as past will appear here.",
+    "modal.changeCover": "Change Cover",
+    "label.title": "Title:",
+    "label.date": "Date:",
+    "label.location": "Location:",
+    "label.guests": "Guests:",
+    "label.tag": "Tag:",
+    "label.client": "Client:",
+    "label.description": "Description:",
+    "label.visibility": "Visibility:",
+    "tab.images": "Images",
+    "tab.videos": "Videos",
+    "upload.images": "Click to upload images",
+    "upload.videos": "Click to upload videos",
+    "btn.close": "Close"
+    ,
+    // Holiday themes / messages (used by holiday-themes.js)
+    "default_theme": "Default Theme",
+    "deactivate": "Deactivate",
+    "messages.failed_to_load": "Failed to load themes",
+    "messages.failed_to_deactivate": "Failed to deactivate theme",
+    "messages.default_restored": "Default theme restored",
+    "messages.failed_to_activate": "Failed to activate theme",
+    "messages.theme_activated": "activated",
+    "messages.failed_to_save": "Failed to save theme",
+    "messages.theme_added": "Theme added",
+    "messages.fill_required": "Please fill all required fields",
+
+    // Example event labels used in the dashboard sample content
+    "event.executiveSummit": "Executive Summit",
+    "event.executiveSummit.date": "May 10, 2026 • 09:00 AM",
+    "event.brandLaunch": "Brand Launch Night",
+    "event.brandLaunch.date": "May 24, 2026 • 07:00 PM",
+    "event.galaDinner": "Annual Gala Dinner",
+    "event.galaDinner.date": "June 01, 2026 • 06:30 PM"
   },
   ar: {
     settings: "الإعدادات",
@@ -338,6 +386,54 @@ const translations = {
     "modal.budget": "الميزانية:",
     "modal.eventDate": "تاريخ الفعالية:",
     "modal.message": "الرسالة:"
+    ,
+    // Past events / modal labels
+    "past_events": "الفعاليات السابقة | ون هارت",
+    "past_events_title": "أرشيف الفعاليات السابقة",
+    "past_events_subtitle": "عرض وتعديل الفعاليات المكتملة",
+    "select.allTags": "كل الوسوم",
+    "select.allMonths": "كل الأشهر",
+    "option.corporate": "شركات",
+    "option.ceremonies": "مراسم",
+    "option.festivals": "مهرجانات",
+    "option.conferences": "مؤتمرات",
+    "option.launches": "إطلاقات",
+    "empty.noPast": "لا توجد فعاليات سابقة",
+    "empty.pastInfo": "ستظهر الفعاليات الموسومة بأنها سابقة هنا.",
+    "modal.changeCover": "تغيير الغلاف",
+    "label.title": "العنوان:",
+    "label.date": "التاريخ:",
+    "label.location": "الموقع:",
+    "label.guests": "الضيوف:",
+    "label.tag": "الوسم:",
+    "label.client": "العميل:",
+    "label.description": "الوصف:",
+    "label.visibility": "الظهور:",
+    "tab.images": "صور",
+    "tab.videos": "فيديوهات",
+    "upload.images": "انقر لرفع الصور",
+    "upload.videos": "انقر لرفع الفيديوهات",
+    "btn.close": "إغلاق"
+    ,
+    // Holiday themes / messages (used by holiday-themes.js)
+    "default_theme": "السمة الافتراضية",
+    "deactivate": "إلغاء التفعيل",
+    "messages.failed_to_load": "فشل في تحميل السمات",
+    "messages.failed_to_deactivate": "فشل في إلغاء تفعيل السمة",
+    "messages.default_restored": "تم استعادة السمة الافتراضية",
+    "messages.failed_to_activate": "فشل في تفعيل السمة",
+    "messages.theme_activated": "تم التفعيل",
+    "messages.failed_to_save": "فشل في حفظ السمة",
+    "messages.theme_added": "تمت إضافة السمة",
+    "messages.fill_required": "يرجى ملء جميع الحقول المطلوبة",
+
+    // Example event labels used in the dashboard sample content
+    "event.executiveSummit": "قمة التنفيذيين",
+    "event.executiveSummit.date": "10 مايو 2026 • 09:00 ص",
+    "event.brandLaunch": "ليلة إطلاق العلامة",
+    "event.brandLaunch.date": "24 مايو 2026 • 07:00 م",
+    "event.galaDinner": "حفل العشاء السنوي",
+    "event.galaDinner.date": "01 يونيو 2026 • 06:30 م"
   }
 };
 
@@ -403,8 +499,8 @@ async function waitForUser() {
 // 🚀 GLOBAL INIT (RUNS ON ALL PAGES)
 document.addEventListener('DOMContentLoaded', async () => {
 
-  // Apply language globally
-  const savedLang = localStorage.getItem('lang') || 'en';
+  // Apply language globally (default to Arabic)
+  const savedLang = localStorage.getItem('lang') || 'ar';
   applyLanguage(savedLang);
 
   // User info (if exists on page)
@@ -443,10 +539,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Global helper to fetch translations from other scripts
 window.t = function(key) {
   try {
-    const lang = localStorage.getItem('lang') || 'en';
+    const lang = localStorage.getItem('lang') || 'ar';
     if (translations && translations[lang] && translations[lang][key]) return translations[lang][key];
   } catch (e) {}
   return key;
 };
 
-window.currentLang = localStorage.getItem('lang') || 'en';
+window.currentLang = localStorage.getItem('lang') || 'ar';

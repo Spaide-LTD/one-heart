@@ -4,39 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OneHeart Login</title>
-  <link rel="stylesheet" href="login.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="shortcut icon" href="../pages/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../pages/favicon.ico" type="image/x-icon">
 </head>
 <body>
- 
+
+<div class="bg-animation"></div>
+
 <div class="login-wrapper">
 
-  <!-- LEFT SIDE -->
-  <div class="login-visual">
-    <div class="overlay"></div>
-    <div class="branding">
-      <h1>OneHeart</h1>
-      <p>Smart Conversations. Real Connections.</p>
-    </div>
-  </div>
-
-  <!-- RIGHT SIDE -->
-  <div class="login-container">
-    <h2>Welcome back</h2>
-    <p class="subtitle">Login to your dashboard</p>
-
-    <input id="email" placeholder="Email" />
-    
-    <div class="password-field">
-      <input id="password" type="password" placeholder="Password" />
-      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    <!-- LEFT SIDE -->
+    <div class="login-visual">
+        <div class="overlay"></div>
+        <div class="branding">
+            <div class="branding-logo">
+                <img src="../images/logo.jpeg" alt="OneHeart Logo">
+            </div>
+            <h1>One Heart Command</h1>
+        </div>
     </div>
 
-    <button id="loginBtn" onclick="login()">Login</button>
+    <!-- RIGHT SIDE -->
+    <div class="login-container">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Login to your dashboard</p>
 
-    <div id="error"></div>
-  </div>
+        <input id="email" type="email" placeholder="Email" autocomplete="email">
+        
+        <div class="password-field">
+            <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+            <span class="toggle-password" onclick="togglePassword()">👁</span>
+        </div>
+
+        <button id="loginBtn" onclick="login()">Login</button>
+
+        <div id="error"></div>
+    </div>
 
 </div>
 
