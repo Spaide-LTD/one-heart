@@ -37,7 +37,7 @@ const serviceData = {
       "Rehearsal coordination",
       "Day-of management"
     ],
-    price: "SAR 25,000",
+    
     related: ["corporate", "private", "birthday"]
   },
   corporate: {
@@ -259,18 +259,13 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('serviceTitle').textContent = service.title;
   document.getElementById('serviceSubtitle').textContent = service.subtitle;
   document.getElementById('serviceDescription').innerHTML = service.description;
-  document.getElementById('servicePrice').textContent = service.price;
   
   const includesList = document.getElementById('serviceIncludes');
   includesList.innerHTML = service.includes.map(item => 
     `<li><i class="fas fa-check-circle"></i> ${item}</li>`
   ).join('');
   
-  const galleryGrid = document.getElementById('serviceGallery');
-  galleryGrid.innerHTML = service.gallery.map(img => 
-    `<div class="gallery-item"><img src="${img}" alt="${service.title}"></div>`
-  ).join('');
-  
+    
   const relatedGrid = document.getElementById('relatedServices');
   relatedGrid.innerHTML = service.related.map(id => {
     const related = serviceData[id];
