@@ -1,5 +1,5 @@
 // theme-loader.js - Apply holiday themes to public website
-// Balanced - noticeable but not overwhelming
+// Just Right - Noticeable but not overwhelming
 
 let currentTheme = null;
 
@@ -26,7 +26,7 @@ async function waitForSupabase() {
     });
 }
 
-// Load active theme from database using existing client
+// Load active theme from database
 async function loadAndApplyTheme() {
     const supabase = await waitForSupabase();
     if (!supabase) {
@@ -57,7 +57,7 @@ async function loadAndApplyTheme() {
     }
 }
 
-// Apply theme to website - BALANCED & PROFESSIONAL
+// Apply theme to website - JUST RIGHT
 function applyThemeToWebsite(theme) {
     const root = document.documentElement;
     
@@ -70,23 +70,40 @@ function applyThemeToWebsite(theme) {
     document.body.setAttribute('data-theme-name', theme.name.toLowerCase().replace(/\s/g, '-'));
     
     // Apply balanced styles
-    addBalancedThemeStyles(theme);
+    addGoldilocksThemeStyles(theme);
     
-    // Add subtle decorations
-    addSubtleDecorations(theme);
+    // Add moderate decorations
+    addModerateDecorations(theme);
     
     console.log(`🎨 Theme "${theme.name}" applied`);
 }
 
-// Add BALANCED theme styles (noticeable but professional)
-function addBalancedThemeStyles(theme) {
+// Add JUST RIGHT theme styles
+function addGoldilocksThemeStyles(theme) {
     const existingStyle = document.getElementById('dynamic-theme-styles');
     if (existingStyle) existingStyle.remove();
     
     const style = document.createElement('style');
     style.id = 'dynamic-theme-styles';
     style.textContent = `
-        /* Theme Colors - Applied to accent elements only */
+        /* Hero Section - Moderate gradient overlay */
+        .hero, .page-header, .page-header-bg {
+            position: relative;
+        }
+        
+        .hero::before, .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, ${theme.primary_color}20, ${theme.accent_color}15);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Gradient Text - Noticeable */
         .gradient-text, 
         h1 span, 
         .section-label,
@@ -96,62 +113,124 @@ function addBalancedThemeStyles(theme) {
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            font-weight: 600;
         }
         
-        /* Buttons - Use theme colors but keep readable */
+        /* Buttons - Bold but clean */
         .btn-primary, 
         button[type="submit"], 
         .form-submit {
             background: linear-gradient(135deg, ${theme.primary_color}, ${theme.accent_color}) !important;
+            transition: all 0.3s ease;
         }
         
-        /* Links hover - subtle color change */
-        a:hover, 
-        .nav-links a:hover {
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px ${theme.primary_color}60;
+        }
+        
+        /* Section headers - themed */
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, ${theme.primary_color}, ${theme.accent_color});
+            border-radius: 3px;
+        }
+        
+        /* Cards - themed hover effects */
+        .event-card, .past-event-card, .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .event-card:hover, .past-event-card:hover, .service-card:hover {
+            border-color: ${theme.primary_color}60 !important;
+            box-shadow: 0 8px 25px ${theme.primary_color}30 !important;
+            transform: translateY(-4px);
+        }
+        
+        /* Navigation - themed active state */
+        .nav-item.active {
+            background: ${theme.primary_color}15 !important;
+            border-color: ${theme.primary_color}40 !important;
+        }
+        
+        .nav-item.active i,
+        .nav-item.active span {
             color: ${theme.primary_color} !important;
         }
         
-        /* Card borders on hover - subtle */
-        .event-card:hover, 
-        .past-event-card:hover,
-        .service-card:hover {
-            border-color: ${theme.primary_color}40 !important;
-            box-shadow: 0 8px 25px ${theme.primary_color}20 !important;
+        /* Links */
+        a {
+            transition: color 0.2s ease;
         }
         
-        /* Active/Featured badges */
-        .active-badge,
-        .featured-badge {
+        a:hover, .nav-links a:hover {
+            color: ${theme.primary_color} !important;
+        }
+        
+        /* Badges and Tags */
+        .event-tag, .theme-category-badge {
+            background: ${theme.primary_color}15 !important;
+            color: ${theme.primary_color} !important;
+            border: none !important;
+        }
+        
+        /* Feature badges */
+        .active-badge, .featured-badge {
             background: ${theme.primary_color} !important;
         }
         
-        /* Subtle page accent */
-        .page-header::after {
-            background: linear-gradient(135deg, ${theme.primary_color}15, ${theme.accent_color}15);
-        }
-        
-        /* Footer accent line */
-        .footer {
-            border-top: 1px solid ${theme.primary_color}20;
-        }
-        
-        /* Navigation active/hover state */
-        .nav-item.active,
-        .nav-item:hover {
-            border-color: ${theme.primary_color}40 !important;
-        }
-        
-        /* Focus rings */
+        /* Form focus rings */
         input:focus, select:focus, textarea:focus {
             border-color: ${theme.primary_color} !important;
-            box-shadow: 0 0 0 2px ${theme.primary_color}20 !important;
+            box-shadow: 0 0 0 3px ${theme.primary_color}20 !important;
+        }
+        
+        /* Pagination */
+        .pagination-btn.active {
+            background: ${theme.primary_color} !important;
+            border-color: ${theme.primary_color} !important;
+        }
+        
+        /* Footer accent */
+        .footer {
+            border-top: 1px solid ${theme.primary_color}30;
+        }
+        
+        /* Small theme indicator in corner */
+        .theme-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${theme.primary_color};
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+            opacity: 0.7;
         }
     `;
     document.head.appendChild(style);
+    
+    // Add small theme indicator
+    addThemeIndicator(theme);
 }
 
-// Add SUBTLE decorations (barely there, adds atmosphere)
-function addSubtleDecorations(theme) {
+// Add MODERATE decorations (noticeable but not distracting)
+function addModerateDecorations(theme) {
     const existingDecorations = document.getElementById('theme-decorations');
     if (existingDecorations) existingDecorations.remove();
     
@@ -165,11 +244,11 @@ function addSubtleDecorations(theme) {
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 999;
+        z-index: 998;
         overflow: hidden;
     `;
     
-    // Very subtle background pattern
+    // Subtle background pattern
     const pattern = document.createElement('div');
     pattern.style.cssText = `
         position: absolute;
@@ -177,75 +256,108 @@ function addSubtleDecorations(theme) {
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: radial-gradient(${theme.primary_color}08 1px, transparent 1px);
-        background-size: 40px 40px;
-        opacity: 0.5;
+        background-image: radial-gradient(${theme.primary_color}10 1px, transparent 1px);
+        background-size: 50px 50px;
     `;
     decorations.appendChild(pattern);
     
-    // Only add floating elements during specific holidays
-    if (themeName.includes('ramadan')) {
-        // Just 3-4 subtle lanterns
-        for (let i = 0; i < 4; i++) {
+    // Moderate floating elements (7-10 items, medium opacity)
+    if (themeName.includes('ramadan') || themeName.includes('eid')) {
+        for (let i = 0; i < 8; i++) {
             const lantern = document.createElement('div');
             lantern.innerHTML = '🏮';
             lantern.style.cssText = `
                 position: absolute;
-                font-size: 35px;
-                opacity: 0.06;
-                bottom: ${10 + Math.random() * 20}%;
+                font-size: 30px;
+                opacity: 0.12;
+                bottom: ${Math.random() * 80}%;
                 left: ${Math.random() * 100}%;
-                animation: floatSlow ${15 + Math.random() * 10}s infinite ease-in-out;
+                animation: floatModerate ${8 + Math.random() * 6}s infinite ease-in-out;
+                filter: drop-shadow(0 0 5px ${theme.primary_color}80);
             `;
             decorations.appendChild(lantern);
         }
     } else if (themeName.includes('christmas')) {
-        // Subtle snow effect - just a few flakes
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 12; i++) {
             const snowflake = document.createElement('div');
             snowflake.innerHTML = '❄️';
             snowflake.style.cssText = `
                 position: absolute;
-                font-size: 18px;
-                opacity: 0.08;
-                top: -20px;
+                font-size: 22px;
+                opacity: 0.12;
+                top: -25px;
                 left: ${Math.random() * 100}%;
-                animation: snowSlow ${8 + Math.random() * 7}s linear infinite;
+                animation: snowModerate ${6 + Math.random() * 5}s linear infinite;
             `;
             decorations.appendChild(snowflake);
         }
     } else if (themeName.includes('diwali')) {
-        // Subtle diyas
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             const diya = document.createElement('div');
             diya.innerHTML = '🪔';
             diya.style.cssText = `
                 position: absolute;
-                font-size: 28px;
-                opacity: 0.08;
-                bottom: ${Math.random() * 30}%;
+                font-size: 30px;
+                opacity: 0.12;
+                bottom: ${Math.random() * 70}%;
                 left: ${Math.random() * 100}%;
-                animation: flickerSlow 3s infinite;
+                animation: flickerModerate 2.5s infinite;
+                filter: drop-shadow(0 0 8px #ff9933);
             `;
             decorations.appendChild(diya);
         }
     } else if (themeName.includes('saudi')) {
-        // Subtle flags
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 6; i++) {
             const flag = document.createElement('div');
             flag.innerHTML = '🇸🇦';
             flag.style.cssText = `
                 position: absolute;
-                font-size: 40px;
-                opacity: 0.05;
+                font-size: 45px;
+                opacity: 0.08;
                 bottom: ${Math.random() * 100}%;
                 right: ${Math.random() * 100}%;
+                animation: swayModerate ${7 + Math.random() * 5}s infinite ease-in-out;
             `;
             decorations.appendChild(flag);
+        }
+    } else if (themeName.includes('new year')) {
+        for (let i = 0; i < 15; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.cssText = `
+                position: absolute;
+                font-size: 20px;
+                opacity: 0.12;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                animation: sparkleModerate 3s infinite alternate;
+            `;
+            decorations.appendChild(sparkle);
         }
     }
     
     document.body.appendChild(decorations);
+}
+
+// Add small theme indicator
+function addThemeIndicator(theme) {
+    const existingIndicator = document.getElementById('theme-indicator');
+    if (existingIndicator) existingIndicator.remove();
+    
+    const indicator = document.createElement('div');
+    indicator.id = 'theme-indicator';
+    indicator.className = 'theme-indicator';
+    indicator.innerHTML = `${theme.icon || '🎨'} ${theme.name}`;
+    document.body.appendChild(indicator);
+    
+    // Fade out after 8 seconds
+    setTimeout(() => {
+        if (indicator) {
+            indicator.style.transition = 'opacity 1s';
+            indicator.style.opacity = '0';
+            setTimeout(() => indicator.remove(), 1000);
+        }
+    }, 8000);
 }
 
 // Apply default theme
@@ -262,26 +374,37 @@ function applyDefaultTheme() {
     
     const existingDecorations = document.getElementById('theme-decorations');
     if (existingDecorations) existingDecorations.remove();
+    
+    const existingIndicator = document.getElementById('theme-indicator');
+    if (existingIndicator) existingIndicator.remove();
 }
 
-// Add animation styles (subtle, slow animations)
+// Add animation styles
 function addAnimationStyles() {
     if (document.getElementById('theme-animation-styles')) return;
     
     const style = document.createElement('style');
     style.id = 'theme-animation-styles';
     style.textContent = `
-        @keyframes floatSlow {
+        @keyframes floatModerate {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-15px); }
         }
-        @keyframes snowSlow {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 0.08; }
+        @keyframes snowModerate {
+            0% { transform: translateY(-25px) rotate(0deg); opacity: 0.12; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
-        @keyframes flickerSlow {
-            0%, 100% { opacity: 0.05; transform: scale(1); }
-            50% { opacity: 0.1; transform: scale(1.03); }
+        @keyframes flickerModerate {
+            0%, 100% { opacity: 0.08; transform: scale(1); }
+            50% { opacity: 0.18; transform: scale(1.05); }
+        }
+        @keyframes swayModerate {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        @keyframes sparkleModerate {
+            0% { opacity: 0.05; transform: scale(0.8); }
+            100% { opacity: 0.15; transform: scale(1.1); }
         }
     `;
     document.head.appendChild(style);
