@@ -78,38 +78,29 @@ function renderThemes() {
     const grid = document.getElementById('themesGrid');
     if (!grid) return;
     
-    // Check if there's an active theme
     const hasActiveTheme = themes.some(t => t.is_active === true);
     
-    // Add Default Theme card at the beginning
     const defaultThemeCard = `
         <div class="theme-card ${!hasActiveTheme ? 'active-theme' : ''}" data-theme-id="default">
             <div class="theme-header">
                 <div class="theme-icon">🎨</div>
                 <div class="theme-info">
-                    <h3 class="theme-title">${t('default_theme')}</h3>
-                    <span class="theme-category-badge"><i class="fas fa-globe"></i> Default</span>
+                    <h3 class="theme-title">Default Theme</h3>
+                    <span class="theme-category-badge">Standard</span>
                 </div>
-                ${!hasActiveTheme ? '<span class="active-badge"><i class="fa-solid fa-check-circle"></i> Active</span>' : ''}
+                ${!hasActiveTheme ? '<span class="active-badge">Active</span>' : ''}
             </div>
-            <p class="theme-description">Reset to default OneHeart theme colors and remove all holiday decorations.</p>
+            <p class="theme-description">Reset to default OneHeart theme colors.</p>
             <div class="theme-preview-area">
-                <div class="theme-preview" style="background: linear-gradient(135deg, #8b5cf633, #06b6d433)">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #8b5cf6, #06b6d4)">
                     <div class="preview-content">
-                        <div class="preview-circle" style="background: #8b5cf6"></div>
-                        <div class="preview-circle-small" style="background: #06b6d4"></div>
+                        <div class="preview-circle" style="background: #8b5cf6; box-shadow: 0 0 15px #8b5cf6;"></div>
+                        <div class="preview-circle-small" style="background: #06b6d4; box-shadow: 0 0 10px #06b6d4;"></div>
                     </div>
-                </div>
-                <div class="theme-colors">
-                    <div class="color-swatch" style="background: #8b5cf6" title="Primary: #8b5cf6"></div>
-                    <div class="color-swatch" style="background: #06b6d4" title="Accent: #06b6d4"></div>
                 </div>
             </div>
             <button class="theme-activate-btn ${!hasActiveTheme ? 'active' : ''}" onclick="deactivateAllThemes()">
-                ${!hasActiveTheme ? 
-                    '<i class="fa-solid fa-check"></i> <span>' + t('actions.currentlyActive') + '</span>' : 
-                    '<i class="fa-solid fa-undo"></i> <span>Restore Default</span>'
-                }
+                ${!hasActiveTheme ? 'Currently Active' : 'Restore Default'}
             </button>
         </div>
     `;
