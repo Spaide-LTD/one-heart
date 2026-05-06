@@ -268,9 +268,9 @@ body {
 }
 
 .nav-logo img {
-  height: 100px;
+  height: 80px;
   width: auto;
-  min-width: 60px;
+  min-width: 80px;
   filter: drop-shadow(0 2px 8px rgba(107, 44, 145, 0.3));
 }
 
@@ -510,12 +510,18 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+}
+
+.footer-logo span {
+  text-decoration: none;
+  border-bottom: none;
 }
 
 .footer-logo img {
-  height: 100px;
+  height: 70px;
   width: auto;
-  min-width: 100px;
+  min-width: 70px;
 }
 
 .footer-logo span {
