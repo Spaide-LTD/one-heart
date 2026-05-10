@@ -26,34 +26,77 @@ async function waitForSupabase() {
     });
 }
 
-// Load active theme from database
 async function loadAndApplyTheme() {
     const supabase = await waitForSupabase();
     if (!supabase) {
         console.error("No Supabase client available");
+        applyDefaultTheme();
         return;
     }
     
     try {
-        const { data, error } = await supabase
+        // First, check if we can even query the table
+        const { error: pingError } = await supabase
             .from('themes')
-            .select('*')
-            .eq('is_active', true)
-            .single();
+            .select('id')
+            .limit(1);
         
-        if (error && error.code !== 'PGRST116') {
-            console.error("Error loading theme:", error);
+        if (pingError) {
+            console.warn("Themes table not accessible:", pingError.message);
+            applyDefaultTheme();
+            return;
+        }
+        
+        // Try to get active theme with only safe columns
+        let query = supabase
+            .from('themes')
+            .select('id, name, primary_color, accent_color, icon, is_active');
+        
+        // Only add filter if is_active column exists and has boolean values
+        const { data: sample } = await supabase
+            .from('themes')
+            .select('is_active')
+            .limit(1);
+        
+        if (sample && sample[0] && typeof sample[0].is_active === 'boolean') {
+            query = query.eq('is_active', true);
+        }
+        
+        const { data, error } = await query.maybeSingle();
+        
+        if (error) {
+            console.warn("Theme query failed:", error.message);
+            applyDefaultTheme();
             return;
         }
         
         if (data) {
-            currentTheme = data;
-            applyThemeToWebsite(data);
+            // Ensure we have all required properties
+            const themeData = {
+                name: data.name || 'Default',
+                primary_color: data.primary_color || '#8b5cf6',
+                accent_color: data.accent_color || '#06b6d4',
+                icon: data.icon || '🎨',
+                is_active: data.is_active || true
+            };
+            currentTheme = themeData;
+            applyThemeToWebsite(themeData);
         } else {
-            applyDefaultTheme();
+            // No active theme found, use first theme or default
+            const { data: allThemes } = await supabase
+                .from('themes')
+                .select('id, name, primary_color, accent_color, icon')
+                .limit(1);
+            
+            if (allThemes && allThemes[0]) {
+                applyThemeToWebsite(allThemes[0]);
+            } else {
+                applyDefaultTheme();
+            }
         }
     } catch (error) {
-        console.error("Error loading theme:", error);
+        console.log("Theme error, using default:", error.message);
+        applyDefaultTheme();
     }
 }
 
