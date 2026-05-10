@@ -17,6 +17,7 @@ async function waitForSupabase() {
                 resolve(window.supabaseClient);
             }
         }, 500);
+
         
         setTimeout(() => {
             clearInterval(interval);
