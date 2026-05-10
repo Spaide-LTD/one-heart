@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
+<html lang="en" data-theme="dark" data-headlessui-focus-visible="" style="--theme-primary: #8b5cf6; --theme-accent: #06b6d4;"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One Heart Events | Premium Event Management</title>
@@ -8,10 +6,121 @@
   <link rel="stylesheet" href="home.css">
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
+  <base target="_blank">
+  <style>
+    /* Preload & Layout Fix: Ensure hero fills viewport from top on load */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    .hero-slideshow-container {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden;
+    }
+    .hero-slide {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      will-change: opacity;
+    }
+    .hero-slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+    .hero-slide img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(15,15,26,0.3) 0%, rgba(15,15,26,0.6) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .slide-indicators {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 3;
+    }
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      outline: none;
+    }
+    .indicator.active {
+      background: white;
+      transform: scale(1.3);
+    }
+    /* Loading state: hide content until images are ready */
+    .hero-loading {
+      opacity: 0;
+    }
+    .hero-loaded {
+      opacity: 1;
+    }
+  </style>
+<style id="theme-animation-styles">
+        @keyframes floatModerate {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes snowModerate {
+            0% { transform: translateY(-25px) rotate(0deg); opacity: 0.12; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes flickerModerate {
+            0%, 100% { opacity: 0.08; transform: scale(1); }
+            50% { opacity: 0.18; transform: scale(1.05); }
+        }
+        @keyframes swayModerate {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        @keyframes sparkleModerate {
+            0% { opacity: 0.05; transform: scale(0.8); }
+            100% { opacity: 0.15; transform: scale(1.1); }
+        }
+    </style></head>
+<body data-new-gr-c-s-check-loaded="14.1137.0" data-gr-ext-installed="" data-gr-aaa-loaded="14.1137.0" data-gr-aaa-notch-connection-id="1778406402492-0.7532414168738384">
   <!-- Particles Background -->
-  <div class="particles-container"></div>
+  <div class="particles-container"><div class="particle" style="width: 33.389px; height: 33.389px; left: 51.9098%; top: 87.6075%; animation-delay: 6.28439s; animation-duration: 25.6098s;"></div><div class="particle" style="width: 21.1128px; height: 21.1128px; left: 26.9714%; top: 83.0176%; animation-delay: 9.27351s; animation-duration: 21.0028s;"></div><div class="particle" style="width: 43.1785px; height: 43.1785px; left: 4.54078%; top: 2.82554%; animation-delay: 17.8569s; animation-duration: 27.6149s;"></div><div class="particle" style="width: 86.3791px; height: 86.3791px; left: 82.0671%; top: 61.153%; animation-delay: 8.40647s; animation-duration: 28.1392s;"></div><div class="particle" style="width: 80.6321px; height: 80.6321px; left: 96.8242%; top: 1.37694%; animation-delay: 6.118s; animation-duration: 26.9728s;"></div><div class="particle" style="width: 89.9588px; height: 89.9588px; left: 78.1267%; top: 25.1682%; animation-delay: 6.77319s; animation-duration: 33.7652s;"></div><div class="particle" style="width: 52.8248px; height: 52.8248px; left: 85.1375%; top: 78.2134%; animation-delay: 0.887631s; animation-duration: 31.3355s;"></div><div class="particle" style="width: 23.5492px; height: 23.5492px; left: 14.1613%; top: 95.3557%; animation-delay: 9.53506s; animation-duration: 22.2704s;"></div><div class="particle" style="width: 71.4464px; height: 71.4464px; left: 65.749%; top: 51.0777%; animation-delay: 18.0359s; animation-duration: 16.2191s;"></div><div class="particle" style="width: 62.5146px; height: 62.5146px; left: 47.8164%; top: 14.7169%; animation-delay: 11.8982s; animation-duration: 23.9992s;"></div><div class="particle" style="width: 30.3423px; height: 30.3423px; left: 2.22018%; top: 94.0167%; animation-delay: 16.0227s; animation-duration: 23.2239s;"></div><div class="particle" style="width: 77.0933px; height: 77.0933px; left: 63.703%; top: 81.106%; animation-delay: 4.91379s; animation-duration: 28.1871s;"></div><div class="particle" style="width: 53.921px; height: 53.921px; left: 83.9316%; top: 46.0403%; animation-delay: 13.1242s; animation-duration: 18.1987s;"></div><div class="particle" style="width: 30.6116px; height: 30.6116px; left: 65.3303%; top: 43.7273%; animation-delay: 3.23819s; animation-duration: 28.1051s;"></div><div class="particle" style="width: 27.2877px; height: 27.2877px; left: 84.46%; top: 45.57%; animation-delay: 4.60555s; animation-duration: 16.6765s;"></div><div class="particle" style="width: 78.2677px; height: 78.2677px; left: 48.5725%; top: 96.3611%; animation-delay: 3.52309s; animation-duration: 27.4061s;"></div><div class="particle" style="width: 51.5062px; height: 51.5062px; left: 84.9076%; top: 96.9038%; animation-delay: 14.6938s; animation-duration: 32.9162s;"></div><div class="particle" style="width: 84.0626px; height: 84.0626px; left: 11.4795%; top: 41.8207%; animation-delay: 11.8999s; animation-duration: 28.2843s;"></div><div class="particle" style="width: 97.7709px; height: 97.7709px; left: 35.9449%; top: 44.6991%; animation-delay: 9.71069s; animation-duration: 22.7799s;"></div><div class="particle" style="width: 86.2068px; height: 86.2068px; left: 49.4795%; top: 36.2703%; animation-delay: 15.6012s; animation-duration: 16.3018s;"></div></div>
 
   <!-- Navigation -->
   <nav class="navbar">
@@ -34,20 +143,95 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-video-container">
-       <video autoplay muted loop playsinline class="hero-video" style="position: absolute; top: 0; left: -5%; width: 150%; height: 90%; object-fit: cover; object-position: center;">
-        <source src="video/intro.mp4" type="video/mp4">
-      </video>
+    <div class="hero-slideshow-container">
+      <!-- Slideshow Images -->
+      <div class="hero-slide" style="opacity: 0; z-index: 0;">
+        <img src="images/slide1.png" alt="Slide 1">
+      </div>
+      <div class="hero-slide" style="opacity: 0; z-index: 0;">
+        <img src="images/slide2.png" alt="Slide 2">
+      </div>
+      <div class="hero-slide active" style="opacity: 1; z-index: 1;">
+        <img src="images/slide3.png" alt="Slide 3">
+      </div>
+      <div class="hero-slide" style="opacity: 0; z-index: 0;">
+        <img src="images/slide4.png" alt="Slide 4">
+      </div>
+      <div class="hero-slide" style="opacity: 0; z-index: 0;">
+        <img src="images/slide5.png" alt="Slide 5">
+      </div>
+
+      <!-- Overlay -->
       <div class="hero-overlay"></div>
+
+      <!-- Slide Indicators -->
+      <div class="slide-indicators">
+        <span class="indicator" data-slide="0" style="background: rgba(255, 255, 255, 0.4); transform: scale(1);"></span>
+        <span class="indicator" data-slide="1" style="background: rgba(255, 255, 255, 0.4); transform: scale(1);"></span>
+        <span class="indicator active" data-slide="2" style="background: white; transform: scale(1.3);"></span>
+        <span class="indicator" data-slide="3" style="background: rgba(255, 255, 255, 0.4); transform: scale(1);"></span>
+        <span class="indicator" data-slide="4" style="background: rgba(255, 255, 255, 0.4); transform: scale(1);"></span>
+      </div>
     </div>
   </section>
+
+  <!-- Slideshow JavaScript -->
+  <script>
+    (function() {
+      const slides = document.querySelectorAll('.hero-slide');
+      const indicators = document.querySelectorAll('.indicator');
+      let currentSlide = 0;
+      const intervalTime = 2000; // 2 seconds
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          if (i === index) {
+            slide.classList.add('active');
+            slide.style.opacity = '1';
+            slide.style.zIndex = '1';
+          } else {
+            slide.classList.remove('active');
+            slide.style.opacity = '0';
+            slide.style.zIndex = '0';
+          }
+        });
+        indicators.forEach((ind, i) => {
+          if (i === index) {
+            ind.classList.add('active');
+            ind.style.background = 'white';
+            ind.style.transform = 'scale(1.3)';
+          } else {
+            ind.classList.remove('active');
+            ind.style.background = 'rgba(255,255,255,0.4)';
+            ind.style.transform = 'scale(1)';
+          }
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      // Auto-change every 2 seconds
+      setInterval(nextSlide, intervalTime);
+
+      // Click on indicators to jump to slide
+      indicators.forEach((ind, index) => {
+        ind.addEventListener('click', () => {
+          currentSlide = index;
+          showSlide(currentSlide);
+        });
+      });
+    })();
+  </script>
 
   <!-- About Preview Section -->
   <section class="about-preview">
     <div class="about-container">
-      <div class="about-image reveal">
+      <div class="about-image reveal active">
         <div class="about-img-wrapper">
-          <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&h=700&fit=crop" alt="Event Planning">
+          <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=600&amp;h=700&amp;fit=crop" alt="Event Planning">
           <div class="about-img-glow"></div>
         </div>
         <div class="about-floating-card glass">
@@ -58,7 +242,7 @@
           </div>
         </div>
       </div>
-      <div class="about-text reveal">
+      <div class="about-text reveal active">
         <span class="section-label">About Us</span>
         <h2>Crafting Memories,<br>One Event at a Time</h2>
         <p>At One Heart, we believe every celebration tells a unique story. Our passionate team of event architects combines creativity with precision to deliver experiences that exceed expectations.</p>
@@ -125,7 +309,7 @@
 
   <!-- CTA Section -->
   <section class="cta-section">
-    <div class="cta-glass glass-strong reveal">
+    <div class="cta-glass glass-strong reveal active" style="">
       <div class="cta-content">
         <h2>Ready to Create Something Amazing?</h2>
         <p>Let's turn your dream event into reality. Our team is ready to bring your vision to life.</p>
@@ -179,17 +363,77 @@
         <h4><i class="fas fa-heart"></i> One Heart Assistant</h4>
         <button class="chatbot-close"><i class="fas fa-times"></i></button>
       </div>
-      <div class="chatbot-messages"></div>
+      <div class="chatbot-messages"><div class="message bot">👋 Hi there! I'm your One Heart assistant. How can I help you today?</div></div>
       <div class="chatbot-input">
         <input type="text" placeholder="Type your message...">
         <button><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
   </div>
-   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="connector/supabase.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="connector/supabase.js"></script>
   <script src="main.js"></script>
   <script src="home.js"></script>
   <script src="theme-loader.js"></script>
-</body>
-</html>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration><grammarly-assistant-notch-view role="presentation" data-grammarly-ignore-keyboard-events="true" data-grammarly-shadow-root="true" class="dnXmp" style="--rem: 16;"><template shadowrootmode="open"><style>.ymqHP{visibility:hidden;position:fixed;}.ymqHP:after{content:'';position:absolute;visibility:visible;height:3px;bottom:0;border-radius:10px;background:#488cc8;animation:JQguZ 1.3s ease forwards}.ymqHP.ExcM8:after{animation:JQguZ .2s ease forwards}@keyframes JQguZ{0%{width:0%}100%{width:100%}}
+</style><link rel="stylesheet" type="text/css" href="chrome-extension://cnlefmmeadmemmdciolhbnfeacpdfbkd/src/css/designSystem.styles.css"><link rel="stylesheet" type="text/css" href="chrome-extension://cnlefmmeadmemmdciolhbnfeacpdfbkd/src/css/assistantUiKit.styles.css"><link rel="stylesheet" type="text/css" href="chrome-extension://cnlefmmeadmemmdciolhbnfeacpdfbkd/src/css/AAA-initAssistant.styles.css"><div aria-label="grammarly-global-assistant-notch" role="group" tabindex="-1"></div><div data-origin-theme="grammarly" data-origin-mode="dark"><div data-gds-theme="dark"><div class="_notchContainer_jPcgv_notchContainer _rightEdge_G9MBv_rightEdge" data-testid="assistant-notch-container" style="top: 327.184px;"><div data-testid="assistant-notch" class="_notch_jKYXX_notch _hidden_RGuj7_hidden  _rightEdge_G9MBv_rightEdge" style="--hidden-percent: 100%; top: 327.184px;"><button class="_notchButton_HXx5H_notchButton" data-testid="assistant-notch-button" aria-label="Start a chat with Grammarly AI"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="_heroIcon_-kKnp_heroIcon" data-testid="hero-icon"><path d="M18.4895 22.669L12.8177 19.563C12.5094 19.3927 12.1337 19.3927 11.8254 19.563L6.15358 22.669C5.24057 23.168 4.24536 22.1552 4.77085 21.2628L11.435 9.97192C11.8313 9.29964 12.8089 9.29964 13.2052 9.97192L19.8693 21.2628C20.3948 22.1552 19.4025 23.168 18.4866 22.669H18.4895ZM12.3216 7.71728C14.127 7.71728 15.589 6.25822 15.589 4.45862C15.589 2.65901 14.127 1.19995 12.3216 1.19995C10.5161 1.19995 9.05409 2.65901 9.05409 4.45862C9.05409 6.25822 10.5161 7.71728 12.3216 7.71728Z" class="_heroIconPath_g2gJS_heroIconPath"></path></svg><input aria-hidden="true" tabindex="-1" style="position: absolute; inset: 0px; opacity: 0; cursor: inherit;"></button></div></div></div></div></template></grammarly-assistant-notch-view></html>
