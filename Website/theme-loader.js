@@ -26,6 +26,8 @@ async function waitForSupabase() {
     });
 }
 
+// Replace your loadAndApplyTheme function with this:
+
 async function loadAndApplyTheme() {
     const supabase = await waitForSupabase();
     if (!supabase) {
@@ -35,64 +37,45 @@ async function loadAndApplyTheme() {
     }
     
     try {
-        // First, check if themes table exists and is accessible
-        const { error: pingError } = await supabase
+        // Only get themes where is_active = true
+        const { data: activeTheme, error } = await supabase
             .from('themes')
-            .select('id')
-            .limit(1);
+            .select('*')
+            .eq('is_active', true)
+            .single();
         
-        if (pingError) {
-            console.warn("Themes table not accessible:", pingError.message);
-            applyDefaultTheme();
+        if (error) {
+            if (error.code === 'PGRST116') {
+                console.log("No active theme found in database, using default theme");
+                applyDefaultTheme();
+            } else {
+                console.warn("Error fetching active theme:", error.message);
+                applyDefaultTheme();
+            }
             return;
-        }
-        
-        // Get ALL themes to see what's available
-        const { data: allThemes, error: allError } = await supabase
-            .from('themes')
-            .select('id, name, primary_color, accent_color, icon, is_active');
-        
-        if (allError) {
-            console.warn("Could not fetch themes:", allError.message);
-            applyDefaultTheme();
-            return;
-        }
-        
-        console.log("All themes in database:", allThemes);
-        
-        if (!allThemes || allThemes.length === 0) {
-            console.log("No themes found, using default");
-            applyDefaultTheme();
-            return;
-        }
-        
-        // Find the theme with is_active = true
-        let activeTheme = allThemes.find(theme => theme.is_active === true);
-        
-        // If no active theme found, use the first one
-        if (!activeTheme && allThemes.length > 0) {
-            console.log("No active theme found, using first theme:", allThemes[0].name);
-            activeTheme = allThemes[0];
         }
         
         if (activeTheme) {
-            console.log("Applying theme:", activeTheme.name, "Active:", activeTheme.is_active);
+            console.log("✓ Active theme found:", activeTheme.name);
+            console.log("  - Primary color:", activeTheme.primary_color);
+            console.log("  - Accent color:", activeTheme.accent_color);
+            
             const themeData = {
-                name: activeTheme.name || 'Default',
+                name: activeTheme.name,
                 primary_color: activeTheme.primary_color || '#8b5cf6',
                 accent_color: activeTheme.accent_color || '#06b6d4',
                 icon: activeTheme.icon || '🎨',
-                is_active: activeTheme.is_active
+                is_active: true
             };
             currentTheme = themeData;
             applyThemeToWebsite(themeData);
         } else {
-            console.log("No themes available, using default");
+            console.log("No active theme, using default");
             applyDefaultTheme();
         }
         
     } catch (error) {
-        console.log("Theme error, using default:", error.message);
+        console.error("Theme error:", error);
         applyDefaultTheme();
     }
 }
