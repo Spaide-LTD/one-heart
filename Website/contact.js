@@ -1,137 +1,64 @@
-// contact.js - Only handles Supabase, form submits normally to PHP
+document.addEventListener("DOMContentLoaded", () => {
 
-// Supabase client
-let supabaseClient = null;
+    const form = document.getElementById("contactForm");
+    const submitBtn = form.querySelector("button");
 
-// Initialize Supabase
-async function initSupabase() {
-    try {
-        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log("Supabase initialized");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+            org_name: form.org_name.value.trim(),
+            email: form.email.value.trim(),
+            phone: form.phone.value.trim(),
+            event_date: form.event_date.value,
+            budget: form.budget.value,
+            message: form.message.value.trim()
+        };
+
+        // BASIC VALIDATION
+        if (!data.org_name || !data.email) {
+            alert("Please fill required fields");
+            return;
         }
-    } catch (error) {
-        console.error("Supabase init failed:", error);
-    }
-}
 
-document.addEventListener('DOMContentLoaded', async function() {
-    await initSupabase();
-    
-    const form = document.getElementById('contactForm');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
-});
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Sending...";
 
-async function handleFormSubmit(event) {
-    event.preventDefault();
+        try {
 
-    const form = event.target;
+            // 1. LOG TO SUPABASE (NON-CRITICAL)
+            if (window.supabaseClient) {
+                await supabaseClient.from("contact_messages").insert({
+                    ...data,
+                    status: "unread"
+                });
+            }
 
-    const formData = new FormData(form);
+            // 2. SEND TO PHP (CRITICAL)
+            const res = await fetch("mailman/send.php", {
+                method: "POST",
+                headers: {
+                    "Accept": "text/plain"
+                },
+                body: new URLSearchParams(data)
+            });
 
-    // 1. Save to Supabase
-    if (supabaseClient) {
-        await supabaseClient.from('contact_messages').insert({
-            org_name: formData.get('org_name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            budget: formData.get('budget'),
-            event_date: formData.get('event_date'),
-            message: formData.get('message'),
-            status: 'unread'
-        });
-    }
+            const result = await res.text();
 
-    // 2. Send to PHP (AJAX)
-    const res = await fetch('mailman/send.php', {
-        method: 'POST',
-        body: formData
+            if (result !== "OK") {
+                throw new Error(result);
+            }
+
+            alert("Message sent successfully!");
+            form.reset();
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to send message");
+
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Send Message";
+        }
     });
-
-    const text = await res.text();
-    console.log(text);
-
-    showNotification("Message sent successfully", "success");
-
-    form.reset();
-}
-
-function showNotification(message, type = 'info') {
-    // Remove existing notification
-    const existing = document.querySelector('.form-notification');
-    if (existing) existing.remove();
-    
-    const notification = document.createElement('div');
-    notification.className = 'form-notification';
-    
-    const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        warning: '#f59e0b',
-        info: '#3b82f6'
-    };
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 10000;
-        padding: 12px 20px;
-        background: ${colors[type] || '#3b82f6'};
-        color: white;
-        border-radius: 8px;
-        font-size: 14px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        animation: slideIn 0.3s ease;
-        cursor: pointer;
-    `;
-    
-    notification.innerHTML = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
-}
-
-// Add styles
-if (!document.querySelector('#contact-styles')) {
-    const style = document.createElement('style');
-    style.id = 'contact-styles';
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
-        
-        .fa-spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    `;
-    document.head.appendChild(style);
-}
+});
