@@ -1,14 +1,20 @@
-// contact.js - Contact form with Supabase
+// contact.js - Contact form with Supabase AND Mailman
 
 // Initialize Supabase
+let supabaseClient = null;
+
 async function initSupabase() {
     try {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase client created successfully");
+        // Make sure SUPABASE_URL and SUPABASE_KEY are defined in your supabase.js
+        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log("Supabase client created successfully");
+        } else {
+            console.warn("Supabase credentials not found");
+        }
         return true;
     } catch (error) {
         console.error("Failed to initialize Supabase:", error);
-        showNotification("Connection failed: " + error.message, "error");
         return false;
     }
 }
@@ -16,12 +22,11 @@ async function initSupabase() {
 // Save contact inquiry to database
 async function saveContactInquiry(formData) {
     if (!supabaseClient) {
-        console.error("No Supabase client");
-        return false;
+        console.log("No Supabase client, skipping database save");
+        return true; // Return true to continue with email sending
     }
     
-    // Log what we're about to send
-    console.log("Sending data:", formData);
+    console.log("Saving to Supabase:", formData);
     
     try {
         const { data, error } = await supabaseClient
@@ -39,20 +44,63 @@ async function saveContactInquiry(formData) {
             .select();
         
         if (error) {
-            console.error("Supabase error details:", error);
-            console.error("Error code:", error.code);
-            console.error("Error message:", error.message);
-            console.error("Error details:", error.details);
-            showNotification(`Error: ${error.message}`, "error");
+            console.error("Supabase error:", error);
             return false;
         }
         
-        console.log("Success! Data saved:", data);
+        console.log("Saved to Supabase successfully:", data);
         return true;
         
     } catch (error) {
-        console.error("Exception caught:", error);
-        showNotification("Something went wrong. Please try again.", "error");
+        console.error("Exception saving to Supabase:", error);
+        return false;
+    }
+}
+
+// Send email through mailman
+async function sendEmailThroughMailman(formData) {
+    // Prepare the full message with all details
+    const fullMessage = `
+🏢 Organization: ${formData.org_name}
+📧 Email: ${formData.email}
+📞 Phone: ${formData.phone || 'Not provided'}
+📅 Event Date: ${formData.event_date || 'Not specified'}
+💰 Budget: ${formData.budget || 'Not specified'}
+
+💭 Message:
+${formData.message || 'No message provided'}
+    `.trim();
+    
+    const emailData = {
+        name: formData.org_name,
+        email: formData.email,
+        phone: formData.phone || 'Not provided',
+        message: fullMessage,
+        subject: `New Contact Form Submission from ${formData.org_name}`
+    };
+    
+    console.log("Sending to mailman:", emailData);
+    
+    try {
+        const response = await fetch('/mailman/send.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData)
+        });
+        
+        const result = await response.json();
+        console.log("Mailman response:", result);
+        
+        if (result.success) {
+            return true;
+        } else {
+            console.error("Mailman error:", result.error);
+            return false;
+        }
+    } catch (error) {
+        console.error("Failed to send email:", error);
         return false;
     }
 }
@@ -65,7 +113,7 @@ async function handleFormSubmit(e) {
     const submitBtn = form.querySelector('.form-submit');
     const originalText = submitBtn.innerHTML;
     
-    // Get form data - match your HTML field names
+    // Get form data
     const formData = {
         org_name: document.querySelector('[name="org_name"]')?.value?.trim() || '',
         email: document.querySelector('[name="email"]')?.value?.trim() || '',
@@ -98,27 +146,62 @@ async function handleFormSubmit(e) {
     submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
     submitBtn.disabled = true;
     
+    let dbSuccess = false;
+    let emailSuccess = false;
+    
     try {
-        const success = await saveContactInquiry(formData);
+        // 1. Save to Supabase (if available)
+        dbSuccess = await saveContactInquiry(formData);
         
-        if (success) {
+        // 2. Send emails through mailman
+        emailSuccess = await sendEmailThroughMailman(formData);
+        
+        // Check results
+        if (emailSuccess) {
             // Show success message
-            const formCard = document.querySelector('.form-card');
-            if (formCard) {
-                formCard.innerHTML = `
-                    <div class="form-success" style="text-align: center; padding: 40px 20px;">
-                        <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981; margin-bottom: 20px; display: block;"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Message Sent Successfully!</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 20px;">Thank you for reaching out, ${escapeHtml(formData.org_name)}! Our team will contact you within 24 hours.</p>
-                        <button class="btn-primary" onclick="location.reload()">
-                            <span>Send Another Message</span>
-                            <i class="fas fa-redo"></i>
-                        </button>
-                    </div>
+            const contactContainer = document.querySelector('.contact-container');
+            if (contactContainer) {
+                // Hide the form
+                const formElement = document.getElementById('contactForm');
+                if (formElement) {
+                    formElement.style.display = 'none';
+                }
+                
+                // Create success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'form-success';
+                successDiv.style.cssText = `
+                    text-align: center;
+                    padding: 60px 40px;
+                    background: rgba(16, 185, 129, 0.1);
+                    border-radius: 24px;
+                    border: 1px solid rgba(16, 185, 129, 0.3);
+                    animation: slideIn 0.5s ease;
                 `;
+                successDiv.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981; margin-bottom: 20px; display: inline-block;"></i>
+                    <h3 style="color: var(--text-primary, #fff); margin-bottom: 10px;">Message Sent Successfully!</h3>
+                    <p style="color: var(--text-secondary, #aaa); margin-bottom: 20px;">
+                        Thank you for reaching out, <strong>${escapeHtml(formData.org_name)}</strong>!<br>
+                        Our team will contact you within 24 hours.
+                    </p>
+                    <button class="btn-primary" onclick="location.reload()">
+                        <span>Send Another Message</span>
+                        <i class="fas fa-redo"></i>
+                    </button>
+                `;
+                
+                // Insert success message
+                const container = document.querySelector('.contact-container');
+                const formElement2 = document.getElementById('contactForm');
+                container.insertBefore(successDiv, formElement2);
             }
+            
             showNotification('Your message has been sent successfully!', 'success');
+        } else {
+            throw new Error('Failed to send email');
         }
+        
     } catch (error) {
         console.error("Form submission error:", error);
         showNotification('Something went wrong. Please try again.', 'error');
@@ -131,6 +214,7 @@ async function handleFormSubmit(e) {
 async function testDirectInsert() {
     if (!supabaseClient) {
         console.log("No supabase client");
+        showNotification("Supabase not initialized", "error");
         return;
     }
     
@@ -140,7 +224,7 @@ async function testDirectInsert() {
         org_name: "Test Organization",
         email: "test@example.com",
         phone: "+966 50 123 4567",
-        budget: "$10,000 - $25,000",
+        budget: "SAR 10,000 - SAR 25,000",
         event_date: "2024-12-31",
         message: "This is a test message from the debug function.",
         status: "unread",
@@ -155,7 +239,6 @@ async function testDirectInsert() {
         
         if (error) {
             console.error("Direct insert failed:", error);
-            console.error("Full error object:", JSON.stringify(error, null, 2));
             showNotification(`Test failed: ${error.message}`, "error");
         } else {
             console.log("Direct insert success:", data);
@@ -163,6 +246,42 @@ async function testDirectInsert() {
         }
     } catch (err) {
         console.error("Direct insert exception:", err);
+    }
+}
+
+// Test mailman connection
+async function testMailman() {
+    console.log("Testing mailman connection...");
+    showNotification("Testing email system...", "info");
+    
+    const testData = {
+        name: "Test User",
+        email: "test@example.com",
+        phone: "+966501234567",
+        message: "This is a test message to verify the email system.",
+        subject: "TEST: Mailman Connection"
+    };
+    
+    try {
+        const response = await fetch('/mailman/send.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(testData)
+        });
+        
+        const result = await response.json();
+        console.log("Mailman test result:", result);
+        
+        if (result.success) {
+            showNotification(`✅ Email system works! Sent to ${result.data.sent_successfully} recipients`, "success");
+        } else {
+            showNotification(`❌ Email system error: ${result.error}`, "error");
+        }
+    } catch (error) {
+        console.error("Mailman test failed:", error);
+        showNotification("❌ Cannot connect to mailman. Check that /mailman/send.php exists.", "error");
     }
 }
 
@@ -185,21 +304,34 @@ function showNotification(message, type = 'info') {
     }
     
     const toast = document.createElement('div');
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+    };
+    
     toast.style.cssText = `
         padding: 12px 20px;
         border-radius: 8px;
         color: white;
         font-size: 13px;
         animation: slideIn 0.3s ease;
-        background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#10b981'};
+        background: ${colors[type] || colors.info};
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
         gap: 10px;
     `;
     
-    const icon = type === 'error' ? 'fa-exclamation-circle' : (type === 'warning' ? 'fa-triangle-exclamation' : 'fa-check-circle');
-    toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-triangle-exclamation',
+        info: 'fa-info-circle'
+    };
+    
+    toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
     
     container.appendChild(toast);
     
@@ -242,15 +374,22 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Add a debug button to the page (optional)
-function addDebugButton() {
-    const formCard = document.querySelector('.form-card');
-    if (formCard && !document.getElementById('debugBtn')) {
-        const debugBtn = document.createElement('button');
-        debugBtn.id = 'debugBtn';
-        debugBtn.textContent = '🧪 Test Database Insert';
-        debugBtn.style.cssText = `
-            margin-top: 10px;
+// Add debug buttons
+function addDebugButtons() {
+    const contactContainer = document.querySelector('.contact-container');
+    if (contactContainer && !document.getElementById('debugPanel')) {
+        const debugPanel = document.createElement('div');
+        debugPanel.id = 'debugPanel';
+        debugPanel.style.cssText = `
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        `;
+        
+        const dbTestBtn = document.createElement('button');
+        dbTestBtn.textContent = '🧪 Test Database';
+        dbTestBtn.style.cssText = `
             background: #374151;
             border: none;
             color: white;
@@ -258,10 +397,30 @@ function addDebugButton() {
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
-            width: 100%;
         `;
-        debugBtn.onclick = testDirectInsert;
-        formCard.appendChild(debugBtn);
+        dbTestBtn.onclick = testDirectInsert;
+        
+        const emailTestBtn = document.createElement('button');
+        emailTestBtn.textContent = '📧 Test Email System';
+        emailTestBtn.style.cssText = `
+            background: #374151;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        `;
+        emailTestBtn.onclick = testMailman;
+        
+        debugPanel.appendChild(dbTestBtn);
+        debugPanel.appendChild(emailTestBtn);
+        
+        // Add after the form
+        const form = document.getElementById('contactForm');
+        if (form) {
+            form.parentNode.insertBefore(debugPanel, form.nextSibling);
+        }
     }
 }
 
@@ -269,26 +428,41 @@ function addDebugButton() {
 document.addEventListener('DOMContentLoaded', async function() {
     await initSupabase();
     initInputEffects();
-    addDebugButton(); // Adds a test button to help debug
+    addDebugButtons(); // Add test buttons for debugging
     
     const form = document.getElementById('contactForm');
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
+        console.log("Form handler attached");
+    } else {
+        console.error("Form not found!");
     }
 });
 
 // Add CSS animation if not present
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(100%);
+if (!document.querySelector('#contact-form-styles')) {
+    const style = document.createElement('style');
+    style.id = 'contact-form-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+        
+        .fa-spin {
+            animation: spin 1s linear infinite;
         }
-    }
-`;
-document.head.appendChild(style);
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+}
