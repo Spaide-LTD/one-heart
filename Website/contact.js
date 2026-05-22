@@ -1,64 +1,73 @@
-document.addEventListener("DOMContentLoaded", () => {
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    const form = document.getElementById("contactForm");
-    const submitBtn = form.querySelector("button");
+    try {
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        const formData = new FormData(form);
 
         const data = {
-            org_name: form.org_name.value.trim(),
-            email: form.email.value.trim(),
-            phone: form.phone.value.trim(),
-            event_date: form.event_date.value,
-            budget: form.budget.value,
-            message: form.message.value.trim()
+            org_name: formData.get("org_name")?.trim(),
+            email: formData.get("email")?.trim(),
+            phone: formData.get("phone")?.trim(),
+            event_date: formData.get("event_date"),
+            budget: formData.get("budget"),
+            message: formData.get("message")?.trim()
         };
 
-        // BASIC VALIDATION
+        // validation
         if (!data.org_name || !data.email) {
-            showNotification("Please fill required fields");
+            if (typeof showNotification === "function") {
+                showNotification("Please fill required fields", "error");
+            }
             return;
         }
 
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Sending...";
+        const submitBtn = form.querySelector("button[type='submit']");
 
-        try {
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Sending...";
+        }
 
-            // 1. LOG TO SUPABASE (NON-CRITICAL)
-            if (window.supabaseClient) {
-                await supabaseClient.from("contact_messages").insert({
-                    ...data,
-                    status: "unread"
-                });
-            }
-
-            // 2. SEND TO PHP (CRITICAL)
-            const res = await fetch("mailman/send.php", {
-                method: "POST",
-                headers: {
-                    "Accept": "text/plain"
-                },
-                body: new URLSearchParams(data)
+        // Supabase (safe)
+        if (window.supabaseClient) {
+            await supabaseClient.from("contact_messages").insert({
+                ...data,
+                status: "unread"
             });
+        }
 
-            const result = await res.text();
+        // PHP request
+        const res = await fetch("mailman/send.php", {
+            method: "POST",
+            body: new URLSearchParams(data)
+        });
 
-            if (result !== "OK") {
-                throw new Error(result);
-            }
+        const result = await res.text();
 
+        if (result !== "OK") {
+            throw new Error(result);
+        }
+
+        // SUCCESS
+        if (typeof showNotification === "function") {
             showNotification("Message sent successfully!", "success");
-            form.reset();
+        }
 
-        } catch (err) {
-            console.error(err);
-           showNotification("Failed to send message", "error");
+        form.reset();
 
-        } finally {
+    } catch (err) {
+        console.error(err);
+
+        if (typeof showNotification === "function") {
+            showNotification("Failed to send message", "error");
+        }
+
+    } finally {
+        const submitBtn = form.querySelector("button[type='submit']");
+        if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerText = "Send Message";
         }
-    });
+    }
 });
