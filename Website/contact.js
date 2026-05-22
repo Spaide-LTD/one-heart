@@ -1,131 +1,47 @@
-// contact.js - Contact form with Supabase AND Mailman
+// contact.js - Production ready with Supabase + Mailman
 
-// Initialize Supabase
+// Supabase client
 let supabaseClient = null;
 
+// Initialize Supabase
 async function initSupabase() {
     try {
-        // Make sure SUPABASE_URL and SUPABASE_KEY are defined in your supabase.js
         if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log("Supabase client created successfully");
-        } else {
-            console.warn("Supabase credentials not found");
+            console.log("Supabase initialized");
         }
-        return true;
     } catch (error) {
-        console.error("Failed to initialize Supabase:", error);
-        return false;
+        console.error("Supabase init failed:", error);
     }
 }
 
-// Save contact inquiry to database
-async function saveContactInquiry(formData) {
-    if (!supabaseClient) {
-        console.log("No Supabase client, skipping database save");
-        return true; // Return true to continue with email sending
-    }
-    
-    console.log("Saving to Supabase:", formData);
-    
-    try {
-        const { data, error } = await supabaseClient
-            .from('contact_messages')
-            .insert({
-                org_name: formData.org_name,
-                email: formData.email,
-                phone: formData.phone || null,
-                budget: formData.budget || null,
-                event_date: formData.event_date || null,
-                message: formData.message || null,
-                status: 'unread',
-                created_at: new Date().toISOString()
-            })
-            .select();
-        
-        if (error) {
-            console.error("Supabase error:", error);
-            return false;
-        }
-        
-        console.log("Saved to Supabase successfully:", data);
-        return true;
-        
-    } catch (error) {
-        console.error("Exception saving to Supabase:", error);
-        return false;
-    }
-}
-
-// Send email through mailman
-async function sendEmailThroughMailman(formData) {
-    // Prepare the full message with all details
-    const fullMessage = `
-🏢 Organization: ${formData.org_name}
-📧 Email: ${formData.email}
-📞 Phone: ${formData.phone || 'Not provided'}
-📅 Event Date: ${formData.event_date || 'Not specified'}
-💰 Budget: ${formData.budget || 'Not specified'}
-
-💭 Message:
-${formData.message || 'No message provided'}
-    `.trim();
-    
-    const emailData = {
-        name: formData.org_name,
-        email: formData.email,
-        phone: formData.phone || 'Not provided',
-        message: fullMessage,
-        subject: `New Contact Form Submission from ${formData.org_name}`
-    };
-    
-    console.log("Sending to mailman:", emailData);
-    
-    try {
-        const response = await fetch('/mailman/send.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(emailData)
-        });
-        
-        const result = await response.json();
-        console.log("Mailman response:", result);
-        
-        if (result.success) {
-            return true;
-        } else {
-            console.error("Mailman error:", result.error);
-            return false;
-        }
-    } catch (error) {
-        console.error("Failed to send email:", error);
-        return false;
-    }
-}
-
-// Handle form submission
-async function handleFormSubmit(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', async function() {
+    await initSupabase();
     
     const form = document.getElementById('contactForm');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmit);
+    }
+});
+
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
     const submitBtn = form.querySelector('.form-submit');
-    const originalText = submitBtn.innerHTML;
+    const originalContent = submitBtn.innerHTML;
     
     // Get form data
     const formData = {
-        org_name: document.querySelector('[name="org_name"]')?.value?.trim() || '',
-        email: document.querySelector('[name="email"]')?.value?.trim() || '',
-        phone: document.querySelector('[name="phone"]')?.value?.trim() || '',
-        budget: document.querySelector('[name="budget"]')?.value || '',
-        event_date: document.querySelector('[name="event_date"]')?.value || '',
-        message: document.querySelector('[name="message"]')?.value?.trim() || ''
+        org_name: form.querySelector('[name="org_name"]')?.value.trim(),
+        email: form.querySelector('[name="email"]')?.value.trim(),
+        phone: form.querySelector('[name="phone"]')?.value.trim() || null,
+        event_date: form.querySelector('[name="event_date"]')?.value || null,
+        budget: form.querySelector('[name="budget"]')?.value || null,
+        message: form.querySelector('[name="message"]')?.value.trim() || null
     };
     
-    console.log("Form data collected:", formData);
-    
-    // Validation
+    // Validate
     if (!formData.org_name) {
         showNotification('Please enter your organization name', 'warning');
         return;
@@ -142,168 +58,141 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // Show loading state
-    submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+    // Prepare email content for mailman
+    const fullMessage = `Organization: ${formData.org_name}
+Email: ${formData.email}
+Phone: ${formData.phone || 'Not provided'}
+Event Date: ${formData.event_date || 'Not specified'}
+Budget: ${formData.budget || 'Not specified'}
+
+Message:
+${formData.message || 'No message provided'}`;
+    
+    const emailData = {
+        name: formData.org_name,
+        email: formData.email,
+        phone: formData.phone || 'Not provided',
+        message: fullMessage,
+        subject: `Contact Form: ${formData.org_name}`
+    };
+    
+    // Show loading
     submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
     
     let dbSuccess = false;
     let emailSuccess = false;
     
     try {
-        // 1. Save to Supabase (if available)
-        dbSuccess = await saveContactInquiry(formData);
+        // 1. Save to Supabase
+        if (supabaseClient) {
+            const { error } = await supabaseClient
+                .from('contact_messages')
+                .insert({
+                    org_name: formData.org_name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    budget: formData.budget,
+                    event_date: formData.event_date,
+                    message: formData.message,
+                    status: 'unread',
+                    created_at: new Date().toISOString()
+                });
+            
+            if (!error) {
+                dbSuccess = true;
+                console.log('Saved to Supabase');
+            } else {
+                console.error('Supabase error:', error);
+            }
+        }
         
         // 2. Send emails through mailman
-        emailSuccess = await sendEmailThroughMailman(formData);
-        
-        // Check results
-        if (emailSuccess) {
-            // Show success message
-            const contactContainer = document.querySelector('.contact-container');
-            if (contactContainer) {
-                // Hide the form
-                const formElement = document.getElementById('contactForm');
-                if (formElement) {
-                    formElement.style.display = 'none';
-                }
-                
-                // Create success message
-                const successDiv = document.createElement('div');
-                successDiv.className = 'form-success';
-                successDiv.style.cssText = `
-                    text-align: center;
-                    padding: 60px 40px;
-                    background: rgba(16, 185, 129, 0.1);
-                    border-radius: 24px;
-                    border: 1px solid rgba(16, 185, 129, 0.3);
-                    animation: slideIn 0.5s ease;
-                `;
-                successDiv.innerHTML = `
-                    <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981; margin-bottom: 20px; display: inline-block;"></i>
-                    <h3 style="color: var(--text-primary, #fff); margin-bottom: 10px;">Message Sent Successfully!</h3>
-                    <p style="color: var(--text-secondary, #aaa); margin-bottom: 20px;">
-                        Thank you for reaching out, <strong>${escapeHtml(formData.org_name)}</strong>!<br>
-                        Our team will contact you within 24 hours.
-                    </p>
-                    <button class="btn-primary" onclick="location.reload()">
-                        <span>Send Another Message</span>
-                        <i class="fas fa-redo"></i>
-                    </button>
-                `;
-                
-                // Insert success message
-                const container = document.querySelector('.contact-container');
-                const formElement2 = document.getElementById('contactForm');
-                container.insertBefore(successDiv, formElement2);
-            }
-            
-            showNotification('Your message has been sent successfully!', 'success');
-        } else {
-            throw new Error('Failed to send email');
-        }
-        
-    } catch (error) {
-        console.error("Form submission error:", error);
-        showNotification('Something went wrong. Please try again.', 'error');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Test direct insert (for debugging)
-async function testDirectInsert() {
-    if (!supabaseClient) {
-        console.log("No supabase client");
-        showNotification("Supabase not initialized", "error");
-        return;
-    }
-    
-    console.log("Testing direct insert...");
-    
-    const testData = {
-        org_name: "Test Organization",
-        email: "test@example.com",
-        phone: "+966 50 123 4567",
-        budget: "SAR 10,000 - SAR 25,000",
-        event_date: "2024-12-31",
-        message: "This is a test message from the debug function.",
-        status: "unread",
-        created_at: new Date().toISOString()
-    };
-    
-    try {
-        const { data, error } = await supabaseClient
-            .from('contact_messages')
-            .insert(testData)
-            .select();
-        
-        if (error) {
-            console.error("Direct insert failed:", error);
-            showNotification(`Test failed: ${error.message}`, "error");
-        } else {
-            console.log("Direct insert success:", data);
-            showNotification("Test insert successful! Check your database.", "success");
-        }
-    } catch (err) {
-        console.error("Direct insert exception:", err);
-    }
-}
-
-// Test mailman connection
-async function testMailman() {
-    console.log("Testing mailman connection...");
-    showNotification("Testing email system...", "info");
-    
-    const testData = {
-        name: "Test User",
-        email: "test@example.com",
-        phone: "+966501234567",
-        message: "This is a test message to verify the email system.",
-        subject: "TEST: Mailman Connection"
-    };
-    
-    try {
         const response = await fetch('/mailman/send.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(testData)
+            body: JSON.stringify(emailData)
         });
         
         const result = await response.json();
-        console.log("Mailman test result:", result);
         
         if (result.success) {
-            showNotification(`✅ Email system works! Sent to ${result.data.sent_successfully} recipients`, "success");
+            emailSuccess = true;
         } else {
-            showNotification(`❌ Email system error: ${result.error}`, "error");
+            throw new Error(result.error || 'Failed to send email');
         }
+        
+        // Show success if at least one operation succeeded
+        if (dbSuccess || emailSuccess) {
+            showSuccessMessage(form, formData.org_name);
+            showNotification('Your message has been sent successfully!', 'success');
+        } else {
+            throw new Error('Failed to save or send message');
+        }
+        
     } catch (error) {
-        console.error("Mailman test failed:", error);
-        showNotification("❌ Cannot connect to mailman. Check that /mailman/send.php exists.", "error");
+        console.error('Error:', error);
+        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+        
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
     }
 }
 
-// Show notification
-function showNotification(message, type = 'info') {
-    let container = document.querySelector('.notification-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'notification-container';
-        container.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        `;
-        document.body.appendChild(container);
-    }
+function showSuccessMessage(form, orgName) {
+    form.style.display = 'none';
     
-    const toast = document.createElement('div');
+    const container = document.querySelector('.contact-container');
+    if (!container) return;
+    
+    // Remove any existing success message
+    const existingSuccess = document.querySelector('.success-message');
+    if (existingSuccess) existingSuccess.remove();
+    
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.style.cssText = `
+        text-align: center;
+        padding: 60px 40px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+        border-radius: 24px;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        animation: fadeInUp 0.5s ease;
+    `;
+    
+    successDiv.innerHTML = `
+        <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981; margin-bottom: 20px;"></i>
+        <h3 style="color: #fff; margin-bottom: 10px;">Thank You, ${escapeHtml(orgName)}!</h3>
+        <p style="color: #aaa; margin-bottom: 20px;">
+            Your message has been sent successfully.<br>
+            Our team will get back to you within 24 hours.
+        </p>
+        <button onclick="location.reload()" class="btn-primary" style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        ">
+            Send Another Message
+        </button>
+    `;
+    
+    container.insertBefore(successDiv, form);
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existing = document.querySelector('.form-notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = 'form-notification';
+    
     const colors = {
         success: '#10b981',
         error: '#ef4444',
@@ -311,139 +200,51 @@ function showNotification(message, type = 'info') {
         info: '#3b82f6'
     };
     
-    toast.style.cssText = `
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
         padding: 12px 20px;
-        border-radius: 8px;
+        background: ${colors[type] || '#3b82f6'};
         color: white;
-        font-size: 13px;
-        animation: slideIn 0.3s ease;
-        background: ${colors[type] || colors.info};
+        border-radius: 8px;
+        font-size: 14px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        animation: slideIn 0.3s ease;
     `;
     
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-triangle-exclamation',
-        info: 'fa-info-circle'
-    };
-    
-    toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
-    
-    container.appendChild(toast);
+    notification.innerHTML = message;
+    document.body.appendChild(notification);
     
     setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => toast.remove(), 300);
+        notification.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
     }, 5000);
 }
 
-// Initialize input effects
-function initInputEffects() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-    
-    const inputs = form.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            const label = input.closest('.form-group')?.querySelector('label');
-            if (label) {
-                const icon = label.querySelector('i');
-                if (icon) icon.style.color = 'var(--primary-light)';
-            }
-        });
-        input.addEventListener('blur', () => {
-            const label = input.closest('.form-group')?.querySelector('label');
-            if (label) {
-                const icon = label.querySelector('i');
-                if (icon) icon.style.color = '';
-            }
-        });
-    });
-}
-
-// Escape HTML
 function escapeHtml(text) {
-    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// Add debug buttons
-function addDebugButtons() {
-    const contactContainer = document.querySelector('.contact-container');
-    if (contactContainer && !document.getElementById('debugPanel')) {
-        const debugPanel = document.createElement('div');
-        debugPanel.id = 'debugPanel';
-        debugPanel.style.cssText = `
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        `;
-        
-        const dbTestBtn = document.createElement('button');
-        dbTestBtn.textContent = '🧪 Test Database';
-        dbTestBtn.style.cssText = `
-            background: #374151;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        `;
-        dbTestBtn.onclick = testDirectInsert;
-        
-        const emailTestBtn = document.createElement('button');
-        emailTestBtn.textContent = '📧 Test Email System';
-        emailTestBtn.style.cssText = `
-            background: #374151;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        `;
-        emailTestBtn.onclick = testMailman;
-        
-        debugPanel.appendChild(dbTestBtn);
-        debugPanel.appendChild(emailTestBtn);
-        
-        // Add after the form
-        const form = document.getElementById('contactForm');
-        if (form) {
-            form.parentNode.insertBefore(debugPanel, form.nextSibling);
-        }
-    }
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', async function() {
-    await initSupabase();
-    initInputEffects();
-    addDebugButtons(); // Add test buttons for debugging
-    
-    const form = document.getElementById('contactForm');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-        console.log("Form handler attached");
-    } else {
-        console.error("Form not found!");
-    }
-});
-
-// Add CSS animation if not present
-if (!document.querySelector('#contact-form-styles')) {
+// Add styles
+if (!document.querySelector('#contact-styles')) {
     const style = document.createElement('style');
-    style.id = 'contact-form-styles';
+    style.id = 'contact-styles';
     style.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -452,6 +253,17 @@ if (!document.querySelector('#contact-form-styles')) {
             to {
                 opacity: 1;
                 transform: translateX(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
             }
         }
         
