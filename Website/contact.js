@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // BASIC VALIDATION
         if (!data.org_name || !data.email) {
-            alert("Please fill required fields");
+            showNotification("Please fill required fields");
             return;
         }
 
@@ -49,12 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(result);
             }
 
-            alert("Message sent successfully!");
+            showNotification("Message sent successfully!", "success");
             form.reset();
 
         } catch (err) {
             console.error(err);
-            alert("Failed to send message");
+           showNotification("Failed to send message", "error");
 
         } finally {
             submitBtn.disabled = false;
