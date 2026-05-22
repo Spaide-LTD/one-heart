@@ -1,4 +1,4 @@
-// contact.js - Production ready with Supabase + Mailman
+// contact.js - Production ready with Supabase + Mailman (Fixed Path)
 
 // Supabase client
 let supabaseClient = null;
@@ -12,6 +12,31 @@ async function initSupabase() {
         }
     } catch (error) {
         console.error("Supabase init failed:", error);
+    }
+}
+
+// Get the correct mailman URL
+function getMailmanUrl() {
+    // Get current path
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+    
+    // Try different possible paths
+    const possiblePaths = [
+        '/mailman/send.php',
+        'mailman/send.php',
+        '../mailman/send.php',
+        './mailman/send.php',
+        basePath + 'mailman/send.php'
+    ];
+    
+    // Return the most likely path based on current location
+    if (currentPath.includes('/pages/')) {
+        return '../mailman/send.php';
+    } else if (currentPath.includes('/one-heart/')) {
+        return '/one-heart/website/mailman/send.php';
+    } else {
+        return '/mailman/send.php';
     }
 }
 
@@ -80,9 +105,6 @@ ${formData.message || 'No message provided'}`;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
     
-    let dbSuccess = false;
-    let emailSuccess = false;
-    
     try {
         // 1. Save to Supabase
         if (supabaseClient) {
@@ -99,42 +121,42 @@ ${formData.message || 'No message provided'}`;
                     created_at: new Date().toISOString()
                 });
             
-            if (!error) {
-                dbSuccess = true;
-                console.log('Saved to Supabase');
-            } else {
+            if (error) {
                 console.error('Supabase error:', error);
+            } else {
+                console.log('Saved to Supabase');
             }
         }
         
-        // 2. Send emails through mailman
-        const response = await fetch('/mailman/send.php', {
+        // 2. Send emails through mailman with correct path
+        const mailmanUrl = getMailmanUrl();
+        console.log('Sending to mailman at:', mailmanUrl);
+        
+        const response = await fetch(mailmanUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify(emailData)
         });
         
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const result = await response.json();
         
         if (result.success) {
-            emailSuccess = true;
+            showSuccessMessage(form, formData.org_name);
+            showNotification('Your message has been sent successfully!', 'success');
         } else {
             throw new Error(result.error || 'Failed to send email');
         }
         
-        // Show success if at least one operation succeeded
-        if (dbSuccess || emailSuccess) {
-            showSuccessMessage(form, formData.org_name);
-            showNotification('Your message has been sent successfully!', 'success');
-        } else {
-            throw new Error('Failed to save or send message');
-        }
-        
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+        showNotification('Sorry, there was an error sending your message. Please try again or call us directly.', 'error');
         
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
@@ -212,6 +234,7 @@ function showNotification(message, type = 'info') {
         font-size: 14px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         animation: slideIn 0.3s ease;
+        cursor: pointer;
     `;
     
     notification.innerHTML = message;
