@@ -25,76 +25,37 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function handleFormSubmit(event) {
-
-    // STOP default form submission first
     event.preventDefault();
 
     const form = event.target;
-    const submitBtn = form.querySelector('.form-submit');
 
-    // Get form data
-    const formData = {
-        org_name: form.querySelector('[name="org_name"]')?.value.trim(),
-        email: form.querySelector('[name="email"]')?.value.trim(),
-        phone: form.querySelector('[name="phone"]')?.value.trim() || null,
-        event_date: form.querySelector('[name="event_date"]')?.value || null,
-        budget: form.querySelector('[name="budget"]')?.value || null,
-        message: form.querySelector('[name="message"]')?.value.trim() || null
-    };
+    const formData = new FormData(form);
 
-    // Validation
-    if (!formData.org_name) {
-        showNotification('Please enter your organization name', 'warning');
-        return;
-    }
-
-    if (!formData.email) {
-        showNotification('Please enter your email address', 'warning');
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(formData.email)) {
-        showNotification('Please enter a valid email address', 'warning');
-        return;
-    }
-
-    // Loading state
-    if (submitBtn) {
-        submitBtn.disabled = true;
-
-        submitBtn.innerHTML =
-            '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
-    }
-
-    // Save to Supabase
+    // 1. Save to Supabase
     if (supabaseClient) {
-        try {
-
-            await supabaseClient
-                .from('contact_messages')
-                .insert({
-                    org_name: formData.org_name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    budget: formData.budget,
-                    event_date: formData.event_date,
-                    message: formData.message,
-                    status: 'unread',
-                    created_at: new Date().toISOString()
-                });
-
-            console.log('Saved to Supabase');
-
-        } catch (error) {
-
-            console.error('Supabase error:', error);
-        }
+        await supabaseClient.from('contact_messages').insert({
+            org_name: formData.get('org_name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            budget: formData.get('budget'),
+            event_date: formData.get('event_date'),
+            message: formData.get('message'),
+            status: 'unread'
+        });
     }
 
-    // FORCE actual form submission to PHP
-    form.submit();
+    // 2. Send to PHP (AJAX)
+    const res = await fetch('mailman/send.php', {
+        method: 'POST',
+        body: formData
+    });
+
+    const text = await res.text();
+    console.log(text);
+
+    showNotification("Message sent successfully", "success");
+
+    form.reset();
 }
 
 function showNotification(message, type = 'info') {
