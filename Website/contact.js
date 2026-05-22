@@ -25,12 +25,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function handleFormSubmit(event) {
-    // Don't prevent default - let the form submit normally to PHP
-    // But we'll save to Supabase first
-    
+
+    // STOP default form submission first
+    event.preventDefault();
+
     const form = event.target;
     const submitBtn = form.querySelector('.form-submit');
-    
+
     // Get form data
     const formData = {
         org_name: form.querySelector('[name="org_name"]')?.value.trim(),
@@ -40,30 +41,37 @@ async function handleFormSubmit(event) {
         budget: form.querySelector('[name="budget"]')?.value || null,
         message: form.querySelector('[name="message"]')?.value.trim() || null
     };
-    
-    // Validate
+
+    // Validation
     if (!formData.org_name) {
-        event.preventDefault();
         showNotification('Please enter your organization name', 'warning');
         return;
     }
-    
+
     if (!formData.email) {
-        event.preventDefault();
         showNotification('Please enter your email address', 'warning');
         return;
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(formData.email)) {
-        event.preventDefault();
         showNotification('Please enter a valid email address', 'warning');
         return;
     }
-    
-    // Save to Supabase (don't block form submission)
+
+    // Loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+
+        submitBtn.innerHTML =
+            '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+    }
+
+    // Save to Supabase
     if (supabaseClient) {
         try {
+
             await supabaseClient
                 .from('contact_messages')
                 .insert({
@@ -76,21 +84,17 @@ async function handleFormSubmit(event) {
                     status: 'unread',
                     created_at: new Date().toISOString()
                 });
+
             console.log('Saved to Supabase');
+
         } catch (error) {
+
             console.error('Supabase error:', error);
         }
     }
-    
-    // Show loading on button
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
-    }
-    
-    // Form will now submit normally to PHP
-    // The PHP will handle email sending
-    return true;
+
+    // FORCE actual form submission to PHP
+    form.submit();
 }
 
 function showNotification(message, type = 'info') {
