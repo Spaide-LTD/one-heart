@@ -1,4 +1,4 @@
-// contact.js - Production ready with Supabase + Mailman (Fixed Path)
+// contact.js - Only handles Supabase, form submits normally to PHP
 
 // Supabase client
 let supabaseClient = null;
@@ -15,31 +15,6 @@ async function initSupabase() {
     }
 }
 
-// Get the correct mailman URL
-function getMailmanUrl() {
-    // Get current path
-    const currentPath = window.location.pathname;
-    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-    
-    // Try different possible paths
-    const possiblePaths = [
-        '/mailman/send.php',
-        'mailman/send.php',
-        '../mailman/send.php',
-        './mailman/send.php',
-        basePath + 'mailman/send.php'
-    ];
-    
-    // Return the most likely path based on current location
-    if (currentPath.includes('/pages/')) {
-        return '../mailman/send.php';
-    } else if (currentPath.includes('/one-heart/')) {
-        return '/one-heart/website/mailman/send.php';
-    } else {
-        return '/mailman/send.php';
-    }
-}
-
 document.addEventListener('DOMContentLoaded', async function() {
     await initSupabase();
     
@@ -50,11 +25,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function handleFormSubmit(event) {
-    event.preventDefault();
+    // Don't prevent default - let the form submit normally to PHP
+    // But we'll save to Supabase first
     
     const form = event.target;
     const submitBtn = form.querySelector('.form-submit');
-    const originalContent = submitBtn.innerHTML;
     
     // Get form data
     const formData = {
@@ -68,47 +43,28 @@ async function handleFormSubmit(event) {
     
     // Validate
     if (!formData.org_name) {
+        event.preventDefault();
         showNotification('Please enter your organization name', 'warning');
         return;
     }
     
     if (!formData.email) {
+        event.preventDefault();
         showNotification('Please enter your email address', 'warning');
         return;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+        event.preventDefault();
         showNotification('Please enter a valid email address', 'warning');
         return;
     }
     
-    // Prepare email content for mailman
-    const fullMessage = `Organization: ${formData.org_name}
-Email: ${formData.email}
-Phone: ${formData.phone || 'Not provided'}
-Event Date: ${formData.event_date || 'Not specified'}
-Budget: ${formData.budget || 'Not specified'}
-
-Message:
-${formData.message || 'No message provided'}`;
-    
-    const emailData = {
-        name: formData.org_name,
-        email: formData.email,
-        phone: formData.phone || 'Not provided',
-        message: fullMessage,
-        subject: `Contact Form: ${formData.org_name}`
-    };
-    
-    // Show loading
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
-    
-    try {
-        // 1. Save to Supabase
-        if (supabaseClient) {
-            const { error } = await supabaseClient
+    // Save to Supabase (don't block form submission)
+    if (supabaseClient) {
+        try {
+            await supabaseClient
                 .from('contact_messages')
                 .insert({
                     org_name: formData.org_name,
@@ -120,91 +76,21 @@ ${formData.message || 'No message provided'}`;
                     status: 'unread',
                     created_at: new Date().toISOString()
                 });
-            
-            if (error) {
-                console.error('Supabase error:', error);
-            } else {
-                console.log('Saved to Supabase');
-            }
+            console.log('Saved to Supabase');
+        } catch (error) {
+            console.error('Supabase error:', error);
         }
-        
-        // 2. Send emails through mailman with correct path
-        const mailmanUrl = getMailmanUrl();
-        console.log('Sending to mailman at:', mailmanUrl);
-        
-        const response = await fetch(mailmanUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(emailData)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showSuccessMessage(form, formData.org_name);
-            showNotification('Your message has been sent successfully!', 'success');
-        } else {
-            throw new Error(result.error || 'Failed to send email');
-        }
-        
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Sorry, there was an error sending your message. Please try again or call us directly.', 'error');
-        
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalContent;
     }
-}
-
-function showSuccessMessage(form, orgName) {
-    form.style.display = 'none';
     
-    const container = document.querySelector('.contact-container');
-    if (!container) return;
+    // Show loading on button
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+    }
     
-    // Remove any existing success message
-    const existingSuccess = document.querySelector('.success-message');
-    if (existingSuccess) existingSuccess.remove();
-    
-    const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
-    successDiv.style.cssText = `
-        text-align: center;
-        padding: 60px 40px;
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-        border-radius: 24px;
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        animation: fadeInUp 0.5s ease;
-    `;
-    
-    successDiv.innerHTML = `
-        <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981; margin-bottom: 20px;"></i>
-        <h3 style="color: #fff; margin-bottom: 10px;">Thank You, ${escapeHtml(orgName)}!</h3>
-        <p style="color: #aaa; margin-bottom: 20px;">
-            Your message has been sent successfully.<br>
-            Our team will get back to you within 24 hours.
-        </p>
-        <button onclick="location.reload()" class="btn-primary" style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        ">
-            Send Another Message
-        </button>
-    `;
-    
-    container.insertBefore(successDiv, form);
+    // Form will now submit normally to PHP
+    // The PHP will handle email sending
+    return true;
 }
 
 function showNotification(message, type = 'info') {
@@ -246,28 +132,11 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
 // Add styles
 if (!document.querySelector('#contact-styles')) {
     const style = document.createElement('style');
     style.id = 'contact-styles';
     style.textContent = `
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
         @keyframes slideIn {
             from {
                 opacity: 0;
