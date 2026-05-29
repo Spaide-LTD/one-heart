@@ -273,9 +273,6 @@ async function sendMessage() {
     });
     await fetch('https://primary-production-19a8d.up.railway.app/webhook/send-agent-message', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
   body: JSON.stringify({
     phone_number: currentPhone,
     message_text: text
