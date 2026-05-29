@@ -1,102 +1,114 @@
-function showNotification(message, type = "info") {
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("contactForm");
+  
+  // Check if form exists
+  if (!form) {
+    console.error("Form with id 'contactForm' not found");
+    return;
+  }
+  
+  const submitBtn = form.querySelector("button");
+  
+  // Check if button exists
+  if (!submitBtn) {
+    console.error("Submit button not found in form");
+    return;
+  }
 
-    const existing = document.querySelector(".form-notification");
-    if (existing) existing.remove();
+  const N8N_WEBHOOK_URL = "https://primary-production-ddbcd.up.railway.app/webhook/a0fa62c2-f3d8-416a-b753-b0b3a9589bab";
 
-    const notification = document.createElement("div");
-    notification.className = "form-notification";
+  function showNotification(message, isError = false) {
+    // You can replace this with a nicer notification system
+    if (isError) {
+      console.error(message);
+      alert("❌ " + message);
+    } else {
+      alert("✅ " + message);
+    }
+  }
 
-    const colors = {
-        success: "#10b981",
-        error: "#ef4444",
-        info: "#3b82f6"
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Get form data
+    const data = {
+      org_name: form.org_name?.value?.trim() || "",
+      email: form.email?.value?.trim() || "",
+      phone: form.phone?.value?.trim() || "",
+      event_date: form.event_date?.value || "",
+      budget: form.budget?.value || "",
+      message: form.message?.value?.trim() || ""
     };
 
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 99999;
-        background: ${colors[type] || "#3b82f6"};
-        color: white;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        animation: slideIn 0.3s ease;
-    `;
+    // Validate required fields
+    if (!data.org_name || !data.email) {
+      showNotification("Please fill all required fields (Organization Name and Email)", true);
+      return;
+    }
 
-    notification.innerText = message;
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      showNotification("Please enter a valid email address", true);
+      return;
+    }
 
-    document.body.appendChild(notification);
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Sending...";
 
-    setTimeout(() => {
-        notification.style.opacity = "0";
-        notification.style.transform = "translateX(100%)";
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-document.addEventListener("DOMContentLoaded", () => {
-
-    const form = document.getElementById("contactForm");
-    const submitBtn = form.querySelector("button");
-
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const data = {
-            org_name: form.org_name.value.trim(),
-            email: form.email.value.trim(),
-            phone: form.phone.value.trim(),
-            event_date: form.event_date.value,
-            budget: form.budget.value,
-            message: form.message.value.trim()
-        };
-
-        // BASIC VALIDATION
-        if (!data.org_name || !data.email) {
-            showNotification("Please fill required fields");
-            return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Sending...";
-
+    try {
+      // Save to Supabase if available
+      if (window.supabaseClient) {
         try {
-
-            // 1. LOG TO SUPABASE (NON-CRITICAL)
-            if (window.supabaseClient) {
-                await supabaseClient.from("contact_messages").insert({
-                    ...data,
-                    status: "unread"
-                });
-            }
-
-            // 2. SEND TO PHP (CRITICAL)
-            const res = await fetch("mailman/send.php", {
-                method: "POST",
-                headers: {
-                    "Accept": "text/plain"
-                },
-                body: new URLSearchParams(data)
+          const { error } = await window.supabaseClient
+            .from("contact_messages")
+            .insert({
+              ...data,
+              status: "unread",
+              created_at: new Date().toISOString()
             });
 
-            const result = await res.text();
-
-            if (result !== "OK") {
-                throw new Error(result);
-            }
-
-            showNotification("Message sent successfully!", "success");
-            form.reset();
-
-        } catch (err) {
-            console.error(err);
-           showNotification("Failed to send message", "error");
-
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Send Message";
+          if (error) throw error;
+          console.log("Data saved to Supabase");
+        } catch (supabaseError) {
+          console.warn("Supabase save failed:", supabaseError);
+          // Continue anyway - don't block the user
         }
-    });
+      } else {
+        console.log("Supabase client not available, skipping database save");
+      }
+
+      // Send to n8n webhook (removed no-cors mode to see actual error)
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.warn("Webhook responded with error:", response.status, errorText);
+          // Don't throw - just warn since this is for notifications
+        } else {
+          console.log("Webhook notification sent successfully");
+        }
+      } catch (webhookError) {
+        console.warn("Webhook notification failed:", webhookError);
+        // Continue anyway - form submission is still successful
+      }
+
+      showNotification("Message sent successfully! We'll get back to you soon.");
+      form.reset();
+
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      showNotification("Something went wrong. Please try again or contact us directly.", true);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Send Message";
+    }
+  });
 });
