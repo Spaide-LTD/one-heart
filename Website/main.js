@@ -352,8 +352,8 @@ function initChatbot() {
     ]);
   }
 
-  function finishInquiry() {
-    const summary = `Website guided inquiry:
+function finishInquiry() {
+  const summary = `Website guided inquiry:
 
 Event Type: ${inquiry.eventType || "Not provided"}
 Event Date: ${inquiry.eventDate || "Not provided"}
@@ -364,25 +364,22 @@ Services Needed: ${inquiry.services || "Not provided"}
 Extra Details:
 Guided inquiry submitted from website chatbot.`;
 
-    addMessage("Great. I’ve prepared your inquiry for the team.");
+  addMessage("Great. I’ve prepared your inquiry for the team.");
 
-    addOptions([
-      {
-        label: "Continue to Contact Form",
-        action: () => {
-          prefillContactForm(summary);
-          scrollToContact();
-          chatbotWindow.classList.remove("active");
-          resetInquiry();
-        }
-      },
-      {
-        label: "Start Over",
-        action: () => showWelcome()
+  addOptions([
+    {
+      label: "Continue to Contact Form",
+      action: () => {
+        localStorage.setItem("chatbotInquiry", summary);
+        window.location.href = "contact.html";
       }
-    ]);
-  }
-
+    },
+    {
+      label: "Start Over",
+      action: () => showWelcome()
+    }
+  ]);
+}
   function goToContact() {
     addMessage("Sure — I’ll take you to the contact form.");
 
@@ -411,17 +408,7 @@ Guided inquiry submitted from website chatbot.`;
     }
   }
 
-  function scrollToContact() {
-    const contactSection =
-      document.querySelector("#contact") ||
-      document.querySelector(".contact-section") ||
-      document.querySelector("form");
-
-    if (contactSection) {
-      contactSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }
-  }
+ function scrollToContact() {
+  window.location.href = "contact.html";
+}
 }
