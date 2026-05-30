@@ -1,4 +1,3 @@
-s
 
 // ============================================
 // ONE HEART EVENTS - MAIN JAVASCRIPT
@@ -330,4 +329,5 @@ ${inquiry.message || "Not provided"}`;
     addMessage("👋 Hi there! I’m your One Heart assistant. I can help you find services, request a quote, or send an inquiry to the team.");
     showMainOptions();
   }, 700);
+}
 }
