@@ -114,101 +114,85 @@ function initChatbot() {
   const chatbotBtn = document.querySelector(".chatbot-btn");
   const chatbotWindow = document.querySelector(".chatbot-window");
   const chatbotClose = document.querySelector(".chatbot-close");
-  const chatbotInput = document.querySelector(".chatbot-input input");
-  const chatbotSend = document.querySelector(".chatbot-input button");
   const messagesContainer = document.querySelector(".chatbot-messages");
+  const chatbotInputArea = document.querySelector(".chatbot-input");
 
-  if (
-    !chatbotBtn ||
-    !chatbotWindow ||
-    !chatbotInput ||
-    !chatbotSend ||
-    !messagesContainer
-  ) {
-    return;
+  if (!chatbotBtn || !chatbotWindow || !messagesContainer) return;
+
+  if (chatbotInputArea) {
+    chatbotInputArea.style.display = "none";
   }
 
   const inquiry = {
     eventType: "",
     eventDate: "",
-    budget: "",
     location: "",
+    budget: "",
     services: "",
     message: ""
   };
 
-  let inquiryMode = false;
-  let inquiryStep = 0;
-  let hasStarted = false;
-
-  const steps = [
+  const inquiryFlow = [
     {
       key: "eventType",
-      question:
-        "What type of event are you planning? For example: wedding, birthday, corporate event, conference, or private celebration."
+      question: "What type of event are you planning?",
+      options: ["Wedding", "Birthday", "Corporate Event", "Conference", "Product Launch", "Private Celebration", "Other"]
     },
     {
       key: "eventDate",
-      question: "Nice. What date are you planning the event for?"
+      question: "When is the event?",
+      options: ["This month", "Next month", "In 2-3 months", "Later this year", "Not sure yet"]
     },
     {
       key: "location",
-      question: "Where will the event be held?"
+      question: "Where will the event be held?",
+      options: ["Riyadh", "Jeddah", "Dammam", "Elsewhere in Saudi Arabia", "Not sure yet"]
     },
     {
       key: "budget",
-      question: "Do you have a budget range in mind?"
+      question: "What budget range are you considering?",
+      options: ["Small budget", "Medium budget", "Premium event", "Not sure yet"]
     },
     {
       key: "services",
-      question:
-        "What services do you need? For example: planning, decor, catering, photography, venue setup, entertainment, or full event management."
-    },
-    {
-      key: "message",
-      question: "Perfect. Add any extra details you'd like the team to know."
+      question: "What do you need help with?",
+      options: ["Full Event Planning", "Decor", "Venue Setup", "Corporate Setup", "Entertainment", "Photography", "Everything"]
     }
   ];
 
   chatbotBtn.addEventListener("click", () => {
     chatbotWindow.classList.toggle("active");
 
-    if (!hasStarted) {
-      hasStarted = true;
-
-      setTimeout(() => {
-        addMessage(
-          "👋 Hi there! I’m your One Heart assistant. I can help you find services, request a quote, or send an inquiry to the team."
-        );
-        showMainOptions();
-      }, 400);
+    if (!messagesContainer.dataset.started) {
+      messagesContainer.dataset.started = "true";
+      showWelcome();
     }
   });
 
-  chatbotClose.addEventListener("click", () => {
-    chatbotWindow.classList.remove("active");
-  });
+  if (chatbotClose) {
+    chatbotClose.addEventListener("click", () => {
+      chatbotWindow.classList.remove("active");
+    });
+  }
+
+  function clearMessages() {
+    messagesContainer.innerHTML = "";
+  }
 
   function addMessage(text, isUser = false) {
     const msg = document.createElement("div");
-
     msg.className = `message ${isUser ? "user" : "bot"}`;
     msg.textContent = text;
-
     messagesContainer.appendChild(msg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  function addOptions(options = []) {
-    const existingOptions = messagesContainer.querySelectorAll(".chatbot-options");
-    existingOptions.forEach(optionBlock => optionBlock.remove());
-
+  function addOptions(options) {
     const wrapper = document.createElement("div");
     wrapper.className = "chatbot-options";
 
     options.forEach(option => {
       const btn = document.createElement("button");
-
       btn.type = "button";
       btn.className = "chatbot-option";
       btn.textContent = option.label;
@@ -226,43 +210,100 @@ function initChatbot() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  function botReply(text, delay = 500) {
-    setTimeout(() => {
-      addMessage(text, false);
-    }, delay);
+  function showWelcome() {
+    clearMessages();
+
+    addMessage("👋 Welcome to One Heart Events. What would you like help with?");
+
+    addOptions([
+      { label: "Book an Event", action: () => startInquiry() },
+      { label: "Get a Quote", action: () => startInquiry() },
+      { label: "View FAQs", action: () => showFAQMenu() },
+      { label: "Contact the Team", action: () => goToContact() }
+    ]);
   }
 
-  function resetInquiry() {
-    inquiry.eventType = "";
-    inquiry.eventDate = "";
-    inquiry.budget = "";
-    inquiry.location = "";
-    inquiry.services = "";
-    inquiry.message = "";
+  function startInquiry(stepIndex = 0) {
+    const step = inquiryFlow[stepIndex];
 
-    inquiryMode = false;
-    inquiryStep = 0;
+    if (!step) {
+      finishInquiry();
+      return;
+    }
+
+    addMessage(step.question);
+
+    const options = step.options.map(value => ({
+      label: value,
+      action: () => {
+        inquiry[step.key] = value;
+        startInquiry(stepIndex + 1);
+      }
+    }));
+
+    options.push({
+      label: "Start Over",
+      action: () => {
+        resetInquiry();
+        showWelcome();
+      }
+    });
+
+    addOptions(options);
   }
 
-  function startInquiry() {
-    resetInquiry();
+  function showFAQMenu() {
+    addMessage("Choose a question:");
 
-    inquiryMode = true;
-    inquiryStep = 0;
-
-    botReply(
-      "Great — I’ll collect a few details and then send you to the contact form so the team can follow up properly."
-    );
-
-    setTimeout(() => {
-      addMessage(steps[inquiryStep].question);
-    }, 1000);
+    addOptions([
+      {
+        label: "What services do you offer?",
+        action: () => showFAQAnswer(
+          "We offer event planning, corporate events, birthdays, conferences, product launches, weddings, private celebrations, decor, and full event management."
+        )
+      },
+      {
+        label: "Where are you located?",
+        action: () => showFAQAnswer(
+          "We are based in Riyadh, Saudi Arabia, and serve events across the Kingdom and beyond."
+        )
+      },
+      {
+        label: "How do I get a quote?",
+        action: () => startInquiry()
+      },
+      {
+        label: "Do you handle weddings?",
+        action: () => showFAQAnswer(
+          "Yes, we handle wedding planning, decor, coordination, and full event management."
+        )
+      },
+      {
+        label: "Do you handle corporate events?",
+        action: () => showFAQAnswer(
+          "Yes, we support corporate events, conferences, product launches, and formal gatherings."
+        )
+      },
+      {
+        label: "Back",
+        action: showWelcome
+      }
+    ]);
   }
 
-  function completeInquiry() {
-    inquiryMode = false;
+  function showFAQAnswer(answer) {
+    addMessage(answer);
 
-    const compiledMessage = `Website chatbot inquiry:
+    addOptions([
+      { label: "Ask another FAQ", action: showFAQMenu },
+      { label: "Get a Quote", action: () => startInquiry() },
+      { label: "Contact the Team", action: () => goToContact() },
+      { label: "Start Over", action: showWelcome }
+    ]);
+  }
+
+  function finishInquiry() {
+    const summary = `Website guided inquiry:
 
 Event Type: ${inquiry.eventType || "Not provided"}
 Event Date: ${inquiry.eventDate || "Not provided"}
@@ -271,73 +312,56 @@ Budget: ${inquiry.budget || "Not provided"}
 Services Needed: ${inquiry.services || "Not provided"}
 
 Extra Details:
-${inquiry.message || "Not provided"}`;
+Guided inquiry submitted from website chatbot.`;
 
-    botReply(
-      "Perfect. I’ll take you to the contact form and prefill your inquiry so the team can respond properly."
-    );
+    addMessage("Great. I’ve prepared your inquiry for the team.");
 
-    setTimeout(() => {
-      const didPrefill = prefillContactForm(compiledMessage);
-
-      if (didPrefill) {
-        scrollToContact();
-        chatbotWindow.classList.remove("active");
-      } else {
-        addMessage(
-          "I couldn’t find the contact form, but here is the inquiry summary you can copy:"
-        );
-        addMessage(compiledMessage);
+    addOptions([
+      {
+        label: "Continue to Contact Form",
+        action: () => {
+          prefillContactForm(summary);
+          scrollToContact();
+          chatbotWindow.classList.remove("active");
+          resetInquiry();
+        }
+      },
+      {
+        label: "Start Over",
+        action: () => {
+          resetInquiry();
+          showWelcome();
+        }
       }
-
-      resetInquiry();
-    }, 1200);
+    ]);
   }
 
-  function handleInquiryAnswer(text) {
-    const lower = text.toLowerCase().trim();
+  function goToContact() {
+    addMessage("Sure — I’ll take you to the contact form.");
 
-    if (["cancel", "stop", "exit", "never mind", "nevermind"].includes(lower)) {
-      resetInquiry();
-      addMessage("No problem. I’ve cancelled that. What would you like help with instead?");
-      showMainOptions();
-      return;
-    }
+    setTimeout(() => {
+      scrollToContact();
+      chatbotWindow.classList.remove("active");
+    }, 500);
+  }
 
-    const currentStep = steps[inquiryStep];
-
-    if (["skip", "not sure", "idk", "i don't know", "dont know", "don't know"].includes(lower)) {
-      inquiry[currentStep.key] = "Not sure";
-    } else {
-      inquiry[currentStep.key] = text;
-    }
-
-    inquiryStep++;
-
-    if (inquiryStep >= steps.length) {
-      completeInquiry();
-      return;
-    }
-
-    botReply(steps[inquiryStep].question);
+  function resetInquiry() {
+    Object.keys(inquiry).forEach(key => {
+      inquiry[key] = "";
+    });
   }
 
   function prefillContactForm(message) {
-    const messageFields = [
-      document.querySelector("#message"),
-      document.querySelector("textarea[name='message']"),
-      document.querySelector("textarea")
-    ];
+    const messageField =
+      document.querySelector("#message") ||
+      document.querySelector("textarea[name='message']") ||
+      document.querySelector("textarea");
 
-    const messageField = messageFields.find(Boolean);
-
-    if (!messageField) return false;
-
-    messageField.value = message;
-    messageField.dispatchEvent(new Event("input", { bubbles: true }));
-    messageField.dispatchEvent(new Event("change", { bubbles: true }));
-
-    return true;
+    if (messageField) {
+      messageField.value = message;
+      messageField.dispatchEvent(new Event("input", { bubbles: true }));
+      messageField.dispatchEvent(new Event("change", { bubbles: true }));
+    }
   }
 
   function scrollToContact() {
@@ -353,7 +377,7 @@ ${inquiry.message || "Not provided"}`;
       });
     }
   }
-
+}
   function showMainOptions() {
     addOptions([
       {
