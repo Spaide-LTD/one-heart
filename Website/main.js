@@ -100,6 +100,36 @@ function createParticles() {
 
 // ===== GUIDED CHATBOT =====
 function initChatbot() {
+<<<<<<< HEAD
+  const chatbotBtn = document.querySelector('.chatbot-btn');
+  const chatbotWindow = document.querySelector('.chatbot-window');
+  const chatbotClose = document.querySelector('.chatbot-close');
+  const chatbotInput = document.querySelector('.chatbot-input input');
+  const chatbotSend = document.querySelector('.chatbot-input button');
+  const messagesContainer = document.querySelector('.chatbot-messages');
+  
+  if (!chatbotBtn) return;
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatBotMessage(text) {
+    const safeText = escapeHtml(text);
+    return safeText.replace(
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
+      (email) => `<a href="mailto:${email}">${email}</a>`
+    );
+  }
+  
+  chatbotBtn.addEventListener('click', () => {
+    chatbotWindow.classList.toggle('active');
+=======
   const chatbotBtn = document.querySelector(".chatbot-btn");
   const chatbotWindow = document.querySelector(".chatbot-window");
   const chatbotClose = document.querySelector(".chatbot-close");
@@ -188,6 +218,7 @@ function initChatbot() {
       messagesContainer.dataset.started = "true";
       showWelcome();
     }
+>>>>>>> 912adf38e2c963076e3d06c17e06cef4a8c154d2
   });
 
   if (chatbotClose) {
@@ -201,9 +232,19 @@ function initChatbot() {
   }
 
   function addMessage(text, isUser = false) {
+<<<<<<< HEAD
+    const msg = document.createElement('div');
+    msg.className = `message ${isUser ? 'user' : 'bot'}`;
+    if (isUser) {
+      msg.textContent = text;
+    } else {
+      msg.innerHTML = formatBotMessage(text);
+    }
+=======
     const msg = document.createElement("div");
     msg.className = `message ${isUser ? "user" : "bot"}`;
     msg.textContent = text;
+>>>>>>> 912adf38e2c963076e3d06c17e06cef4a8c154d2
     messagesContainer.appendChild(msg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
