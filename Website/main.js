@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  
   const reveals = document.querySelectorAll(".reveal");
 
   if ("IntersectionObserver" in window) {
