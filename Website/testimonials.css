@@ -19,11 +19,13 @@
 
 @keyframes marqueeScroll { 0%{transform: translateX(0);} 100%{transform: translateX(-50%);} }
 @keyframes marqueeScrollReverse { 0%{transform: translateX(-50%);} 100%{transform: translateX(0);} }
+@keyframes marqueeScrollRtl { 0%{transform: translateX(0);} 100%{transform: translateX(50%);} }
+@keyframes marqueeScrollRtlReverse { 0%{transform: translateX(50%);} 100%{transform: translateX(0);} }
 
 /* RTL: invert marquee direction so movement feels natural in Arabic */
-html[dir="rtl"] .marquee-row-1 { animation-name: marqueeScrollReverse; }
-html[dir="rtl"] .marquee-row-2 { animation-name: marqueeScroll; }
-html[dir="rtl"] .marquee-row-3 { animation-name: marqueeScrollReverse; }
+html[dir="rtl"] .marquee-row-1 { animation-name: marqueeScrollRtl; }
+html[dir="rtl"] .marquee-row-2 { animation-name: marqueeScrollRtlReverse; }
+html[dir="rtl"] .marquee-row-3 { animation-name: marqueeScrollRtl; }
 
 .testimonial-card { width: 400px; min-width: 400px; padding: 30px; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--glass-border); transition: var(--transition); cursor: default; }
 .testimonial-card:hover { transform: scale(1.02); border-color: var(--primary-light); box-shadow: 0 15px 40px rgba(107,44,145,0.15); }

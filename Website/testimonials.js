@@ -63,10 +63,26 @@ function createTestimonialCard(t, isFeatured = false) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Split testimonials into 3 rows for marquee
-  const row1 = [...testimonialsData.slice(0, 3), ...testimonialsData.slice(0, 3)];
-  const row2 = [...testimonialsData.slice(3, 6), ...testimonialsData.slice(3, 6)];
-  const row3 = [...testimonialsData.slice(6, 9), ...testimonialsData.slice(6, 9)];
+  // Build 3 marquee rows reliably, even when the dataset is small.
+  const rowSize = 3;
+  const source = testimonialsData.length ? testimonialsData : [];
+
+  function getLoopingSlice(start, size) {
+    const slice = [];
+    for (let i = 0; i < size; i += 1) {
+      slice.push(source[(start + i) % source.length]);
+    }
+    return slice;
+  }
+
+  const row1Base = getLoopingSlice(0, rowSize);
+  const row2Base = getLoopingSlice(2, rowSize);
+  const row3Base = getLoopingSlice(4, rowSize);
+
+  // Duplicate row content for seamless marquee loops.
+  const row1 = [...row1Base, ...row1Base];
+  const row2 = [...row2Base, ...row2Base];
+  const row3 = [...row3Base, ...row3Base];
   
   document.getElementById('marquee1').innerHTML = row1.map(t => createTestimonialCard(t)).join('');
   document.getElementById('marquee2').innerHTML = row2.map(t => createTestimonialCard(t)).join('');
