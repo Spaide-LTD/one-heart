@@ -10,7 +10,7 @@
 .testimonials-marquee { padding: 40px 0; overflow: hidden; position: relative; z-index: 1; }
 .marquee-wrapper { margin-bottom: 25px; overflow: hidden; }
 .marquee-wrapper:last-child { margin-bottom: 0; }
-.marquee-row { display: flex; gap: 25px; width: max-content; }
+.marquee-row { display: flex; gap: 25px; width: max-content; will-change: transform; transform: translate3d(0, 0, 0); backface-visibility: hidden; }
 .marquee-row-1 { animation: marqueeScroll 40s linear infinite; }
 .marquee-row-2 { animation: marqueeScrollReverse 45s linear infinite; }
 .marquee-row-3 { animation: marqueeScroll 50s linear infinite; }
@@ -19,6 +19,11 @@
 
 @keyframes marqueeScroll { 0%{transform: translateX(0);} 100%{transform: translateX(-50%);} }
 @keyframes marqueeScrollReverse { 0%{transform: translateX(-50%);} 100%{transform: translateX(0);} }
+
+/* RTL: invert marquee direction so movement feels natural in Arabic */
+html[dir="rtl"] .marquee-row-1 { animation-name: marqueeScrollReverse; }
+html[dir="rtl"] .marquee-row-2 { animation-name: marqueeScroll; }
+html[dir="rtl"] .marquee-row-3 { animation-name: marqueeScrollReverse; }
 
 .testimonial-card { width: 400px; min-width: 400px; padding: 30px; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--glass-border); transition: var(--transition); cursor: default; }
 .testimonial-card:hover { transform: scale(1.02); border-color: var(--primary-light); box-shadow: 0 15px 40px rgba(107,44,145,0.15); }

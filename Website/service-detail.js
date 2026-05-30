@@ -1,203 +1,155 @@
 const serviceData = {
   wedding: {
-    title: "Wedding Planning",
-    subtitle: "From the proposal to the last dance, we craft weddings that tell your unique love story",
-    icon: "fa-heart",
-    heroImage: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1400&h=800&fit=crop",
+    title: "Electronic Invitations",
+    subtitle: "Beautiful digital invitations that make every first impression memorable",
+    icon: "fa-envelope",
+    heroImage: "images/invites.png",
     description: `
-      <p>Your wedding day is one of the most significant moments of your life, and at One Heart, we treat it with the reverence it deserves. Our comprehensive wedding planning service covers every aspect of your special day.</p>
-      <p>We begin with a deep consultation to understand your vision, style, and budget. From there, our team of expert planners, designers, and coordinators work tirelessly to bring your dream wedding to life.</p>
-      <h3>Our Wedding Services Include:</h3>
+      <p>Make your event stand out from the very beginning with professionally electronic invitations that combine elegance, convenience, and modern communication.</p>
+      <p>Our team creates customized digital invitations that reflect your event theme while simplifying guest communication and RSVP tracking.</p>
+      <h3>Electronic Invitation Services:</h3>
       <ul>
-        <li>Venue selection and booking</li>
-        <li>Custom theme and decor design</li>
-        <li>Catering and menu planning</li>
-        <li>Photography and videography coordination</li>
-        <li>Entertainment and music curation</li>
-        <li>Guest management and RSVP handling</li>
-        <li>Floral arrangements and centerpieces</li>
-        <li>Lighting and ambiance design</li>
-        <li>Day-of coordination and management</li>
-      </ul>
-      <p>Whether you envision an intimate garden ceremony or a grand ballroom celebration, we have the expertise and connections to make it happen flawlessly.</p>
+      <li>Digital RSVP management</li>
+      <li>WhatsApp delivery</li>
+      <li>Guest list management</li>
+      <li>Event information integration</li>
+      <li>Reminder notifications</li>
+      <li>Mobile-friendly invitation formats</li>
+    </ul>
+      <p>We ensure every invitation is beautifully presented and delivered efficiently, creating excitement before your event even begins.</p>
     `,
-    gallery: [
-      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400&h=300&fit=crop"
-    ],
     includes: [
-      "Full event planning & coordination",
-      "Vendor management",
-      "Custom decor & design",
-      "Timeline creation",
-      "Rehearsal coordination",
-      "Day-of management"
+    "RSVP tracking",
+    "Guest management",
+    "WhatsApp delivery",
+    "Reminder notifications"
     ],
     
     related: ["corporate", "private", "birthday"]
   },
   corporate: {
-    title: "Corporate Events",
-    subtitle: "Professional events that strengthen your brand and inspire your team",
-    icon: "fa-briefcase",
-    heroImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1400&h=800&fit=crop",
-    description: `
-      <p>Elevate your corporate presence with events that reflect your company's values and ambitions. From high-stakes board meetings to celebratory galas, we deliver professionalism with creative flair.</p>
-      <p>Our corporate event specialists understand the nuances of business entertainment. We create environments that foster connection, celebrate achievement, and reinforce your brand identity.</p>
-      <h3>Corporate Event Solutions:</h3>
-      <ul>
-        <li>Annual general meetings and conferences</li>
-        <li>Product launches and brand activations</li>
-        <li>Team building retreats and workshops</li>
-        <li>Award ceremonies and gala dinners</li>
-        <li>Client appreciation events</li>
-        <li>Trade show booth design and management</li>
-        <li>Executive retreats and offsites</li>
-        <li>Holiday parties and celebrations</li>
-      </ul>
-      <p>We handle AV requirements, stage design, speaker coordination, and all logistical elements to ensure your corporate event runs like clockwork.</p>
-    `,
-    gallery: [
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=300&fit=crop"
-    ],
-    includes: [
-      "Event strategy & planning",
-      "Venue sourcing",
-      "AV & tech setup",
-      "Branding integration",
-      "Catering management",
-      "Post-event reporting"
-    ],
+    title: "Crowd Organization & Management",
+    subtitle: "Professional crowd coordination for safe and seamless events",
+  icon: "fa-users",
+  heroImage: "images/crowd.png",
+  description: `
+    <p>Ensure your event runs smoothly with expert crowd organization and management services designed to maximize guest comfort, safety, and efficiency.</p>
+    <p>Our experienced coordinators manage guest flow, entrances, exits, and event operations to create a well-organized experience for all attendees.</p>
+    <h3>Crowd Management Services:</h3>
+    <ul>
+      <li>Guest flow coordination</li>
+      <li>Entrance and exit management</li>
+      <li>Queue management</li>
+      <li>VIP guest assistance</li>
+      <li>Event supervision</li>
+      <li>Security coordination support</li>
+      <li>Capacity monitoring</li>
+      <li>Emergency response planning</li>
+    </ul>
+    <p>We help maintain order and professionalism throughout your event, allowing guests to enjoy a smooth and comfortable experience.</p>
+  `,
+  includes: [
+    "Guest coordination",
+    "Queue management",
+    "VIP assistance",
+    "Safety supervision",
+    "Event monitoring",
+    "Operational support"
+  ],
     price: "SAR 20,000",
     related: ["conference", "launch", "private"]
   },
   birthday: {
-    title: "Birthday Parties",
-    subtitle: "Celebrate another trip around the sun with style, fun, and unforgettable memories",
-    icon: "fa-birthday-cake",
-    heroImage: "https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?w=1400&h=800&fit=crop",
-    description: `
-      <p>Every birthday is a milestone worth celebrating, and at One Heart, we make sure each one is extraordinary. From whimsical children's parties to sophisticated adult celebrations, we bring the perfect energy to your special day.</p>
-      <p>Our creative team designs immersive themed experiences that transport your guests into a world of wonder. We handle everything from invitations to party favors, so you can focus on making memories.</p>
-      <h3>Birthday Party Packages:</h3>
-      <ul>
-        <li>Themed party design and execution</li>
-        <li>Custom cake and dessert tables</li>
-        <li>Entertainment and activity coordination</li>
-        <li>Photo booth and memory stations</li>
-        <li>Balloon installations and decor</li>
-        <li>Catering for all ages and dietary needs</li>
-        <li>Party favor design and preparation</li>
-        <li>Live entertainment and DJs</li>
-      </ul>
-      <p>Whether it's a first birthday, sweet sixteen, or a fabulous fifty, we create celebrations that match the significance of the milestone.</p>
-    `,
-    gallery: [
-      "https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop"
-    ],
-    includes: [
-      "Theme development",
-      "Decor & styling",
-      "Entertainment booking",
-      "Catering coordination",
-      "Photography",
-      "Party favors"
-    ],
+    title: "Event Preparation & Setup",
+     subtitle: "Complete event setup solutions that bring your vision to life",
+  icon: "fa-tools",
+  heroImage: "images/setup.png",
+  description: `
+    <p>Transform any venue into the perfect event space with our comprehensive event preparation and setup services.</p>
+    <p>From initial planning to final setup, our team handles every detail to ensure your event is ready for a flawless experience.</p>
+    <h3>Event Preparation Services:</h3>
+    <ul>
+      <li>Venue preparation and arrangement</li>
+      <li>Stage and seating setup</li>
+      <li>Decor installation</li>
+      <li>Lighting and sound coordination</li>
+      <li>Equipment setup</li>
+      <li>Vendor coordination</li>
+      <li>Timeline preparation</li>
+      <li>On-site setup supervision</li>
+    </ul>
+    <p>We ensure every component is professionally arranged and ready before your guests arrive.</p>
+  `,
+  includes: [
+    "Venue setup",
+    "Decor installation",
+    "Stage preparation",
+    "Equipment setup",
+    "Vendor coordination",
+    "On-site supervision"
+  ],
     price: "SAR 8,000",
     related: ["private", "wedding", "corporate"]
   },
   conference: {
-    title: "Conferences",
-    subtitle: "Seamless conference management from concept to closing remarks",
-    icon: "fa-users",
-    heroImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1400&h=800&fit=crop",
-    description: `
-      <p>Conferences are powerful platforms for knowledge sharing, networking, and brand building. Our conference management team ensures every session, break, and networking moment is perfectly orchestrated.</p>
-      <p>We combine logistical expertise with creative programming to deliver conferences that engage attendees and achieve your organizational objectives.</p>
-      <h3>Conference Management Services:</h3>
-      <ul>
-        <li>Venue selection and room configuration</li>
-        <li>Speaker coordination and travel management</li>
-        <li>Registration and badge systems</li>
-        <li>AV production and live streaming</li>
-        <li>Breakout session management</li>
-        <li>Catering and refreshment planning</li>
-        <li>Exhibition and sponsor management</li>
-        <li>Networking event coordination</li>
-        <li>Post-conference reporting and analytics</li>
-      </ul>
-      <p>From intimate workshops to multi-day international conferences, we scale our services to match your needs and exceed expectations.</p>
-    `,
-    gallery: [
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=300&fit=crop"
-    ],
-    includes: [
-      "Full program management",
-      "Speaker coordination",
-      "Registration systems",
-      "AV & live streaming",
-      "Catering",
-      "On-site support"
-    ],
+   title: "Games Rental",
+  subtitle: "Fun and interactive entertainment for unforgettable events",
+  icon: "fa-gamepad",
+  heroImage: "images/rental.png",
+  description: `
+    <p>Add excitement and entertainment to your event with our wide range of games and interactive attractions suitable for guests of all ages.</p>
+    <p>Whether you're planning a birthday party, family gathering, corporate event, or festival, our games create memorable experiences and keep guests engaged.</p>
+    <h3>Games Rental Services:</h3>
+    <ul>
+      <li>Children's party games</li>
+      <li>Carnival and funfair games</li>
+      <li>Team-building activities</li>
+      <li>Outdoor event games</li>
+      <li>Family-friendly attractions</li>
+      <li>Game setup and operation</li>
+      <li>Event entertainment support</li>
+    </ul>
+    <p>We provide high-quality equipment, professional setup, and engaging entertainment solutions tailored to your event.</p>
+  `,
+  includes: [
+    "Game rental equipment",
+    "Delivery & setup",
+    "Interactive activities",
+    "Operator assistance",
+    "Family entertainment",
+  ],
     price: "SAR 30,000",
     related: ["corporate", "launch", "private"]
   },
   launch: {
-    title: "Product Launches",
-    subtitle: "Make your debut unforgettable with launch events that captivate and convert",
-    icon: "fa-rocket",
-    heroImage: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1400&h=800&fit=crop",
-    description: `
-      <p>A product launch is your moment to shine in the spotlight. We create launch events that generate buzz, engage media, and leave lasting impressions on your target audience.</p>
-      <p>Our launch specialists understand the art of storytelling. We design experiences that showcase your product's unique value while creating memorable moments for attendees.</p>
-      <h3>Launch Event Services:</h3>
-      <ul>
-        <li>Launch strategy and concept development</li>
-        <li>Venue selection with brand alignment</li>
-        <li>Stage design and product display</li>
-        <li>Media and press coordination</li>
-        <li>Influencer and VIP guest management</li>
-        <li>Live demonstration planning</li>
-        <li>Social media integration</li>
-        <li>Post-launch follow-up events</li>
-      </ul>
-      <p>From tech startups to luxury brands, we tailor every element of your launch to maximize impact and drive results.</p>
-    `,
-    gallery: [
-      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop"
-    ],
-    includes: [
-      "Launch strategy",
-      "Venue & staging",
-      "Media coordination",
-      "Demo planning",
-      "Guest management",
-      "Post-event PR"
-    ],
+    title: "Photo & Video Coverage",
+  subtitle: "Capture every special moment with professional photography and videography",
+  icon: "fa-camera",
+  heroImage: "images/video coverage.png",
+  description: `
+    <p>Preserve the memories of your event with high-quality photo and video coverage provided by experienced professionals.</p>
+    <p>Our team captures every important detail, emotion, and highlight, ensuring your special moments can be relived and shared for years to come.</p>
+    <h3>Photo & Video Coverage Services:</h3>
+    <ul>
+      <li>Professional event photography</li>
+      <li>Cinematic videography</li>
+      <li>Drone aerial coverage</li>
+      <li>Live event recording</li>
+      <li>Highlight reels and recap videos</li>
+      <li>Photo editing and retouching</li>
+      <li>Video editing and production</li>
+      <li>Social media content creation</li>
+    </ul>
+    <p>From intimate gatherings to large-scale celebrations, we ensure every meaningful moment is captured with creativity and professionalism.</p>
+  `,
+  includes: [
+    "Professional photography",
+    "Event videography",
+    "Drone coverage",
+    "Photo editing",
+    "Video production",
+    "Digital delivery"
+  ],
     price: "SAR 35,000",
     related: ["corporate", "conference", "private"]
   },

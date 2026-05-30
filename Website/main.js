@@ -98,6 +98,23 @@ function initChatbot() {
   const messagesContainer = document.querySelector('.chatbot-messages');
   
   if (!chatbotBtn) return;
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatBotMessage(text) {
+    const safeText = escapeHtml(text);
+    return safeText.replace(
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
+      (email) => `<a href="mailto:${email}">${email}</a>`
+    );
+  }
   
   chatbotBtn.addEventListener('click', () => {
     chatbotWindow.classList.toggle('active');
@@ -110,7 +127,11 @@ function initChatbot() {
   function addMessage(text, isUser = false) {
     const msg = document.createElement('div');
     msg.className = `message ${isUser ? 'user' : 'bot'}`;
-    msg.textContent = text;
+    if (isUser) {
+      msg.textContent = text;
+    } else {
+      msg.innerHTML = formatBotMessage(text);
+    }
     messagesContainer.appendChild(msg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
