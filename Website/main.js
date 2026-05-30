@@ -325,9 +325,12 @@ ${inquiry.message || "Not provided"}`;
     if (e.key === "Enter") sendMessage();
   });
 
-  setTimeout(() => {
+setTimeout(() => {
     addMessage("👋 Hi there! I’m your One Heart assistant. I can help you find services, request a quote, or send an inquiry to the team.");
     showMainOptions();
   }, 700);
 }
-}
+
+initChatbot();
+
+});
