@@ -17,6 +17,7 @@ async function waitForSupabase() {
                 resolve(window.supabaseClient);
             }
         }, 500);
+
         
         setTimeout(() => {
             clearInterval(interval);
@@ -25,6 +26,8 @@ async function waitForSupabase() {
         }, 10000);
     });
 }
+
+// Replace your loadAndApplyTheme function with this:
 
 async function loadAndApplyTheme() {
     const supabase = await waitForSupabase();
@@ -35,67 +38,45 @@ async function loadAndApplyTheme() {
     }
     
     try {
-        // First, check if we can even query the table
-        const { error: pingError } = await supabase
+        // Only get themes where is_active = true
+        const { data: activeTheme, error } = await supabase
             .from('themes')
-            .select('id')
-            .limit(1);
-        
-        if (pingError) {
-            console.warn("Themes table not accessible:", pingError.message);
-            applyDefaultTheme();
-            return;
-        }
-        
-        // Try to get active theme with only safe columns
-        let query = supabase
-            .from('themes')
-            .select('id, name, primary_color, accent_color, icon, is_active');
-        
-        // Only add filter if is_active column exists and has boolean values
-        const { data: sample } = await supabase
-            .from('themes')
-            .select('is_active')
-            .limit(1);
-        
-        if (sample && sample[0] && typeof sample[0].is_active === 'boolean') {
-            query = query.eq('is_active', true);
-        }
-        
-        const { data, error } = await query.maybeSingle();
+            .select('*')
+            .eq('is_active', true)
+            .single();
         
         if (error) {
-            console.warn("Theme query failed:", error.message);
-            applyDefaultTheme();
+            if (error.code === 'PGRST116') {
+                console.log("No active theme found in database, using default theme");
+                applyDefaultTheme();
+            } else {
+                console.warn("Error fetching active theme:", error.message);
+                applyDefaultTheme();
+            }
             return;
         }
         
-        if (data) {
-            // Ensure we have all required properties
+        if (activeTheme) {
+            console.log("✓ Active theme found:", activeTheme.name);
+            console.log("  - Primary color:", activeTheme.primary_color);
+            console.log("  - Accent color:", activeTheme.accent_color);
+            
             const themeData = {
-                name: data.name || 'Default',
-                primary_color: data.primary_color || '#8b5cf6',
-                accent_color: data.accent_color || '#06b6d4',
-                icon: data.icon || '🎨',
-                is_active: data.is_active || true
+                name: activeTheme.name,
+                primary_color: activeTheme.primary_color || '#8b5cf6',
+                accent_color: activeTheme.accent_color || '#06b6d4',
+                icon: activeTheme.icon || '🎨',
+                is_active: true
             };
             currentTheme = themeData;
             applyThemeToWebsite(themeData);
         } else {
-            // No active theme found, use first theme or default
-            const { data: allThemes } = await supabase
-                .from('themes')
-                .select('id, name, primary_color, accent_color, icon')
-                .limit(1);
-            
-            if (allThemes && allThemes[0]) {
-                applyThemeToWebsite(allThemes[0]);
-            } else {
-                applyDefaultTheme();
-            }
+            console.log("No active theme, using default");
+            applyDefaultTheme();
         }
+        
     } catch (error) {
-        console.log("Theme error, using default:", error.message);
+        console.error("Theme error:", error);
         applyDefaultTheme();
     }
 }

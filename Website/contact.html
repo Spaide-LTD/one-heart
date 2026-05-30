@@ -228,6 +228,26 @@
   <script src="main.js"></script>
   <script src="contact.js"></script>
   <script src="theme-loader.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const savedInquiry = localStorage.getItem("chatbotInquiry");
+
+  if (!savedInquiry) return;
+
+  const messageField =
+    document.querySelector("#message") ||
+    document.querySelector("textarea[name='message']") ||
+    document.querySelector("textarea");
+
+  if (messageField) {
+    messageField.value = savedInquiry;
+    messageField.dispatchEvent(new Event("input", { bubbles: true }));
+    messageField.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  localStorage.removeItem("chatbotInquiry");
+});
+  </script>
 </body>
 </html>
 

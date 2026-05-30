@@ -271,11 +271,8 @@ async function sendMessage() {
       sender_type: 'admin',
       created_at: new Date().toISOString()
     });
-    await fetch('https://primary-production-19a8d.up.railway.app/webhook/send-agent-message', {
+    await fetch('https://primary-production-ddbcd.up.railway.app/webhook/Spaide-WhatsApp', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
   body: JSON.stringify({
     phone_number: currentPhone,
     message_text: text
