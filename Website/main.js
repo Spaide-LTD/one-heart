@@ -3,23 +3,16 @@
 // ============================================
 
 document.addEventListener("DOMContentLoaded", function () {
-  // ===== PARTICLES =====
   createParticles();
 
-  // ===== NAVBAR SCROLL =====
   const navbar = document.querySelector(".navbar");
 
   if (navbar) {
     window.addEventListener("scroll", () => {
-      if (window.scrollY > 50) {
-        navbar.classList.add("scrolled");
-      } else {
-        navbar.classList.remove("scrolled");
-      }
+      navbar.classList.toggle("scrolled", window.scrollY > 50);
     });
   }
 
-  // ===== MOBILE MENU =====
   const mobileBtn = document.querySelector(".mobile-menu-btn");
   const navLinks = document.querySelector(".nav-links");
 
@@ -29,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== SCROLL REVEAL =====
   const reveals = document.querySelectorAll(".reveal");
 
   if ("IntersectionObserver" in window) {
@@ -49,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     reveals.forEach(el => el.classList.add("active"));
   }
 
-  // ===== THEME SWITCHER =====
   const themeToggle = document.querySelector(".theme-toggle");
   const currentTheme = localStorage.getItem("theme") || "dark";
   document.documentElement.setAttribute("data-theme", currentTheme);
@@ -64,10 +55,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== CHATBOT =====
   initChatbot();
 
-  // ===== SMOOTH SCROLL =====
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener("click", function (e) {
       e.preventDefault();
@@ -109,7 +98,7 @@ function createParticles() {
   }
 }
 
-// ===== CHATBOT =====
+// ===== GUIDED CHATBOT =====
 function initChatbot() {
   const chatbotBtn = document.querySelector(".chatbot-btn");
   const chatbotWindow = document.querySelector(".chatbot-window");
@@ -128,35 +117,67 @@ function initChatbot() {
     eventDate: "",
     location: "",
     budget: "",
-    services: "",
-    message: ""
+    services: ""
   };
 
   const inquiryFlow = [
     {
       key: "eventType",
       question: "What type of event are you planning?",
-      options: ["Wedding", "Birthday", "Corporate Event", "Conference", "Product Launch", "Private Celebration", "Other"]
+      options: [
+        "Wedding",
+        "Birthday",
+        "Corporate Event",
+        "Conference",
+        "Product Launch",
+        "Private Celebration",
+        "Other"
+      ]
     },
     {
       key: "eventDate",
       question: "When is the event?",
-      options: ["This month", "Next month", "In 2-3 months", "Later this year", "Not sure yet"]
+      options: [
+        "This month",
+        "Next month",
+        "In 2-3 months",
+        "Later this year",
+        "Not sure yet"
+      ]
     },
     {
       key: "location",
       question: "Where will the event be held?",
-      options: ["Riyadh", "Jeddah", "Dammam", "Elsewhere in Saudi Arabia", "Not sure yet"]
+      options: [
+        "Riyadh",
+        "Jeddah",
+        "Dammam",
+        "Elsewhere in Saudi Arabia",
+        "Not sure yet"
+      ]
     },
     {
       key: "budget",
       question: "What budget range are you considering?",
-      options: ["Small budget", "Medium budget", "Premium event", "Not sure yet"]
+      options: [
+        "Small budget",
+        "Medium budget",
+        "Premium event",
+        "Not sure yet"
+      ]
     },
     {
       key: "services",
       question: "What do you need help with?",
-      options: ["Full Event Planning", "Decor", "Venue Setup", "Corporate Setup", "Entertainment", "Photography", "Everything"]
+      options: [
+        "Full Event Planning",
+        "Decor",
+        "Venue Setup",
+        "Corporate Setup",
+        "Entertainment",
+        "Photography",
+        "Everything"
+      ]
     }
   ];
 
@@ -187,7 +208,10 @@ function initChatbot() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  function addOptions(options) {
+  function addOptions(options = []) {
+    const oldOptions = messagesContainer.querySelectorAll(".chatbot-options");
+    oldOptions.forEach(optionBlock => optionBlock.remove());
+
     const wrapper = document.createElement("div");
     wrapper.className = "chatbot-options";
 
@@ -211,15 +235,28 @@ function initChatbot() {
   }
 
   function showWelcome() {
+    resetInquiry();
     clearMessages();
 
     addMessage("👋 Welcome to One Heart Events. What would you like help with?");
 
     addOptions([
-      { label: "Book an Event", action: () => startInquiry() },
-      { label: "Get a Quote", action: () => startInquiry() },
-      { label: "View FAQs", action: () => showFAQMenu() },
-      { label: "Contact the Team", action: () => goToContact() }
+      {
+        label: "Book an Event",
+        action: () => startInquiry()
+      },
+      {
+        label: "Get a Quote",
+        action: () => startInquiry()
+      },
+      {
+        label: "View FAQs",
+        action: () => showFAQMenu()
+      },
+      {
+        label: "Contact the Team",
+        action: () => goToContact()
+      }
     ]);
   }
 
@@ -243,10 +280,7 @@ function initChatbot() {
 
     options.push({
       label: "Start Over",
-      action: () => {
-        resetInquiry();
-        showWelcome();
-      }
+      action: () => showWelcome()
     });
 
     addOptions(options);
@@ -258,15 +292,17 @@ function initChatbot() {
     addOptions([
       {
         label: "What services do you offer?",
-        action: () => showFAQAnswer(
-          "We offer event planning, corporate events, birthdays, conferences, product launches, weddings, private celebrations, decor, and full event management."
-        )
+        action: () =>
+          showFAQAnswer(
+            "We offer event planning, corporate events, birthdays, conferences, product launches, weddings, private celebrations, decor, and full event management."
+          )
       },
       {
         label: "Where are you located?",
-        action: () => showFAQAnswer(
-          "We are based in Riyadh, Saudi Arabia, and serve events across the Kingdom and beyond."
-        )
+        action: () =>
+          showFAQAnswer(
+            "We are based in Riyadh, Saudi Arabia, and serve events across the Kingdom and beyond."
+          )
       },
       {
         label: "How do I get a quote?",
@@ -274,19 +310,21 @@ function initChatbot() {
       },
       {
         label: "Do you handle weddings?",
-        action: () => showFAQAnswer(
-          "Yes, we handle wedding planning, decor, coordination, and full event management."
-        )
+        action: () =>
+          showFAQAnswer(
+            "Yes, we handle wedding planning, decor, coordination, and full event management."
+          )
       },
       {
         label: "Do you handle corporate events?",
-        action: () => showFAQAnswer(
-          "Yes, we support corporate events, conferences, product launches, and formal gatherings."
-        )
+        action: () =>
+          showFAQAnswer(
+            "Yes, we support corporate events, conferences, product launches, and formal gatherings."
+          )
       },
       {
         label: "Back",
-        action: showWelcome
+        action: () => showWelcome()
       }
     ]);
   }
@@ -295,10 +333,22 @@ function initChatbot() {
     addMessage(answer);
 
     addOptions([
-      { label: "Ask another FAQ", action: showFAQMenu },
-      { label: "Get a Quote", action: () => startInquiry() },
-      { label: "Contact the Team", action: () => goToContact() },
-      { label: "Start Over", action: showWelcome }
+      {
+        label: "Ask another FAQ",
+        action: () => showFAQMenu()
+      },
+      {
+        label: "Get a Quote",
+        action: () => startInquiry()
+      },
+      {
+        label: "Contact the Team",
+        action: () => goToContact()
+      },
+      {
+        label: "Start Over",
+        action: () => showWelcome()
+      }
     ]);
   }
 
@@ -328,10 +378,7 @@ Guided inquiry submitted from website chatbot.`;
       },
       {
         label: "Start Over",
-        action: () => {
-          resetInquiry();
-          showWelcome();
-        }
+        action: () => showWelcome()
       }
     ]);
   }
@@ -377,115 +424,4 @@ Guided inquiry submitted from website chatbot.`;
       });
     }
   }
-}
-  function showMainOptions() {
-    addOptions([
-      {
-        label: "Book an Event",
-        action: startInquiry
-      },
-      {
-        label: "View Services",
-        action: () => {
-          addMessage(
-            "We offer event planning, corporate events, birthday parties, conferences, product launches, weddings, private celebrations, and full event management."
-          );
-
-          setTimeout(showMainOptions, 700);
-        }
-      },
-      {
-        label: "Get a Quote",
-        action: startInquiry
-      },
-      {
-        label: "Contact the Team",
-        action: () => {
-          addMessage("Sure — I’ll take you to the contact form.");
-
-          setTimeout(() => {
-            scrollToContact();
-            chatbotWindow.classList.remove("active");
-          }, 700);
-        }
-      }
-    ]);
-  }
-
-  function getBotResponse(input) {
-    const lower = input.toLowerCase();
-
-    if (
-      lower.includes("book") ||
-      lower.includes("quote") ||
-      lower.includes("price") ||
-      lower.includes("cost") ||
-      lower.includes("budget") ||
-      lower.includes("contact") ||
-      lower.includes("human") ||
-      lower.includes("team")
-    ) {
-      startInquiry();
-      return null;
-    }
-
-    if (
-      lower.includes("hello") ||
-      lower.includes("hi") ||
-      lower.includes("hey")
-    ) {
-      return "Hello! Welcome to One Heart Events. I can help with services, quotes, bookings, or connect you to the team.";
-    }
-
-    if (lower.includes("service") || lower.includes("offer")) {
-      return "We offer weddings, corporate events, birthdays, conferences, product launches, private celebrations, decor, planning, and full event management.";
-    }
-
-    if (lower.includes("location") || lower.includes("where")) {
-      return "We’re based in Riyadh, Saudi Arabia, and serve events across the Kingdom and beyond.";
-    }
-
-    if (lower.includes("wedding")) {
-      return "Yes, we handle wedding planning, decor, coordination, and full event management. Would you like me to help you send an inquiry?";
-    }
-
-    if (lower.includes("birthday")) {
-      return "Yes, we plan birthday celebrations of different sizes. I can help you prepare an inquiry for the team.";
-    }
-
-    if (lower.includes("corporate") || lower.includes("conference")) {
-      return "Yes, we support corporate events, conferences, launches, and formal gatherings. I can help you send the details to the team.";
-    }
-
-    return "I can help with event services, bookings, quotes, and general questions. For custom requests, I can guide you to the contact form.";
-  }
-
-  function sendMessage() {
-    const text = chatbotInput.value.trim();
-
-    if (!text) return;
-
-    addMessage(text, true);
-    chatbotInput.value = "";
-
-    if (inquiryMode) {
-      handleInquiryAnswer(text);
-      return;
-    }
-
-    const response = getBotResponse(text);
-
-    if (response) {
-      botReply(response);
-      setTimeout(showMainOptions, 900);
-    }
-  }
-
-  chatbotSend.addEventListener("click", sendMessage);
-
-  chatbotInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  });
 }
