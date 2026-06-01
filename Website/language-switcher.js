@@ -1,8 +1,39 @@
 (function () {
   const STORAGE_KEY = 'oneheart-language';
+  const SESSION_SELECTED_KEY = 'oneheart-language-selected';
   const DEFAULT_LANG = 'en';
   const SUPPORTED_LANGS = ['en', 'ar'];
   const TRANSLATE_CONTAINER_ID = 'google_translate_element';
+
+  function setTranslateCookieValue(value, days, domain) {
+    const expiryDate = new Date();
+    expiryDate.setTime(expiryDate.getTime() + days * 24 * 60 * 60 * 1000);
+    let cookie = `googtrans=${value};expires=${expiryDate.toUTCString()};path=/`;
+    if (domain) cookie += `;domain=${domain}`;
+    document.cookie = cookie;
+  }
+
+  function syncTranslateCookies(lang) {
+    setTranslateCookieValue(`/en/${lang}`, 365);
+    const host = window.location.hostname;
+    if (host && host.indexOf('.') !== -1) {
+      setTranslateCookieValue(`/en/${lang}`, 365, host);
+      setTranslateCookieValue(`/en/${lang}`, 365, `.${host}`);
+    }
+  }
+
+  function forceSessionDefaultEnglish() {
+    const selected = localStorage.getItem(SESSION_SELECTED_KEY) === '1';
+    if (!selected) {
+      localStorage.setItem(STORAGE_KEY, DEFAULT_LANG);
+      syncTranslateCookies(DEFAULT_LANG);
+      document.documentElement.lang = DEFAULT_LANG;
+      document.documentElement.dir = 'ltr';
+    }
+  }
+
+  // Run immediately so English wins before Google Translate initializes.
+  forceSessionDefaultEnglish();
 
   function injectStyles() {
     const style = document.createElement('style');
@@ -71,18 +102,20 @@
     const fromStorage = localStorage.getItem(STORAGE_KEY);
     if (SUPPORTED_LANGS.includes(fromStorage)) return fromStorage;
 
-    const googTrans = getCookie('googtrans');
-    if (googTrans) {
-      if (googTrans.endsWith('/ar')) return 'ar';
-      if (googTrans.endsWith('/en')) return 'en';
-    }
-
     return DEFAULT_LANG;
   }
 
   function setSavedLanguage(lang) {
     localStorage.setItem(STORAGE_KEY, lang);
-    setCookie('googtrans', `/en/${lang}`, 365);
+    syncTranslateCookies(lang);
+  }
+
+  function markLanguageSelected() {
+    localStorage.setItem(SESSION_SELECTED_KEY, '1');
+  }
+
+  function hasSelectedLanguage() {
+    return localStorage.getItem(SESSION_SELECTED_KEY) === '1';
   }
 
   function ensureTranslateContainer() {
@@ -184,9 +217,15 @@
       const activeLang = getSavedLanguage();
       const nextLang = activeLang === 'en' ? 'ar' : 'en';
 
+      markLanguageSelected();
       setSavedLanguage(nextLang);
       applyDirection(nextLang);
       updateButtonLabel(button, nextLang);
+
+      if (nextLang === 'ar') {
+        loadGoogleTranslateScript();
+      }
+
       applyTranslateSelection(nextLang, 30);
       suppressGoogleUi();
 
@@ -209,7 +248,7 @@
     injectStyles();
     ensureTranslateContainer();
 
-    const activeLang = getSavedLanguage();
+    const activeLang = hasSelectedLanguage() ? getSavedLanguage() : DEFAULT_LANG;
     setSavedLanguage(activeLang);
     applyDirection(activeLang);
 
@@ -218,7 +257,10 @@
       updateButtonLabel(button, activeLang);
     }
 
-    loadGoogleTranslateScript();
+    const shouldLoadTranslate = hasSelectedLanguage() && activeLang === 'ar';
+    if (shouldLoadTranslate) {
+      loadGoogleTranslateScript();
+    }
 
     // Re-apply after dynamic changes to keep language and hide Google UI.
     const observer = new MutationObserver(function () {
@@ -226,8 +268,10 @@
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
 
-    window.addEventListener('load', ensureLanguageApplied);
-    setTimeout(ensureLanguageApplied, 500);
-    setTimeout(ensureLanguageApplied, 1500);
+    if (shouldLoadTranslate) {
+      window.addEventListener('load', ensureLanguageApplied);
+      setTimeout(ensureLanguageApplied, 500);
+      setTimeout(ensureLanguageApplied, 1500);
+    }
   });
 })();

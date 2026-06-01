@@ -154,42 +154,34 @@ const serviceData = {
     related: ["corporate", "conference", "private"]
   },
   private: {
-    title: "Private Celebrations",
-    subtitle: "Intimate moments deserve extraordinary settings and impeccable service",
-    icon: "fa-glass-cheers",
-    heroImage: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=1400&h=800&fit=crop",
-    description: `
-      <p>Some of life's most precious moments happen in the company of those closest to us. Our private celebration service transforms intimate gatherings into extraordinary experiences.</p>
-      <p>We specialize in creating atmospheres of warmth, elegance, and joy for celebrations that matter most to you and your loved ones.</p>
-      <h3>Private Celebration Experiences:</h3>
-      <ul>
-        <li>Anniversary celebrations and vow renewals</li>
-        <li>Family reunions and milestone gatherings</li>
-        <li>Graduation parties and achievements</li>
-        <li>Holiday celebrations and seasonal events</li>
-        <li>Engagement parties and proposals</li>
-        <li>Housewarming and dinner parties</li>
-        <li>Private chef experiences</li>
-        <li>Luxury picnic and outdoor events</li>
-      </ul>
-      <p>Every detail is curated to reflect your personal style and create an atmosphere where memories are made naturally.</p>
-    `,
-    gallery: [
-      "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=400&h=300&fit=crop"
-    ],
-    includes: [
-      "Personalized planning",
-      "Intimate venue curation",
-      "Custom menu design",
-      "Decor & ambiance",
-      "Entertainment",
-      "Photography"
-    ],
+    title: "Internal Communication Campaigns",
+  subtitle: "Engaging employees through impactful communication and workplace initiatives",
+  icon: "fa-bullhorn",
+  heroImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1400&h=800&fit=crop",
+  description: `
+    <p>Strengthen employee engagement and foster a positive workplace culture through strategic internal communication campaigns.</p>
+    <p>We help organizations effectively connect with their teams, communicate important messages, and create initiatives that inspire collaboration, awareness, and participation.</p>
+    <h3>Internal Communication Services:</h3>
+    <ul>
+      <li>Internal awareness campaigns</li>
+      <li>Employee engagement programs</li>
+      <li>Corporate culture initiatives</li>
+      <li>Staff events and communication activities</li>
+      <li>Employee recognition campaigns</li>
+      <li>Change management communications</li>
+      <li>Internal branding initiatives</li>
+      <li>Workplace engagement strategies</li>
+    </ul>
+    <p>Our solutions are designed to improve communication, strengthen company culture, and create meaningful connections between organizations and their employees.</p>
+  `,
+  includes: [
+    "Awareness campaign planning",
+    "Employee engagement activities",
+    "Corporate culture programs",
+    "Internal communication strategy",
+    "Staff event coordination",
+    "Campaign execution & reporting"
+  ],
     price: "SAR 12,000",
     related: ["wedding", "birthday", "corporate"]
   }
