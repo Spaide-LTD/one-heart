@@ -157,29 +157,30 @@ function initChatbot() {
         "Not sure yet"
       ]
     },
+   {
+  key: "budget",
+  question: "What budget range are you considering?",
+  options: [
+    "Under SAR 10,000",
+    "SAR 10,000 - SAR 25,000",
+    "SAR 25,000 - SAR 50,000",
+    "SAR 50,000 - SAR 100,000",
+    "SAR 100,000+",
+    "Not sure yet"
+  ]
+},
     {
-      key: "budget",
-      question: "What budget range are you considering?",
-      options: [
-        "Small budget",
-        "Medium budget",
-        "Premium event",
-        "Not sure yet"
-      ]
-    },
-    {
-      key: "services",
-      question: "What do you need help with?",
-      options: [
-        "Full Event Planning",
-        "Decor",
-        "Venue Setup",
-        "Corporate Setup",
-        "Entertainment",
-        "Photography",
-        "Everything"
-      ]
-    }
+  key: "services",
+  question: "Which service are you interested in?",
+  options: [
+    "Electronic Invitations",
+    "Crowd Organization & Management",
+    "Event Preparation & Setup",
+    "Games Rental",
+    "Photo & Video Coverage",
+    "Not sure yet"
+  ]
+}
   ];
 
   chatbotBtn.addEventListener("click", () => {
@@ -295,7 +296,7 @@ function initChatbot() {
         label: "What services do you offer?",
         action: () =>
           showFAQAnswer(
-            "We offer event planning, corporate events, birthdays, conferences, product launches, weddings, private celebrations, decor, and full event management."
+            "We currently offer Electronic Invitations, Crowd Organization & Management, Event Preparation & Setup, Games Rental, and Photo & Video Coverage."
           )
       },
       {
