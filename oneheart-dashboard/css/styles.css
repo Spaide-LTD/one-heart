@@ -2040,7 +2040,21 @@ input:checked + .slider:before {
     gap: 5px;
     font-variant-numeric: tabular-nums;
 }
-
+.nav-alert-badge {
+  margin-left: auto;
+  background: #ef4444;
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 800;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
 .card-details .card-date i {
     font-size: 10px;
 }

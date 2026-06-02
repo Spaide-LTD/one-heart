@@ -511,10 +511,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedLang = localStorage.getItem('lang') || 'ar';
   applyLanguage(savedLang);
 
+  async function updateHumanNeededBadge() {
+    if (!window.supabaseClient) return;
+
+    const { count, error } = await window.supabaseClient
+      .from("conversations")
+      .select("*", { count: "exact", head: true })
+      .eq("chat_owner", "WAITING_HUMAN");
+
+    if (error) {
+      console.error("Human needed count failed:", error);
+      return;
+    }
+
+    const badge = document.getElementById("humanNeededBadge");
+    if (!badge) return;
+
+    if (count > 0) {
+      badge.textContent = count > 99 ? "99+" : count;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
+  updateHumanNeededBadge();
+  setInterval(updateHumanNeededBadge, 15000);
+
   // User info (if exists on page)
   await waitForUser();
   setUserInfo();
 
+});
   // 👇 ONLY runs on settings page (if elements exist)
 
   const switcher = document.getElementById('languageSwitcher');
@@ -542,7 +570,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Global i18n active
-});
 
 // Global helper to fetch translations from other scripts
 window.t = function(key) {

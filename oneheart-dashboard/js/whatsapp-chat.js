@@ -8,7 +8,8 @@
 
 const MESSAGES_TABLE = "Messages";
 const CONVERSATIONS_TABLE = "conversations";
-const WHATSAPP_WEBHOOK_URL = "https://primary-production-ddbcd.up.railway.app/webhook/Spaide-WhatsApp";
+const WHATSAPP_WEBHOOK_URL = "https://primary-production-ddbcd.up.railway.app/webhook/fb4c1a98-2d45-41ce-88be-221b173e4d2e";
+const RESPONDENT = "https://primary-production-ddbcd.up.railway.app/webhook/agent-whatsapp-reply";
 
 const chatList = document.getElementById("chatList");
 const chatBody = document.getElementById("chatBody");
@@ -300,7 +301,7 @@ async function insertMessage(senderType, text) {
 
 async function notifyWhatsApp(text, senderType = "admin") {
   try {
-    await fetch(WHATSAPP_WEBHOOK_URL, {
+    await fetch(RESPONDENT, {
       method: "POST",
       mode: "no-cors",
       body: JSON.stringify({
