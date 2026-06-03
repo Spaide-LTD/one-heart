@@ -8,7 +8,7 @@
 
 const MESSAGES_TABLE = "Messages";
 const CONVERSATIONS_TABLE = "conversations";
-const WHATSAPP_WEBHOOK_URL = "https://primary-production-ddbcd.up.railway.app/webhook/fb4c1a98-2d45-41ce-88be-221b173e4d2e";
+const WHATSAPP_WEBHOOK_URL = "https://primary-production-ddbcd.up.railway.app/webhook/Spaide-WhatsApp";
 const RESPONDENT = "https://primary-production-ddbcd.up.railway.app/webhook/agent-whatsapp-reply";
 
 const chatList = document.getElementById("chatList");
@@ -94,7 +94,7 @@ function getSenderMeta(senderType) {
 }
 
 function getOwnerMeta(owner) {
-  if (owner === "WAITING_HUMAN") {
+  if (owner === "HUMAN_NEEDED") {
     return {
       label: "Needs Human",
       statusText: "AI requested human help",
@@ -121,7 +121,7 @@ function getOwnerMeta(owner) {
 }
 
 function canHumanReply() {
-  return currentOwner === "WAITING_HUMAN" || currentOwner === "HUMAN_ACTIVE";
+  return currentOwner === "HUMAN_NEEDED" || currentOwner === "HUMAN_ACTIVE";
 }
 
 async function getConversation(phoneNumber) {
@@ -225,7 +225,7 @@ function updateOwnershipUI() {
     responseTime.textContent =
       currentOwner === "AI_ACTIVE"
         ? "AI replying"
-        : currentOwner === "WAITING_HUMAN"
+        : currentOwner === "HUMAN_NEEDED"
           ? "Human help needed"
           : "Human replying now";
   }
@@ -264,7 +264,7 @@ function updateOwnershipUI() {
   if (messageInput) {
     messageInput.disabled = !enabled;
     messageInput.placeholder = enabled
-      ? currentOwner === "WAITING_HUMAN"
+      ? currentOwner === "HUMAN_NEEDED"
         ? "Type to accept handoff and reply..."
         : "Type a message..."
       : "AI is currently handling this chat...";
@@ -575,7 +575,7 @@ async function sendMessage() {
 
   sendBtn.disabled = true;
 
-  if (currentOwner === "WAITING_HUMAN") {
+  if (currentOwner === "HUMAN_NEEDED") {
     currentOwner = "HUMAN_ACTIVE";
     await updateConversationOwner(currentPhone, "HUMAN_ACTIVE");
   }
